@@ -4,6 +4,7 @@ import PlatformDownloader from "@/components/platform-downloader"
 import HeroSectionStyles from "@/components/hero-section-styles"; 
 import AdsterraBanner from "@/components/adsterra-banner"
 import AdsterraNativeBanner from "@/components/adsterra-native-normal"
+import AdsterraNativeDebug from "@/components/adsterra-native-debug"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card" 
 import { Badge } from "@/components/ui/badge"
@@ -86,7 +87,9 @@ export default async function Home() {
             ))}
           </div>
           <div className="w-full max-w-4xl mb-12 animate-fade-in-up delay-1000" id="downloader">
-            <AdsterraBanner className="mb-6" />
+            <div className="w-full h-[179px] mb-6 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-lg border border-white/20">
+              <AdsterraBanner className="w-full h-full" />
+            </div>
             <PlatformDownloader platform="universal" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl animate-fade-in-up delay-1200">
@@ -113,7 +116,7 @@ export default async function Home() {
       <HowToUse />
 
       {/* Native Banner 1 - After How to Use section */}
-      <AdsterraNativeBanner className="my-4" id="homepage-native-1" />
+      <AdsterraNativeDebug className="my-4" id="homepage-native-1" />
      
       <section className="py-8 md:py-12 bg-white dark:bg-slate-950">
         <Suspense fallback={<GridLoading />}>
