@@ -22,6 +22,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Normalize Reddit URLs
+    if (platform === 'reddit' || (platform === 'universal' && url.includes('reddit.com'))) {
+      // Ensure Reddit URLs are in the proper format
+      if (url.includes('redd.it/')) {
+        // Convert redd.it short URLs to full reddit URLs
+        const postId = url.split('redd.it/').pop()?.split('?')[0].split('#')[0];
+        if (postId) {
+          processUrl = `https://www.reddit.com/comments/${postId}`;
+          console.log("Normalized Reddit URL:", processUrl);
+        }
+      } else if (url.includes('reddit.com/r/') && !url.includes('/comments/')) {
+        // Convert subreddit post URLs to comment URLs
+        const match = url.match(/reddit\.com\/r\/([^\/]+)\/comments\/([^\/]+)/);
+        if (match) {
+          processUrl = `https://www.reddit.com/comments/${match[2]}`;
+          console.log("Normalized Reddit URL:", processUrl);
+        }
+      }
+    }
+
     // Get the RapidAPI credentials from environment variables
     const apiKey = process.env.NEXT_PUBLIC_RAPIDAPI_KEY
     const apiHost = process.env.NEXT_PUBLIC_RAPIDAPI_HOST

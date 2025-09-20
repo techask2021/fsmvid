@@ -72,7 +72,7 @@ export function detectPlatform(url: string): Platform {
     if (hostname.includes("ifunny.co")) return "ifunny"
     if (hostname.includes("imdb.com")) return "imdb"
     if (hostname.includes("mixcloud.com")) return "mixcloud"
-    if (hostname.includes("reddit.com") || hostname.includes("redd.it")) return "reddit"
+    if (hostname.includes("reddit.com") || hostname.includes("redd.it") || url.includes("reddit.com") || url.includes("redd.it")) return "reddit"
     if (hostname.includes("soundcloud.com")) return "soundcloud"
     if (hostname.includes("spotify.com") || hostname.includes("open.spotify.com")) return "spotify"
     if (hostname.includes("ted.com")) return "ted"

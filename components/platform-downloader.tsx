@@ -171,6 +171,13 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
     try {
       const detectedPlatform = detectPlatform(finalUrlToProcess)
+      
+      // Debug logging for Reddit URLs
+      if (finalUrlToProcess.includes('reddit.com') || finalUrlToProcess.includes('redd.it')) {
+        console.log('Reddit URL detected:', finalUrlToProcess);
+        console.log('Detected platform:', detectedPlatform);
+        console.log('Current platform:', platform);
+      }
 
       if (platform !== "universal" && detectedPlatform !== platform) {
         if (platform === 'pinterest' && (url.includes('pin.it') || url.includes('pinterest.com') || url.includes('pinterest.'))) {
