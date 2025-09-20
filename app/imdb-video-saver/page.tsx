@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const ImdbSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.ImdbSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function ImdbPage() {
       <ToolsHero
         title="IMDb Video Downloader"
         subtitle="Download movie trailers, clips, and behind-the-scenes videos from IMDb.com for free."
+        platform="imdb"
       >
 
         <PlatformDownloader platform="imdb" />

@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const SnapchatSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.SnapchatSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -48,6 +49,7 @@ export default function SnapchatPage() {
       <ToolsHero
         title="Snapchat Video Downloader"
         subtitle="Download Snapchat stories and snaps in high quality for free."
+        platform="snapchat"
       >
         <PlatformDownloader platform="snapchat" />
       </ToolsHero>

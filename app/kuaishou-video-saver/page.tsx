@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const KuaishouSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.KuaishouSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function KuaishouPage() {
       <ToolsHero
         title="Kuaishou Video Downloader"
         subtitle="Download videos from Kuaishou for free."
+        platform="kuaishou"
       >
         <PlatformDownloader platform="kuaishou" />
       </ToolsHero>

@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const LinkedInSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.LinkedInSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -48,6 +49,7 @@ export default function LinkedInPage() {
       <ToolsHero
         title="LinkedIn Video Downloader"
         subtitle="Download LinkedIn videos and images in high quality for free. The easiest way to save LinkedIn content."
+        platform="linkedin"
       >
         <PlatformDownloader platform="linkedin" />
       </ToolsHero>

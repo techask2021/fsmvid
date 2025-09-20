@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const DailymotionSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.DailymotionSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -49,6 +50,7 @@ export default function DailymotionPage() {
       <ToolsHero
         title="Dailymotion Video Downloader"
         subtitle="Download Dailymotion videos in high quality for free."
+        platform="dailymotion"
       >
         <PlatformDownloader platform="dailymotion" />
       </ToolsHero>

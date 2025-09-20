@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { Suspense, lazy } from "react"
 import PlatformDownloader from "@/components/platform-downloader"
 import HeroSectionStyles from "@/components/hero-section-styles"; 
+import AdsterraBanner from "@/components/adsterra-banner"
+import AdsterraNativeBanner from "@/components/adsterra-native-normal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card" 
 import { Badge } from "@/components/ui/badge"
@@ -78,7 +80,8 @@ export default async function Home() {
             ))}
           </div>
           <div className="w-full max-w-4xl mb-12 animate-fade-in-up delay-1000" id="downloader">
-             <PlatformDownloader platform="universal" />
+            <AdsterraBanner className="mb-6" />
+            <PlatformDownloader platform="universal" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl animate-fade-in-up delay-1200">
             {[
@@ -103,9 +106,10 @@ export default async function Home() {
       </section>
       <HowToUse />
 
-      
+      {/* Native Banner 1 - After How to Use section */}
+      <AdsterraNativeBanner className="my-4" id="homepage-native-1" />
      
-      <section className="py-12 md:py-20 bg-white dark:bg-slate-950">
+      <section className="py-8 md:py-12 bg-white dark:bg-slate-950">
         <Suspense fallback={<GridLoading />}>
           <PlatformGrid />
         </Suspense>
@@ -169,9 +173,12 @@ export default async function Home() {
           </Suspense>
         </div>
       </section>
+
+      {/* Native Banner 2 - After SEO Content section */}
+      <AdsterraNativeBanner className="my-4" id="homepage-native-2" />
        
       {/* Updated Call to Action Section */}
-      <section className="w-full py-16 relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-center">
+      <section className="w-full py-12 relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-center">
         <HeroSectionStyles /> {/* Re-added HeroSectionStyles for the animated background effects */}
         
         <div className="container mx-auto px-4 relative z-10">
@@ -334,6 +341,9 @@ export default async function Home() {
           <div className="max-w-3xl mx-auto"><Suspense fallback={<ContentLoading />}><FAQ /></Suspense></div>
         </div>
       </section>
+
+      {/* Native Banner 3 - After FAQ section */}
+      <AdsterraNativeBanner className="my-4" id="homepage-native-3" />
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
             "@context": "https://schema.org", "@type": "WebApplication", name: "FSMVID", applicationCategory: "UtilityApplication", operatingSystem: "Web",

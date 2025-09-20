@@ -7,6 +7,7 @@ import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
 
+
 // Lazy load non-critical components
 const YouTubeSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.YouTubeSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -49,6 +50,7 @@ export default function YouTubePage() {
       <ToolsHero
         title="YouTube Video Downloader"
         subtitle="Download YouTube videos in HD quality for free. Fast and easy YouTube video downloader - no registration required."
+        platform="youtube"
       >
         <PlatformDownloader platform="youtube" />
       </ToolsHero>
@@ -69,13 +71,10 @@ export default function YouTubePage() {
           <PlatformFeatures />
         </Suspense>
 
-
         {/* SEO Content Section */}
         <Suspense fallback={<ContentLoading />}>
           <YouTubeSEOContent />
         </Suspense>
-
-        
 
         <Suspense fallback={<FAQLoading />}>
           <YouTubeFAQSection />
@@ -104,6 +103,7 @@ export default function YouTubePage() {
           <RelatedTools currentPlatform={platform} />
         </Suspense>
       </div>
+      
     </>
   );
 }

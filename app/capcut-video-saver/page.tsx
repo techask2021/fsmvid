@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const CapcutSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.CapcutSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function CapcutPage() {
       <ToolsHero
         title="CapCut Video Downloader"
         subtitle="Download video templates and edited videos from CapCut for free."
+        platform="capcut"
       >
 
         <PlatformDownloader platform="capcut" />

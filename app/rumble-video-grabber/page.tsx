@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const RumbleSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.RumbleSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -48,6 +49,7 @@ export default function RumblePage() {
       <ToolsHero
         title="Rumble Video Downloader"
         subtitle="Download Rumble videos in high quality for free. The easiest way to save Rumble content."
+        platform="rumble"
       >
         <PlatformDownloader platform="rumble" />
       </ToolsHero>

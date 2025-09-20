@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const TwitterSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.TwitterSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -47,6 +48,7 @@ export default function TwitterPage() {
       <ToolsHero
         title="Twitter Video Downloader"
         subtitle="Download Twitter videos and GIFs in high quality for free."
+        platform="twitter"
       >
         <PlatformDownloader platform="twitter" />
       </ToolsHero>

@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const DouyinSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.DouyinSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function DouyinPage() {
       <ToolsHero
         title="Douyin Video Downloader Without Watermark"
         subtitle="Download videos from Douyin for free."
+        platform="douyin"
       >
 
         <PlatformDownloader platform="douyin" />

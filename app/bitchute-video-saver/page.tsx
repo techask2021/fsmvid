@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const BitChuteSEOContent = lazy(() => import("@/components/seo-content/bitchute").then(mod => ({ default: mod.BitChuteSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function BitchutePage() {
       <ToolsHero
         title="BitChute Video Downloader"
         subtitle="Download videos from BitChute for free."
+        platform="bitchute"
       >
   
 

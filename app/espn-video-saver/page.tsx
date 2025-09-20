@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const EspnSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.EspnSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function EspnPage() {
       <ToolsHero
         title="ESPN Video Downloader Online"
         subtitle="Download sports highlights, game replays, and interviews from ESPN for free."
+        platform="espn"
       >
 
 

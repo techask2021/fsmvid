@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const Zingmp3SEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.Zingmp3SEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function Zingmp3Page() {
       <ToolsHero
         title="ZingMP3 Downloader"
         subtitle="Download songs and albums from Zing MP3 (zingmp3.vn) for free."
+        platform="zingmp3"
       >
         <PlatformDownloader platform="zingmp3" />
       </ToolsHero>

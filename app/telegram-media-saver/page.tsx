@@ -8,6 +8,7 @@ import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
 
+
 // Lazy load non-critical components
 const TelegramSEOContent = lazy(() => import("@/components/seo-content/index").then(mod => ({ default: mod.TelegramSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -54,6 +55,7 @@ export default function TelegramPage() {
       <ToolsHero
         title="Telegram Video Downloader"
         subtitle="Download Telegram videos, photos, and files in high quality for free."
+        platform="telegram"
       >
         <PlatformDownloader platform="telegram" />
       </ToolsHero>

@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const IfunnySEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.IfunnySEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function IfunnyPage() {
       <ToolsHero
         title="iFunny Video Downloader Online"
         subtitle="Download videos, GIFs, and memes from iFunny.co for free."
+        platform="ifunny"
       >
 
         <PlatformDownloader platform="ifunny" />

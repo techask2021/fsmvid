@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const FacebookSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.FacebookSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -47,6 +48,7 @@ export default function FacebookPage() {
       <ToolsHero
         title="Facebook Video Downloader"
         subtitle="Download Facebook videos, photos, stories, and reels in high quality for free."
+        platform="facebook"
       >
         <PlatformDownloader platform="facebook" />
       </ToolsHero>

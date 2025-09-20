@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const VimeoSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.VimeoSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -49,6 +50,7 @@ export default function VimeoPage() {
       <ToolsHero
         title="Vimeo Video Downloader"
         subtitle="Download Vimeo videos in high quality for free."
+        platform="vimeo"
       >
         <PlatformDownloader platform="vimeo" />
       </ToolsHero>

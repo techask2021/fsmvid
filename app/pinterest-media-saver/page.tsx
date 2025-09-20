@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const PinterestSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.PinterestSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -48,6 +49,7 @@ export default function PinterestPage() {
       <ToolsHero
         title="Pinterest Video Downloader"
         subtitle="Download Pinterest images and videos in high quality for free. The easiest way to save Pinterest content."
+        platform="pinterest"
       >
         <PlatformDownloader platform="pinterest" />
       </ToolsHero>

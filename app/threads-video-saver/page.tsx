@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const ThreadsSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.ThreadsSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -45,6 +46,7 @@ export default function ThreadsPage() {
       <ToolsHero
         title="Threads Downloader"
         subtitle="Download videos and images from Instagram Threads (threads.net) for free."
+        platform="threads"
       >
         <PlatformDownloader platform="threads" />
       </ToolsHero>

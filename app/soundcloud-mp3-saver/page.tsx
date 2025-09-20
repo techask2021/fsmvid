@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const SoundcloudSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.SoundcloudSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function SoundcloudPage() {
       <ToolsHero
         title="SoundCloud Downloader"
         subtitle="Download tracks, playlists, and podcasts from SoundCloud for free."
+        platform="soundcloud"
       >
         <PlatformDownloader platform="soundcloud" />
       </ToolsHero>

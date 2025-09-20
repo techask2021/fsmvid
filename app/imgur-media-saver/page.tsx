@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const ImgurSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.ImgurSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -48,6 +49,7 @@ export default function ImgurPage() {
       <ToolsHero
         title="Imgur Video Downloader"
         subtitle="Download Imgur videos in high quality for free. The easiest way to save Imgur content."
+        platform="imgur"
       >
         <PlatformDownloader platform="imgur" />
       </ToolsHero>

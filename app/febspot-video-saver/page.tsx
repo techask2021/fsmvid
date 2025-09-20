@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const FebspotSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.FebspotSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function FebspotPage() {
       <ToolsHero
         title="Febspot Video Downloader"
         subtitle="Download videos from Febspot for free."
+        platform="febspot"
       >
 
         <PlatformDownloader platform="febspot" />

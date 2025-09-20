@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const TikTokSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.TikTokSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -47,6 +48,7 @@ export default function TikTokPage() {
       <ToolsHero
         title="TikTok Video Downloader"
         subtitle="Download TikTok videos without watermark in high quality for free."
+        platform="tiktok"
       >
         <PlatformDownloader platform="tiktok" />
       </ToolsHero>
@@ -100,6 +102,7 @@ export default function TikTokPage() {
           <RelatedTools currentPlatform={platform} />
         </Suspense>
       </div>
+      
     </>
   );
 }

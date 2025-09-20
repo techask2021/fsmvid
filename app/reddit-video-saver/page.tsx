@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const RedditSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.RedditSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function RedditPage() {
       <ToolsHero
         title="Reddit Video Downloader"
         subtitle="Download videos and animated GIFs from Reddit posts for free."
+        platform="reddit"
       >
         <PlatformDownloader platform="reddit" />
       </ToolsHero>

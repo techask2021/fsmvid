@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const InstagramSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.InstagramSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -47,6 +48,7 @@ export default function InstagramPage() {
       <ToolsHero
         title="Instagram Video Downloader"
         subtitle="Download Instagram photos, videos, reels, and stories in high quality for free."
+        platform="instagram"
       >
         <PlatformDownloader platform="instagram" />
       </ToolsHero>

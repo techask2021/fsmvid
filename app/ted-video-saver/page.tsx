@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const TedSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.TedSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -45,6 +46,7 @@ export default function TedPage() {
       <ToolsHero
         title="TED Talk Downloader"
         subtitle="Download inspiring TED Talks and videos from TED.com for free."
+        platform="ted"
       >
         <PlatformDownloader platform="ted" />
       </ToolsHero>

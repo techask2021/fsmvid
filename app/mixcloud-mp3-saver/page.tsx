@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const MixcloudSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.MixcloudSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function MixcloudPage() {
       <ToolsHero
         title="Mixcloud Downloader"
         subtitle="Download DJ mixes, radio shows, and podcasts from Mixcloud for free."
+        platform="mixcloud"
       >
         <PlatformDownloader platform="mixcloud" />
       </ToolsHero>

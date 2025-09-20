@@ -1,4 +1,6 @@
 import HeroSectionStyles from "@/components/hero-section-styles";
+import AdsterraBanner from "@/components/adsterra-banner";
+import AdsterraNativeBanner from "@/components/adsterra-native-normal";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
@@ -6,15 +8,17 @@ interface ToolsHeroProps {
   title: string;
   subtitle: string;
   children: React.ReactNode;
+  platform?: string;
 }
 
-export default function ToolsHero({ title, subtitle, children }: ToolsHeroProps) {
+export default function ToolsHero({ title, subtitle, children, platform }: ToolsHeroProps) {
   return (
-    <section
-      className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden"
-    >
-      <HeroSectionStyles />
-      <div className="container relative z-10 flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
+    <>
+      <section
+        className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden"
+      >
+        <HeroSectionStyles />
+        <div className="container relative z-10 flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
         <Badge
           variant="secondary"
           className="mb-6 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-3 text-sm font-semibold hover:bg-white/30 transition-all duration-300 animate-fade-in"
@@ -31,9 +35,19 @@ export default function ToolsHero({ title, subtitle, children }: ToolsHeroProps)
           {subtitle}
         </p>
         <div className="w-full max-w-4xl animate-fade-in-up delay-1000" id="downloader">
+          <AdsterraBanner className="mb-6" />
           {children}
         </div>
       </div>
-    </section>
+      </section>
+      
+      {/* Native Banners for Tools Page */}
+      {platform && (
+        <>
+          <AdsterraNativeBanner className="my-4" id={`${platform}-native-1`} />
+          <AdsterraNativeBanner className="my-4" id={`${platform}-native-2`} />
+        </>
+      )}
+    </>
   );
 }

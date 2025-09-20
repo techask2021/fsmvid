@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const WeiboSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.WeiboSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function WeiboPage() {
       <ToolsHero
         title="Weibo Video Downloader"
         subtitle="Download videos from Weibo (weibo.com / weibo.cn) for free."
+        platform="weibo"
       >
         <PlatformDownloader platform="weibo" />
       </ToolsHero>

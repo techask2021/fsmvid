@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/ui/faq-section"
 import ToolsHero from "@/components/Tools-hero";
 import PlatformFeatures from "@/components/platform-features";
 import PlatformHowTo from "@/components/platform-how-to";
+
 // Lazy load non-critical components
 const XiaohongshuSEOContent = lazy(() => import("@/components/seo-content").then(mod => ({ default: mod.XiaohongshuSEOContent })))
 const RelatedTools = lazy(() => import("@/components/related-tools"))
@@ -46,6 +47,7 @@ export default function XiaohongshuPage() {
       <ToolsHero
         title="Xiaohongshu Downloader"
         subtitle="Download videos and images from Xiaohongshu (Little Red Book / 小红书) for free."
+        platform="xiaohongshu"
       >
         <PlatformDownloader platform="xiaohongshu" />
       </ToolsHero>
