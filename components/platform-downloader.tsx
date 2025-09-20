@@ -324,13 +324,14 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         setDownloadLoading(true)
         toast.info("Starting download...", { duration: 3000 })
         let filename = `${platform}_download.${selectedFormat?.toLowerCase() || 'mp4'}`
-        if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit')) {
+        const detectedPlatform = detectPlatform(url);
+        if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && detectedPlatform === 'reddit'))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
           toast.info("Downloading m3u8 streaming file...", { duration: 8000 });
-          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: `${platform}_${Date.now()}` }), });
+          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: `${platform === 'universal' ? detectedPlatform : platform}_${Date.now()}` }), });
           if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || 'Download failed'); }
           const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a'); link.href = blobUrl; link.download = `${platform}_stream_${Date.now()}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
+          const link = document.createElement('a'); link.href = blobUrl; link.download = `${platform === 'universal' ? detectedPlatform : platform}_stream_${Date.now()}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
           toast.success("Download successful! Use VLC Media Player to open.");
           setDownloadLoading(false); return;
         } 
@@ -538,9 +539,9 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                       </Select>
                     </div>
                   </div>
-                  {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && selectedFormat === 'streaming' && (
+                  {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && detectPlatform(url) === 'reddit')) && selectedFormat === 'streaming' && (
                     <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-md text-sm text-blue-700 dark:text-blue-300 mb-2">
-                      <div className="font-semibold mb-1">{platform === 'dailymotion' ? 'Dailymotion' : platform === 'bsky' ? 'Bluesky' : 'Reddit'} videos use HLS streaming format:</div>
+                      <div className="font-semibold mb-1">{platform === 'dailymotion' ? 'Dailymotion' : platform === 'bsky' ? 'Bluesky' : (platform === 'universal' && detectPlatform(url) === 'reddit') ? 'Reddit' : 'Reddit'} videos use HLS streaming format:</div>
                       <ol className="list-decimal ml-5 mt-1">
                         <li>Use "Download Now" to save the streaming file or "Copy Link" to get the URL</li>
                         <li>For direct MP4 download, you can use an external tool like VLC Player or FFmpeg</li>
@@ -563,7 +564,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                     ) : (
                       <>
                         <Download className="w-5 h-5 mr-3 group-hover:animate-bounce" /> 
-                        {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && (selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8'))
+                        {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && detectPlatform(url) === 'reddit')) && (selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8'))
                           ? 'Download Streaming File (m3u8)'
                           : selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8')
                             ? 'Download Streaming File (m3u8)'
