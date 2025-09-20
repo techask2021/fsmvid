@@ -50,25 +50,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Get blog posts for sitemap - with error handling
   let blogRoutes: MetadataRoute.Sitemap = []
-  try {
-    const { posts } = await getAllPosts(1, 100)
-    blogRoutes = posts.map((post) => ({
-      url: `${baseUrl}/blog/${post.slug.current}`,
-      lastModified: new Date(post.publishedAt || new Date()),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }))
+  
+  // Check if Sanity is properly configured
+  const hasSanityConfig = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && 
+                         process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== 'placeholder-project-id'
+  
+  if (hasSanityConfig) {
+    try {
+      const { posts } = await getAllPosts(1, 100)
+      blogRoutes = posts.map((post) => ({
+        url: `${baseUrl}/blog/${post.slug.current}`,
+        lastModified: new Date(post.publishedAt || new Date()),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }))
 
-    // Add the main blog page
-    blogRoutes.push({
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const, 
-      priority: 0.8,
-    })
-  } catch (error) {
-    console.error('Error fetching blog posts for sitemap:', error)
-    // Still add the main blog page even if posts fail to load
+      // Add the main blog page
+      blogRoutes.push({
+        url: `${baseUrl}/blog`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const, 
+        priority: 0.8,
+      })
+    } catch (error) {
+      console.error('Error fetching blog posts for sitemap:', error)
+      // Still add the main blog page even if posts fail to load
+      blogRoutes = [{
+        url: `${baseUrl}/blog`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }]
+    }
+  } else {
+    // If Sanity is not configured, just add the main blog page
     blogRoutes = [{
       url: `${baseUrl}/blog`,
       lastModified: new Date(),

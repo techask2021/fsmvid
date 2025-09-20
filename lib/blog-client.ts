@@ -5,8 +5,8 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder-project-id',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2025-04-14',
   useCdn: process.env.NODE_ENV === 'production',
 });

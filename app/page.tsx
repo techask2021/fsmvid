@@ -47,7 +47,13 @@ const featuresForNewSection = [
 ]
 
 export default async function Home() {
-  const featuredPosts = await getFeaturedPosts(5).catch(() => []); // Fetch 5 posts
+  // Check if Sanity is properly configured before fetching posts
+  const hasSanityConfig = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && 
+                         process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== 'placeholder-project-id'
+  
+  const featuredPosts = hasSanityConfig 
+    ? await getFeaturedPosts(5).catch(() => []) 
+    : []; // Fetch 5 posts or empty array if Sanity not configured
   
   return (
     <div>
