@@ -1,0 +1,189 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+import { Toaster } from "@/components/ui/toaster"
+
+import Script from "next/script"
+import { cn } from "@/lib/utils"
+import { Analytics } from "@/components/analytics"
+
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap', // Ensure text remains visible during font loading
+  preload: true,
+})
+
+export const metadata: Metadata = {
+  title: {
+    default: "FSMVID | Free Social Media Video Downloader",
+    template: "%s | FSMVID",
+  },
+  description: "Download videos and content from multiple social media platforms",
+  generator: 'v0.dev',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
+  openGraph: {
+    images: [
+      {
+        url: '/images/free-social-media-video-downloader.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'FSMVID - Free Social Media Video Downloader',
+      }
+    ]
+  },
+  // Adding canonical URL to prevent duplicate content issues
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com',
+  }
+}
+
+// Optimized Web Vitals reporting function
+const WebVitalsMonitoring = () => {
+  return (
+    <Script id="web-vitals" strategy="worker"> {/* Changed to worker strategy */}
+      {`
+        function sendToAnalytics(metric) {
+          if (!navigator.sendBeacon) return;
+          
+          const body = JSON.stringify(metric);
+          try {
+            navigator.sendBeacon('/api/vitals', body);
+          } catch (e) {
+            // Fallback
+            fetch('/api/vitals', {
+              body,
+              method: 'POST',
+              keepalive: true
+            });
+          }
+        }
+        
+        try {
+          if (window.performance) {
+            // CLS
+            new PerformanceObserver((entryList) => {
+              const entries = entryList.getEntries();
+              entries.forEach((entry) => {
+                if (!entry.hadRecentInput) {
+                  const cls = {
+                    name: 'CLS',
+                    value: entry.value,
+                    rating: entry.value <= 0.1 ? 'good' : 
+                            entry.value <= 0.25 ? 'needs-improvement' : 'poor',
+                    id: Math.random().toString(36).slice(2),
+                  };
+                  requestIdleCallback(() => sendToAnalytics(cls));
+                }
+              });
+            }).observe({type: 'layout-shift', buffered: true});
+            
+            // LCP
+            new PerformanceObserver((entryList) => {
+              const entries = entryList.getEntries();
+              const lcp = entries[entries.length - 1];
+              if (lcp) {
+                const lcpValue = {
+                  name: 'LCP',
+                  value: lcp.startTime,
+                  rating: lcp.startTime <= 2500 ? 'good' : 
+                          lcp.startTime <= 4000 ? 'needs-improvement' : 'poor',
+                  id: Math.random().toString(36).slice(2),
+                };
+                requestIdleCallback(() => sendToAnalytics(lcpValue));
+              }
+            }).observe({type: 'largest-contentful-paint', buffered: true});
+            
+            // FID
+            new PerformanceObserver((entryList) => {
+              const entries = entryList.getEntries();
+              entries.forEach((entry) => {
+                const fid = {
+                  name: 'FID',
+                  value: entry.processingStart - entry.startTime,
+                  rating: (entry.processingStart - entry.startTime) <= 100 ? 'good' : 
+                          (entry.processingStart - entry.startTime) <= 300 ? 'needs-improvement' : 'poor',
+                  id: Math.random().toString(36).slice(2),
+                };
+                requestIdleCallback(() => sendToAnalytics(fid));
+              });
+            }).observe({type: 'first-input', buffered: true});
+            
+            // TTFB
+            new PerformanceObserver((list) => {
+              const entry = list.getEntries()[0];
+              if (entry) {
+                const ttfb = {
+                  name: 'TTFB',
+                  value: entry.responseStart - entry.requestStart,
+                  rating: (entry.responseStart - entry.requestStart) <= 100 ? 'good' : 
+                          (entry.responseStart - entry.requestStart) <= 200 ? 'needs-improvement' : 'poor',
+                  id: Math.random().toString(36).slice(2),
+                };
+                requestIdleCallback(() => sendToAnalytics(ttfb));
+              }
+            }).observe({type: 'navigation', buffered: true});
+          }
+        } catch (e) {
+          console.error('Web Vitals error:', e);
+        }
+      `}
+    </Script>
+  )
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preload critical assets */}
+        <link rel="preload" href="/favicon.ico" as="image" />
+        <link rel="preload" href="/icons/youtube.svg" as="image" />
+        <link rel="preload" href="/icons/tiktok.svg" as="image" />
+        <link rel="preload" href="/icons/facebook.svg" as="image" />
+        <link rel="preload" href="/icons/instagram.svg" as="image" />
+        
+        {/* Preconnect to any external domains used for assets */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Meta tags for Core Web Vitals optimization */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="theme-color" content="#2563EB" />
+      </head>
+      <body className={cn(
+        "min-h-screen bg-background font-sans antialiased",
+        inter.className
+      )} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          
+          <div className="relative flex min-h-screen flex-col overflow-x-hidden break-words">
+            <div>
+              <Header />
+            </div>
+            <div className="flex-1 break-words pt-20" style={{ containIntrinsicSize: '1px 5000px' }}> {/* Added pt-20 */}
+              {children}
+            </div>
+            
+            <Footer />
+          </div>
+          <Toaster />
+          <Analytics />
+        </ThemeProvider>
+        <WebVitalsMonitoring />
+      </body>
+    </html>
+  )
+}
+
+import './globals.css'

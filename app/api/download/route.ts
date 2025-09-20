@@ -1,0 +1,113 @@
+import { type NextRequest, NextResponse } from "next/server"
+import { detectPlatform } from "@/lib/platform-detector"
+
+export const runtime = "edge" // Use edge runtime for better performance
+
+export async function POST(request: NextRequest) {
+  try {
+    // Destructure platform from the request body as well
+    const { url, filename, platform: originalPlatform } = await request.json();
+
+    if (!url) {
+      return NextResponse.json({ message: "URL is required" }, { status: 400 });
+    }
+
+    if (!filename) {
+      return NextResponse.json({ message: "Filename is required" }, { status: 400 });
+    }
+
+    // Use the platform passed from the client, as 'url' is now a direct media link
+    // and detectPlatform(directMediaUrl) would likely fail or be incorrect.
+    const platformToUse = originalPlatform || detectPlatform(url) || ''; // Fallback if not provided, though it should be
+    const isDailymotion = platformToUse === 'dailymotion';
+    const isWeibo = platformToUse === 'weibo';
+    const isBluesky = platformToUse === 'bsky';
+    const isReddit = platformToUse === 'reddit';
+
+    console.log(`Downloading file from ${url} (Original Platform: ${platformToUse})`);
+    
+    // Handle special case for m3u8 streaming URLs (common with Dailymotion)
+    const isM3u8 = url.includes('.m3u8');
+    
+    // Set proper headers based on the platform
+    const headers: HeadersInit = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36', // Updated User-Agent
+    };
+    
+    // Add platform-specific headers
+    if (isDailymotion) {
+      headers['Referer'] = 'https://www.dailymotion.com/';
+      headers['Origin'] = 'https://www.dailymotion.com';
+    } else if (isWeibo) {
+      headers['Referer'] = 'https://weibo.com/'; // Adding a generic Weibo referer
+    } else if (isBluesky) {
+      headers['Referer'] = 'https://bsky.app/';
+      headers['Origin'] = 'https://bsky.app';
+    } else if (isReddit) {
+      headers['Referer'] = 'https://www.reddit.com/';
+      headers['Origin'] = 'https://www.reddit.com';
+    }
+    
+    // Fetch the file from the URL
+    const fileResponse = await fetch(url, {
+      headers,
+      redirect: 'follow' // Follow redirects which are common with streaming services
+    })
+
+    if (!fileResponse.ok) {
+      console.error(`Download failed: ${fileResponse.status} ${fileResponse.statusText}`);
+      return NextResponse.json({ 
+        message: `Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`,
+        url: url
+      }, { status: fileResponse.status });
+    }
+
+    // For m3u8 files, we need special handling
+    if (isM3u8) {
+      try {
+        // Get the original content
+        const content = await fileResponse.text();
+        
+        // Return the m3u8 file with proper headers
+        const response = new NextResponse(content);
+        response.headers.set('Content-Disposition', `attachment; filename="${filename.replace(/\.(mp4|streaming)$/, '.m3u8')}"`);
+        response.headers.set('Content-Type', 'application/vnd.apple.mpegurl');
+        response.headers.set('Content-Length', `${content.length}`);
+        
+        return response;
+      } catch (m3u8Error) {
+        console.error('Error processing m3u8 file:', m3u8Error);
+        return NextResponse.json({ message: 'Error processing m3u8 streaming file' }, { status: 500 });
+      }
+    }
+    
+    try {
+      // Get the file data as array buffer
+      const fileData = await fileResponse.arrayBuffer()
+      
+      // Create a response with the file data
+      const response = new NextResponse(fileData)
+      
+      // Get content type from response or infer from filename
+      let contentType = fileResponse.headers.get('Content-Type') || 'application/octet-stream';
+      
+      // If we have an MP4 file but wrong content type, fix it
+      if (filename.endsWith('.mp4') && !contentType.includes('mp4')) {
+        contentType = 'video/mp4';
+      }
+      
+      // Set headers for download
+      response.headers.set('Content-Disposition', `attachment; filename="${filename}"`)
+      response.headers.set('Content-Type', contentType)
+      response.headers.set('Content-Length', fileResponse.headers.get('Content-Length') || `${fileData.byteLength}`)
+      
+      return response
+    } catch (downloadError) {
+      console.error('Error downloading file:', downloadError);
+      return NextResponse.json({ message: 'Error downloading file content' }, { status: 500 });
+    }
+  } catch (error: any) {
+    console.error("Download error:", error)
+    return NextResponse.json({ message: error.message || "An error occurred" }, { status: 500 })
+  }
+}
