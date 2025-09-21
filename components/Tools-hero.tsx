@@ -1,6 +1,4 @@
 import HeroSectionStyles from "@/components/hero-section-styles";
-import AdsterraBanner from "@/components/adsterra-banner";
-import AdsterraNativeBanner from "@/components/adsterra-native-normal";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
@@ -35,19 +33,11 @@ export default function ToolsHero({ title, subtitle, children, platform }: Tools
           {subtitle}
         </p>
         <div className="w-full max-w-4xl animate-fade-in-up delay-1000" id="downloader">
-          <AdsterraBanner className="mb-6" />
           {children}
         </div>
       </div>
       </section>
       
-      {/* Native Banners for Tools Page */}
-      {platform && (
-        <>
-          <AdsterraNativeBanner className="my-4" id={`${platform}-native-1`} />
-          <AdsterraNativeBanner className="my-4" id={`${platform}-native-2`} />
-        </>
-      )}
     </>
   );
 }

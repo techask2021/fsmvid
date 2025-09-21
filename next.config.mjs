@@ -194,14 +194,11 @@ const nextConfig = {
                 https://ep2.adtrafficquality.google
                 https://www.google.com
                 https://www.gstatic.com
-                https://www.highperformanceformat.com
-                https://pl27688086.revenuecpmgate.com
-                http://pl27688086.revenuecpmgate.com;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
               font-src 'self' https://fonts.gstatic.com;
               img-src 'self' data: https:;
               connect-src 'self' https:;
-              frame-src 'self' https: https://www.google.com https://www.highperformanceformat.com https://pl27688086.revenuecpmgate.com;
+              frame-src 'self' https: https://www.google.com;
               media-src 'self' https:;
               object-src 'self';
               worker-src 'self' blob:;
