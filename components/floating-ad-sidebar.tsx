@@ -18,28 +18,6 @@ export default function FloatingAdSidebar() {
 
   const ads: Ad[] = [
     {
-      id: 'nordvpn',
-      name: 'NordVPN',
-      hook: '🔒 Secure Your Internet - Get 3 Months FREE!',
-      content: (
-        <a 
-          href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=130825&file_id=25"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="block hover:opacity-90 transition-opacity duration-200"
-        >
-          <img 
-            src="https://media.go2speed.org/brand/files/nordvpn/15/300x250v12.gif" 
-            alt="NordVPN - Secure VPN Service" 
-            title="NordVPN - Get 3 months free"
-            width="300" 
-            height="250"
-            className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-          />
-        </a>
-      )
-    },
-    {
       id: 'redotpay',
       name: 'RedotPay',
       hook: '💰 Get $5 FREE - Spend Crypto Like Cash!',
@@ -60,6 +38,28 @@ export default function FloatingAdSidebar() {
           />
         </a>
       )
+    },
+    {
+      id: 'nordvpn',
+      name: 'NordVPN',
+      hook: '🔒 Secure Your Internet - Get 3 Months FREE!',
+      content: (
+        <a 
+          href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=130825&file_id=25"
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block hover:opacity-90 transition-opacity duration-200"
+        >
+          <img 
+            src="https://media.go2speed.org/brand/files/nordvpn/15/300x250v12.gif" 
+            alt="NordVPN - Secure VPN Service" 
+            title="NordVPN - Get 3 months free"
+            width="300" 
+            height="250"
+            className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          />
+        </a>
+      )
     }
   ]
 
@@ -74,13 +74,13 @@ export default function FloatingAdSidebar() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Rotate ads every 60 seconds (1 minute)
+  // Rotate ads every 10 seconds
   useEffect(() => {
     if (!isVisible) return
 
     const interval = setInterval(() => {
       setCurrentAdIndex((prevIndex) => (prevIndex + 1) % ads.length)
-    }, 60000) // 60 seconds
+    }, 10000) // 10 seconds
 
     return () => clearInterval(interval)
   }, [isVisible, ads.length])
