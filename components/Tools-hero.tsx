@@ -1,6 +1,7 @@
 import HeroSectionStyles from "@/components/hero-section-styles";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
+import MediaMisterAd from "@/components/media-mister-ad";
 
 interface ToolsHeroProps {
   title: string;
@@ -33,6 +34,7 @@ export default function ToolsHero({ title, subtitle, children, platform }: Tools
           {subtitle}
         </p>
         <div className="w-full max-w-4xl animate-fade-in-up delay-1000" id="downloader">
+          <MediaMisterAd />
           {children}
         </div>
       </div>

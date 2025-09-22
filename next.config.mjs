@@ -196,7 +196,7 @@ const nextConfig = {
                 https://www.gstatic.com
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
               font-src 'self' https://fonts.gstatic.com;
-              img-src 'self' data: https:;
+              img-src 'self' data: https: https://affiliates.mediamister.com;
               connect-src 'self' https:;
               frame-src 'self' https: https://www.google.com;
               media-src 'self' https:;

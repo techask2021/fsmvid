@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Analytics } from "@/components/analytics"
+import FloatingAdSidebar from "@/components/floating-ad-sidebar"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -179,6 +180,7 @@ export default function RootLayout({
           </div>
           <Toaster />
           <Analytics />
+          <FloatingAdSidebar />
         </ThemeProvider>
         <WebVitalsMonitoring />
       </body>
