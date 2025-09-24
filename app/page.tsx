@@ -10,7 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
 import { getFeaturedPosts, urlFor } from "@/lib/blog-client"
-import MediaMisterAd from "@/components/media-mister-ad"
+import RotatingAdBanner from "@/components/rotating-ad-banner"
 
 const PlatformGrid = lazy(() => import("@/components/platform-grid"))
 const HowToUse = lazy(() => import("@/components/how-to-use"))
@@ -85,7 +85,8 @@ export default async function Home() {
             ))}
           </div>
           <div className="w-full max-w-4xl mb-12 animate-fade-in-up delay-1000" id="downloader">
-            <MediaMisterAd />
+            {/* Rotating Ad Banner */}
+            <RotatingAdBanner />
             <PlatformDownloader platform="universal" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl animate-fade-in-up delay-1200">

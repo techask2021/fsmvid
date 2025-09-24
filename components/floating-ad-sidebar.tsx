@@ -38,28 +38,6 @@ export default function FloatingAdSidebar() {
           />
         </a>
       )
-    },
-    {
-      id: 'nordvpn',
-      name: 'NordVPN',
-      hook: '🔒 Secure Your Internet - Get 3 Months FREE!',
-      content: (
-        <a 
-          href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=130825&file_id=25"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="block hover:opacity-90 transition-opacity duration-200"
-        >
-          <img 
-            src="https://media.go2speed.org/brand/files/nordvpn/15/300x250v12.gif" 
-            alt="NordVPN - Secure VPN Service" 
-            title="NordVPN - Get 3 months free"
-            width="300" 
-            height="250"
-            className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-          />
-        </a>
-      )
     }
   ]
 
@@ -185,14 +163,6 @@ export default function FloatingAdSidebar() {
           </div>
         )}
 
-        {/* Hidden tracking pixels */}
-        <img 
-          src="https://go.nordvpn.net/aff_i?offer_id=15&file_id=25&aff_id=130825" 
-          width="0" 
-          height="0" 
-          style={{ position: 'absolute', visibility: 'hidden' }} 
-          alt=""
-        />
       </div>
     </div>
   )
