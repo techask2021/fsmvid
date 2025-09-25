@@ -41,7 +41,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1750480/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1750480"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -101,7 +102,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1028079/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1028079"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -141,7 +143,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1013996/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1013996"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -209,7 +212,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1243181/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1243181"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -244,7 +248,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/980147/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="980147"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -279,7 +284,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/986644/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="986644"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -314,7 +320,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1439062/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1439062"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
@@ -349,7 +356,8 @@ export default function RotatingAdBanner() {
             <a 
               rel="sponsored"
               href="https://appsumo.8odi.net/c/2791840/1345975/7443" 
-              target="_top" 
+              target="_blank" 
+              rel="noopener noreferrer"
               id="1345975"
               className="block hover:opacity-90 transition-opacity duration-200"
             >
