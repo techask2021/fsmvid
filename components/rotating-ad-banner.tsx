@@ -8,6 +8,31 @@ export default function RotatingAdBanner() {
 
   const ads = [
     {
+      id: 'redotpay',
+      name: 'RedotPay',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              href="https://wap.redotpay.com/en/invite/?referralId=it60y&fbclid=IwY2xjawM-TJNleHRuA2FlbQIxMABicmlkETF4T0NJMHA1ZG9FdTF6M3hoAR5gF66vUHSOYDjWm3va7NDieD-sXhcSSj5layq4R9msU-pfYboJwX6pMxbtwQ_aem_rQ-RUntd4rM92eScO4HsUw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="/Redotpay.png" 
+                alt="RedotPay - Spend Crypto Like Cash! Get $5 FREE" 
+                title="RedotPay - Get $5 FREE - Spend Crypto Like Cash!"
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'fiverr',
       name: 'Fiverr',
       component: (

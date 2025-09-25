@@ -17,28 +17,7 @@ export default function FloatingAdSidebar() {
   const [isMobile, setIsMobile] = useState(false)
 
   const ads: Ad[] = [
-    {
-      id: 'redotpay',
-      name: 'RedotPay',
-      hook: '💰 Get $5 FREE - Spend Crypto Like Cash!',
-      content: (
-        <a 
-          href="https://wap.redotpay.com/en/invite/?referralId=it60y&fbclid=IwY2xjawM-TJNleHRuA2FlbQIxMABicmlkETF4T0NJMHA1ZG9FdTF6M3hoAR5gF66vUHSOYDjWm3va7NDieD-sXhcSSj5layq4R9msU-pfYboJwX6pMxbtwQ_aem_rQ-RUntd4rM92eScO4HsUw"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="block hover:opacity-90 transition-opacity duration-200"
-        >
-          <img 
-            src="/redotpay.jpg" 
-            alt="RedotPay - Spend Crypto Like Fiat" 
-            title="RedotPay - Get 5 USD For New Registrations"
-            width="300" 
-            height="250"
-            className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 object-cover"
-          />
-        </a>
-      )
-    }
+    // No ads currently - Redotpay moved to rotating banner above downloader
   ]
 
   // Check if mobile on mount and resize
