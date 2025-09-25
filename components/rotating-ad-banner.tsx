@@ -33,6 +33,41 @@ export default function RotatingAdBanner() {
       )
     },
     {
+      id: 'appsumo1',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1750480/7443" 
+              target="_top" 
+              id="1750480"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1750480" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1750480/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'fiverr',
       name: 'Fiverr',
       component: (
@@ -58,9 +93,79 @@ export default function RotatingAdBanner() {
       )
     },
     {
+      id: 'appsumo2',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1028079/7443" 
+              target="_top" 
+              id="1028079"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1028079" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1028079/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'mediamister',
       name: 'MediaMister',
       component: <MediaMisterAd />
+    },
+    {
+      id: 'appsumo3',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1013996/7443" 
+              target="_top" 
+              id="1013996"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1013996" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1013996/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
     },
     {
       id: 'nordvpn',
@@ -89,6 +194,181 @@ export default function RotatingAdBanner() {
               width="0" 
               height="0" 
               style={{ position: 'absolute', visibility: 'hidden' }} 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appsumo4',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1243181/7443" 
+              target="_top" 
+              id="1243181"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1243181" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1243181/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appsumo5',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/980147/7443" 
+              target="_top" 
+              id="980147"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-980147" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/980147/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appsumo6',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/986644/7443" 
+              target="_top" 
+              id="986644"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-986644" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/986644/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appsumo7',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1439062/7443" 
+              target="_top" 
+              id="1439062"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1439062" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1439062/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
+              alt=""
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appsumo8',
+      name: 'AppSumo',
+      component: (
+        <div className="w-full flex justify-center my-8">
+          <div className="w-full max-w-5xl">
+            <a 
+              rel="sponsored"
+              href="https://appsumo.8odi.net/c/2791840/1345975/7443" 
+              target="_top" 
+              id="1345975"
+              className="block hover:opacity-90 transition-opacity duration-200"
+            >
+              <img 
+                src="//a.impactradius-go.com/display-ad/7443-1345975" 
+                border="0" 
+                alt="AppSumo - Software Deals" 
+                width="728" 
+                height="90"
+                className="w-full h-auto max-w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              />
+            </a>
+            {/* Hidden tracking pixel */}
+            <img 
+              height="0" 
+              width="0" 
+              src="https://appsumo.8odi.net/i/2791840/1345975/7443" 
+              style={{ position: 'absolute', visibility: 'hidden' }} 
+              border="0" 
               alt=""
             />
           </div>
