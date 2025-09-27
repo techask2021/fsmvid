@@ -161,6 +161,9 @@ export default function RootLayout({
         {/* Meta tags for Core Web Vitals optimization */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#2563EB" />
+        
+        {/* Galaksion domain verification */}
+        <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
       </head>
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased",
