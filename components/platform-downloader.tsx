@@ -326,43 +326,10 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         let filename = `${platform}_download.${selectedFormat?.toLowerCase() || 'mp4'}`
         const detectedPlatform = detectPlatform(url);
         
-        // Check if this is a YouTube/googlevideo URL - download directly without proxy
-        const isYouTubeUrl = downloadUrl.includes('googlevideo.com') || downloadUrl.includes('youtube.com/videoplayback') || platform === 'youtube' || (platform === 'universal' && detectedPlatform === 'youtube');
-        
-        if (isYouTubeUrl) {
-          // For YouTube, use a free third-party download service
-          toast.info("Preparing YouTube download...", { duration: 3000 });
-          
-          try {
-            // Store the video URL in session storage for reference
-            sessionStorage.setItem('lastYouTubeUrl', url);
-            sessionStorage.setItem('lastYouTubeDownloadUrl', downloadUrl);
-            
-            // Extract video ID from URL
-            const videoId = url.split('watch?v=')[1]?.split('&')[0] || 
-                           url.split('youtu.be/')[1]?.split('?')[0] ||
-                           url.split('youtube.com/shorts/')[1]?.split('?')[0];
-            
-            if (videoId) {
-              // Use y2mate free YouTube download service (no auth required)
-              const youtubeDownloadService = `https://y2mate.com/en/download-youtube/${videoId}`;
-              window.open(youtubeDownloadService, '_blank');
-            } else {
-              // Fallback if we can't extract video ID
-              window.open(url, '_blank');
-            }
-            
-            toast.success("YouTube download service opened! Complete the download there.", { duration: 5000 });
-            setDownloadLoading(false);
-            return;
-          } catch (ytError) {
-            console.error('YouTube download service error:', ytError);
-            // Fallback: Open video URL directly
-            window.open(url, '_blank');
-            setDownloadLoading(false);
-            return;
-          }
-        }
+        // We're working on improving YouTube direct downloads
+        // For now, users can use the direct download link from the "Direct Link" tab
+        // Store the video URL in session storage for reference
+        sessionStorage.setItem('lastDownloadUrl', downloadUrl);
         
         if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && detectedPlatform === 'reddit'))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
@@ -635,9 +602,21 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     </Button>
                   </div>
-                  <p className="text-sm text-gray-300 dark:text-gray-400"> 
-                    You can copy this direct download link and use it in another download manager.
-                  </p>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
+                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                        💡 How to use this direct link:
+                      </p>
+                      <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
+                        <li>Copy the link using the button above</li>
+                        <li>Paste it into your browser address bar or any download manager</li>
+                        <li>The video will start downloading directly</li>
+                      </ul>
+                    </div>
+                    <p className="text-sm text-gray-300 dark:text-gray-400"> 
+                      We care about providing you with the best experience. This direct link gives you full control over your download. For better stability with large files, consider using a download manager like IDM or DownThemAll.
+                    </p>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
