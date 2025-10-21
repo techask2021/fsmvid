@@ -15,7 +15,7 @@ export default function AdSenseBanner() {
   }, [])
 
   return (
-    <div className="w-full flex justify-center mt-1 mb-4">
+    <div className="w-full flex justify-center mt-1 mb-5">
       <ins
         className="adsbygoogle"
         style={{ display: 'inline-block', width: '880px', height: '250px' }}
