@@ -192,6 +192,8 @@ const nextConfig = {
                 https://pagead2.googlesyndication.com 
                 https://adservice.google.com
                 https://googleads.g.doubleclick.net
+                https://fundingchoicesmessages.google.com
+                https://partner.googleadservices.com
                 https://va.vercel-scripts.com 
                 https://ep2.adtrafficquality.google
                 https://www.google.com
