@@ -33,7 +33,7 @@ export default function ToolsHero({ title, subtitle, children, platform }: Tools
         <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
           {subtitle}
         </p>
-        <div className="w-full max-w-4xl animate-fade-in-up delay-1000" id="downloader">
+        <div className="w-full max-w-4xl animate-fade-in-up delay-1000 mt-2 mb-2" id="downloader">
           <AdSenseBanner />
           {children}
         </div>

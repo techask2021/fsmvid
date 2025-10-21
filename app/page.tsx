@@ -73,7 +73,7 @@ export default async function Home() {
             <span className="font-semibold text-cyan-300">YouTube, TikTok, Facebook, Instagram, Twitter</span>, and 15+ other platforms.<br />
             <span className="text-base text-blue-200">Fast, secure, and completely free.</span>
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-8 animate-fade-in-up delay-800">
+          <div className="flex flex-wrap justify-center gap-3 mb-4 animate-fade-in-up delay-800">
             {[
               { icon: CheckCircle, text: "No registration required" }, { icon: CheckCircle, text: "100% free forever" },
               { icon: CheckCircle, text: "High quality downloads" }, { icon: CheckCircle, text: "Multiple formats" },
@@ -84,7 +84,7 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <div className="w-full max-w-4xl mb-2 animate-fade-in-up delay-1000" id="downloader">
+          <div className="w-full max-w-4xl mb-1 animate-fade-in-up delay-1000" id="downloader">
             <AdSenseBanner />
             <PlatformDownloader platform="universal" />
           </div>
