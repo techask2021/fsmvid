@@ -80,6 +80,74 @@ const nextConfig = {
       { source: '/rumble-video-downloader', destination: '/api/gone', permanent: true },
       { source: '/:platform-video-downloader', destination: '/api/gone', permanent: true },
       { source: '/twitter-story-saver', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress listing pages
+      { source: '/listing/capital-vilnius', destination: '/api/gone', permanent: true },
+      { source: '/listing/sj-interna', destination: '/api/gone', permanent: true },
+      { source: '/listing/kontolita-buhalterines-paslaugos-ir-konsultacijos', destination: '/api/gone', permanent: true },
+      { source: '/listing/baltic-sothebys-international-realty-lithuania', destination: '/api/gone', permanent: true },
+      { source: '/listing/real-estate-agent-in-vilnius-agata-avsejenko', destination: '/api/gone', permanent: true },
+      { source: '/listing/inkonta-teisines-ir-buhalterines-paslaugos-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/vilnius-county-tax-inspection-service', destination: '/api/gone', permanent: true },
+      { source: '/listing/lina-ivanauske-komercinio-nt-eksperte', destination: '/api/gone', permanent: true },
+      { source: '/listing/mb-verslo-sprendimu-profesionalai-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/andrius-kapitancukas-nt-brokeris', destination: '/api/gone', permanent: true },
+      { source: '/listing/accounting-services-in-vilnius-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/pro-kapital-vilnius-real-estate', destination: '/api/gone', permanent: true },
+      { source: '/listing/nt-eksperte-karina-paulauskaite', destination: '/api/gone', permanent: true },
+      { source: '/listing/leinonen-lithuania-vilnius-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/grant-thornton-baltic-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/1office-lithuania-uab-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/uab-financial-world-3', destination: '/api/gone', permanent: true },
+      { source: '/listing/ecovis-proventus-uab', destination: '/api/gone', permanent: true },
+      { source: '/listing/vilija-tamasauskiene', destination: '/api/gone', permanent: true },
+      { source: '/listing/akorus-real-estate', destination: '/api/gone', permanent: true },
+      { source: '/listing/ecit-norian-uab-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/solds-real-estate', destination: '/api/gone', permanent: true },
+      { source: '/listing/mokesciu-sufleris', destination: '/api/gone', permanent: true },
+      { source: '/listing/nst-accounting-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/esas-consulting', destination: '/api/gone', permanent: true },
+      { source: '/listing/tomas-paulaitis', destination: '/api/gone', permanent: true },
+      { source: '/listing/uab-rebaltic', destination: '/api/gone', permanent: true },
+      { source: '/listing/eureka-lt-2', destination: '/api/gone', permanent: true },
+      { source: '/listing/uab-kadmas', destination: '/api/gone', permanent: true },
+      { source: '/listing/ober-haus', destination: '/api/gone', permanent: true },
+      { source: '/listing/1stopvat', destination: '/api/gone', permanent: true },
+      { source: '/listing/gismeya', destination: '/api/gone', permanent: true },
+      { source: '/listing/proreal', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress listing categories
+      { source: '/listing-category/business-management-consultant', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/tax-preparation-services', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/financial-consultant', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/real-estate-agency', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/insurance-agency', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/accounting-firm', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/medical-center', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/dental-clinic', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/notary-public', destination: '/api/gone', permanent: true },
+      { source: '/listing-category/law-firm', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress author pages
+      { source: '/author/raymond', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress blog and category pages
+      { source: '/category/blog', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress region pages
+      { source: '/region/vilnius', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress static pages
+      { source: '/terms-and-conditions', destination: '/api/gone', permanent: true },
+      { source: '/submit-listing', destination: '/api/gone', permanent: true },
+      { source: '/listing-with-sidebar', destination: '/api/gone', permanent: true },
+      { source: '/listing-full', destination: '/api/gone', permanent: true },
+      { source: '/disclaimer', destination: '/api/gone', permanent: true },
+      
+      // Old WordPress blog posts
+      { source: '/vilnius-startup-ecosystem-guide-complete-overview-of-funding-support-programs', destination: '/api/gone', permanent: true },
+      { source: '/12-best-day-trips-from-vilnius-trakai-castle-curonian-spit-hidden-gems', destination: '/api/gone', permanent: true },
+      { source: '/vilnius-music-scene-where-traditional-folk-meets-modern-beats', destination: '/api/gone', permanent: true },
     ]
   },
   async headers() {
