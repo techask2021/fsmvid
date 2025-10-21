@@ -42,21 +42,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get the RapidAPI credentials from environment variables
-    const apiKey = process.env.NEXT_PUBLIC_RAPIDAPI_KEY
-    const apiHost = process.env.NEXT_PUBLIC_RAPIDAPI_HOST
-    const apiUrl = "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink"
+    // Get the new ZM API credentials from environment variables
+    const apiKey = process.env.NEXT_PUBLIC_ZM_API_KEY
+    const apiUrl = process.env.NEXT_PUBLIC_ZM_API_URL
 
-    if (!apiKey || !apiHost) {
+    if (!apiKey || !apiUrl) {
       return NextResponse.json({ status: "error", message: "API configuration is missing" }, { status: 500 })
     }
 
-    // Use the exact API endpoint from .env without any modifications
+    // Use the new ZM API endpoint with proper headers
     const options = {
       method: "POST",
       headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": apiHost,
+        "apikey": apiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ url: processUrl })
@@ -66,10 +64,11 @@ export async function POST(request: NextRequest) {
     console.log(`Proxying POST request to: ${apiUrl}`);
     console.log("Request body:", JSON.stringify({ url: processUrl }));
     console.log("Using API key:", apiKey.substring(0, 5) + "..." + apiKey.substring(apiKey.length - 5));
-    console.log("Using API host:", apiHost);
+    console.log("Using API URL:", apiUrl);
+    console.log("Request headers:", JSON.stringify(options.headers));
 
     try {
-      // Make the request to the RapidAPI endpoint using POST with body
+      // Make the request to the new ZM API endpoint using POST with body
       console.log("Making POST request to:", apiUrl);
       
       const response = await fetch(
@@ -81,9 +80,9 @@ export async function POST(request: NextRequest) {
       const data = await response.json()
       
       // Log the response for debugging
-      console.log("RapidAPI Status:", response.status)
-      console.log("RapidAPI Response Headers:", JSON.stringify(Object.fromEntries([...response.headers.entries()])))
-      console.log("RapidAPI Response:", JSON.stringify(data).substring(0, 200) + "...")
+      console.log("ZM API Status:", response.status)
+      console.log("ZM API Response Headers:", JSON.stringify(Object.fromEntries([...response.headers.entries()])))
+      console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
 
       // Return error if the API call fails
       if (!response.ok) {
@@ -100,7 +99,7 @@ export async function POST(request: NextRequest) {
 
       // Even if response.ok is true, the API might have its own error flag/message
       if (data.error === true || (data.status && data.status !== 200 && data.status !== "success" && data.status !== 203 && data.message && data.message.toLowerCase().includes("no medias found"))) {
-        // The RapidAPI for Bilibili returns status 203 with "No medias found"
+        // The ZM API for Bilibili returns status 203 with "No medias found"
         // For other errors, use a 422 or 404 if appropriate, or relay the API's status if it's an error status
         const errorStatus = (data.status && data.status >= 400) ? data.status : 
                             (data.message && data.message.toLowerCase().includes("no medias found")) ? 404 : 422; // Unprocessable Entity or Not Found

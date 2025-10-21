@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { detectPlatform } from "@/lib/platform-detector"
 
-export const runtime = "edge" // Use edge runtime for better performance
+export const runtime = "nodejs" // Use Node.js runtime for better compatibility with media CDNs
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +23,8 @@ export async function POST(request: NextRequest) {
     const isWeibo = platformToUse === 'weibo';
     const isBluesky = platformToUse === 'bsky';
     const isReddit = platformToUse === 'reddit';
+    const isYoutube = platformToUse === 'youtube';
+    const isGoogleVideoLink = url.includes('.googlevideo.com') || url.includes('youtube.com');
 
     console.log(`Downloading file from ${url} (Original Platform: ${platformToUse})`);
     
@@ -32,6 +34,9 @@ export async function POST(request: NextRequest) {
     // Set proper headers based on the platform
     const headers: HeadersInit = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36', // Updated User-Agent
+      'Accept': '*/*',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
     };
     
     // Add platform-specific headers
@@ -46,6 +51,21 @@ export async function POST(request: NextRequest) {
     } else if (isReddit) {
       headers['Referer'] = 'https://www.reddit.com/';
       headers['Origin'] = 'https://www.reddit.com';
+    }
+
+    // Apply YouTube/googlevideo specific headers when needed (even if platform is 'universal')
+    if (isYoutube || isGoogleVideoLink) {
+      headers['Referer'] = 'https://www.youtube.com/';
+      headers['Origin'] = 'https://www.youtube.com';
+      headers['Accept-Language'] = 'en-US,en;q=0.9';
+      headers['Accept-Encoding'] = 'gzip, deflate, br';
+      headers['DNT'] = '1';
+      headers['Connection'] = 'keep-alive';
+      headers['Upgrade-Insecure-Requests'] = '1';
+      // Some googlevideo endpoints require a Range header to avoid 403
+      if (!('Range' in headers)) {
+        headers['Range'] = 'bytes=0-';
+      }
     }
     
     // Fetch the file from the URL
@@ -82,11 +102,8 @@ export async function POST(request: NextRequest) {
     }
     
     try {
-      // Get the file data as array buffer
-      const fileData = await fileResponse.arrayBuffer()
-      
-      // Create a response with the file data
-      const response = new NextResponse(fileData)
+      // Stream the file data instead of buffering the whole file in memory
+      const response = new NextResponse(fileResponse.body as any)
       
       // Get content type from response or infer from filename
       let contentType = fileResponse.headers.get('Content-Type') || 'application/octet-stream';
@@ -99,7 +116,10 @@ export async function POST(request: NextRequest) {
       // Set headers for download
       response.headers.set('Content-Disposition', `attachment; filename="${filename}"`)
       response.headers.set('Content-Type', contentType)
-      response.headers.set('Content-Length', fileResponse.headers.get('Content-Length') || `${fileData.byteLength}`)
+      const contentLength = fileResponse.headers.get('Content-Length')
+      if (contentLength) {
+        response.headers.set('Content-Length', contentLength)
+      }
       
       return response
     } catch (downloadError) {

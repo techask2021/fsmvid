@@ -10,7 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
 import { getFeaturedPosts, urlFor } from "@/lib/blog-client"
-import RotatingAdBanner from "@/components/rotating-ad-banner"
+import AdSenseBanner from "@/components/adsense-banner"
 
 const PlatformGrid = lazy(() => import("@/components/platform-grid"))
 const HowToUse = lazy(() => import("@/components/how-to-use"))
@@ -57,23 +57,23 @@ export default async function Home() {
   return (
     <div>
       {/* New Hero Section */}
-      <section className="relative min-h-[90vh] bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
+      <section className="relative min-h-[60vh] bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
         <HeroSectionStyles /> 
-        <div className="container relative z-10 flex flex-col items-center justify-center min-h-[90vh] text-center px-6 py-16">
-          <Badge variant="secondary" className="mb-6 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-3 text-sm font-semibold hover:bg-white/30 transition-all duration-300 animate-fade-in">
+        <div className="container relative z-10 flex flex-col items-center justify-center min-h-[60vh] text-center px-6 py-8">
+          <Badge variant="secondary" className="mb-4 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-3 text-sm font-semibold hover:bg-white/30 transition-all duration-300 animate-fade-in">
             <Sparkles className="w-4 h-4 mr-2 animate-spin-slow" />
             Free Online Downloader
           </Badge>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight max-w-5xl text-white animate-fade-in-up">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight max-w-5xl text-white animate-fade-in-up">
             <span className="inline-block animate-fade-in-up delay-200">Free Social Media</span><br />
             <span className="bg-gradient-to-r from-cyan-300 via-blue-200 to-indigo-200 bg-clip-text text-transparent inline-block animate-fade-in-up delay-400">Video Downloader</span>
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
+          <p className="text-lg md:text-xl text-blue-100 mb-6 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
             Download videos, images, and shorts from{" "}
             <span className="font-semibold text-cyan-300">YouTube, TikTok, Facebook, Instagram, Twitter</span>, and 15+ other platforms.<br />
             <span className="text-base text-blue-200">Fast, secure, and completely free.</span>
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-in-up delay-800">
+          <div className="flex flex-wrap justify-center gap-4 mb-8 animate-fade-in-up delay-800">
             {[
               { icon: CheckCircle, text: "No registration required" }, { icon: CheckCircle, text: "100% free forever" },
               { icon: CheckCircle, text: "High quality downloads" }, { icon: CheckCircle, text: "Multiple formats" },
@@ -84,9 +84,8 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <div className="w-full max-w-4xl mb-12 animate-fade-in-up delay-1000" id="downloader">
-            {/* Rotating Ad Banner */}
-            <RotatingAdBanner />
+          <div className="w-full max-w-4xl mb-8 animate-fade-in-up delay-1000" id="downloader">
+            <AdSenseBanner />
             <PlatformDownloader platform="universal" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl animate-fade-in-up delay-1200">

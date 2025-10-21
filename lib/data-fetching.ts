@@ -26,7 +26,7 @@ export async function downloadContentServer(url: string, platform: Platform): Pr
   "use server"
 
   try {
-    // Use our proxy endpoint instead of calling the RapidAPI directly
+    // Use our proxy endpoint instead of calling the ZM API directly
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/proxy`, {
       method: "POST",
       headers: {

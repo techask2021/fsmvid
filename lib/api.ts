@@ -17,7 +17,7 @@ export interface DownloadResult {
 
 export async function downloadContent(url: string, platform: Platform): Promise<DownloadResult> {
   try {
-    // Use our proxy endpoint instead of calling the RapidAPI directly
+    // Use our proxy endpoint instead of calling the ZM API directly
     const response = await fetch("/api/proxy", {
       method: "POST",
       headers: {
@@ -108,7 +108,7 @@ function extractDownloadOptions(apiData: any, platform: Platform): DownloadOptio
     return options;
   }
 
-  // Special handling for YouTube responses from new RapidAPI endpoint
+  // Special handling for YouTube responses from new ZM API endpoint
   if (platform === 'youtube' && apiData.streamingData) {
     const options: DownloadOptions[] = [];
     const videoFormats = [
@@ -134,7 +134,7 @@ function extractDownloadOptions(apiData: any, platform: Platform): DownloadOptio
     return options;
   }
 
-  // Special handling for YouTube responses from RapidAPI
+  // Special handling for YouTube responses from ZM API
   if (platform === 'youtube' && apiData.links && typeof apiData.links === 'object') {
     const options: DownloadOptions[] = [];
     
@@ -151,7 +151,7 @@ function extractDownloadOptions(apiData: any, platform: Platform): DownloadOptio
     return options;
   }
 
-  // Handle the formats structure that comes from RapidAPI
+  // Handle the formats structure that comes from ZM API
   if (apiData.formats && typeof apiData.formats === 'object') {
     const options: DownloadOptions[] = [];
     

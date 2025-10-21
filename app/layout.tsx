@@ -10,7 +10,6 @@ import { Toaster } from "@/components/ui/toaster"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Analytics } from "@/components/analytics"
-import FloatingAdSidebar from "@/components/floating-ad-sidebar"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -164,6 +163,14 @@ export default function RootLayout({
         
         {/* Galaksion domain verification */}
         <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
+        
+        {/* Google AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased",
@@ -183,7 +190,6 @@ export default function RootLayout({
           </div>
           <Toaster />
           <Analytics />
-          <FloatingAdSidebar />
         </ThemeProvider>
         <WebVitalsMonitoring />
       </body>

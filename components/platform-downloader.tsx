@@ -239,7 +239,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             const format = media.ext || media.type || "mp4";
             let quality = media.label || media.quality || `${media.height}p`;
             const hasAudio = (() => {
-              if (['tiktok', 'facebook', 'twitter', 'instagram', 'vimeo', 'telegram', 'tumblr', 'snapchat', 'pinterest', 'linkedin', 'dailymotion', 'rumble'].includes(platform)) return true;
+              if (['tiktok', 'facebook', 'twitter', 'instagram', 'vimeo', 'telegram', 'tumblr', 'snapchat', 'pinterest', 'linkedin', 'dailymotion', 'rumble', 'youtube'].includes(platform)) return true;
               if (platform === 'imgur') return (format.toLowerCase() === 'mp4' || format.toLowerCase() === 'webm' || (media.mimeType && media.mimeType.includes('video')));
               return !!(media.audioQuality || (media.mimeType && media.mimeType.includes('mp4a')) || (media.codecs && media.codecs.includes('mp4a')) || media.formatId === 18 || quality.toLowerCase().includes('audio') || format.toLowerCase() === 'mp3' || format.toLowerCase() === 'm4a');
             })();
@@ -325,6 +325,45 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         toast.info("Starting download...", { duration: 3000 })
         let filename = `${platform}_download.${selectedFormat?.toLowerCase() || 'mp4'}`
         const detectedPlatform = detectPlatform(url);
+        
+        // Check if this is a YouTube/googlevideo URL - download directly without proxy
+        const isYouTubeUrl = downloadUrl.includes('googlevideo.com') || downloadUrl.includes('youtube.com/videoplayback') || platform === 'youtube' || (platform === 'universal' && detectedPlatform === 'youtube');
+        
+        if (isYouTubeUrl) {
+          // For YouTube, use a free third-party download service
+          toast.info("Preparing YouTube download...", { duration: 3000 });
+          
+          try {
+            // Store the video URL in session storage for reference
+            sessionStorage.setItem('lastYouTubeUrl', url);
+            sessionStorage.setItem('lastYouTubeDownloadUrl', downloadUrl);
+            
+            // Extract video ID from URL
+            const videoId = url.split('watch?v=')[1]?.split('&')[0] || 
+                           url.split('youtu.be/')[1]?.split('?')[0] ||
+                           url.split('youtube.com/shorts/')[1]?.split('?')[0];
+            
+            if (videoId) {
+              // Use y2mate free YouTube download service (no auth required)
+              const youtubeDownloadService = `https://y2mate.com/en/download-youtube/${videoId}`;
+              window.open(youtubeDownloadService, '_blank');
+            } else {
+              // Fallback if we can't extract video ID
+              window.open(url, '_blank');
+            }
+            
+            toast.success("YouTube download service opened! Complete the download there.", { duration: 5000 });
+            setDownloadLoading(false);
+            return;
+          } catch (ytError) {
+            console.error('YouTube download service error:', ytError);
+            // Fallback: Open video URL directly
+            window.open(url, '_blank');
+            setDownloadLoading(false);
+            return;
+          }
+        }
+        
         if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && detectedPlatform === 'reddit'))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
           toast.info("Downloading m3u8 streaming file...", { duration: 8000 });

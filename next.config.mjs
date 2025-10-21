@@ -190,16 +190,18 @@ const nextConfig = {
                 http://gc.kis.v2.scr.kaspersky-labs.com 
                 ws://gc.kis.v2.scr.kaspersky-labs.com 
                 https://pagead2.googlesyndication.com 
+                https://adservice.google.com
+                https://googleads.g.doubleclick.net
                 https://va.vercel-scripts.com 
                 https://ep2.adtrafficquality.google
                 https://www.google.com
-                https://www.gstatic.com
+                https://www.gstatic.com;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
               font-src 'self' https://fonts.gstatic.com;
-              img-src 'self' data: https: https://affiliates.mediamister.com;
-              connect-src 'self' https:;
-              frame-src 'self' https: https://www.google.com;
-              media-src 'self' https:;
+              img-src 'self' data: https:;
+              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com;
+              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
+              media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob:;
               object-src 'self';
               worker-src 'self' blob:;
               form-action 'self';
