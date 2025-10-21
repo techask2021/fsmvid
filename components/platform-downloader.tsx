@@ -343,41 +343,102 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           toast.info("This is a streaming format (m3u8).", { duration: 6000 });
           if (!confirm("This is a streaming format. Download m3u8 file? (Cancel to copy link)")) { setDownloadLoading(false); copyToClipboard(); return; }
         }
-        // Use parallel download for Mixcloud (faster!)
+        // Use CLIENT-SIDE parallel download for Mixcloud (bypasses Netlify size limits!)
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
         
         if (isMixcloud) {
-          toast.info("Downloading with parallel chunks (faster method)...", { duration: 4000 });
-          
-          const response = await fetch('/api/mixcloud-download', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ url: downloadUrl, filename }), 
-          })
-          
-          if (!response.ok) {
-            throw new Error('Parallel download failed')
+          try {
+            toast.info("Downloading with parallel chunks in browser (faster!)...", { duration: 4000 });
+            
+            // Step 1: Get file size
+            const headResponse = await fetch(downloadUrl, { 
+              method: 'HEAD',
+              mode: 'cors',
+              credentials: 'omit'
+            });
+            
+            const contentLength = headResponse.headers.get('Content-Length');
+            if (!contentLength) {
+              throw new Error('Cannot determine file size');
+            }
+            
+            const fileSize = parseInt(contentLength, 10);
+            const numChunks = 4;
+            const chunkSize = Math.floor(fileSize / numChunks);
+            
+            toast.info(`Downloading ${Math.round(fileSize / 1024 / 1024)}MB in 4 parallel chunks...`, { duration: 3000 });
+            
+            // Step 2: Download all chunks in parallel (IN BROWSER, not server!)
+            const chunkPromises = [];
+            
+            for (let i = 0; i < numChunks; i++) {
+              const startByte = i * chunkSize;
+              const endByte = i === numChunks - 1 ? fileSize - 1 : startByte + chunkSize - 1;
+              
+              const chunkPromise = fetch(downloadUrl, {
+                headers: {
+                  'Range': `bytes=${startByte}-${endByte}`,
+                },
+                mode: 'cors',
+                credentials: 'omit'
+              }).then(async (response) => {
+                if (!response.ok && response.status !== 206) {
+                  throw new Error(`Chunk ${i + 1} failed: ${response.status}`);
+                }
+                const arrayBuffer = await response.arrayBuffer();
+                return {
+                  index: i,
+                  data: new Uint8Array(arrayBuffer)
+                };
+              });
+              
+              chunkPromises.push(chunkPromise);
+            }
+            
+            // Step 3: Wait for all chunks
+            const chunks = await Promise.all(chunkPromises);
+            chunks.sort((a, b) => a.index - b.index);
+            
+            toast.info("Combining chunks...", { duration: 2000 });
+            
+            // Step 4: Combine chunks
+            const totalLength = chunks.reduce((sum, chunk) => sum + chunk.data.length, 0);
+            const combinedBuffer = new Uint8Array(totalLength);
+            
+            let offset = 0;
+            for (const chunk of chunks) {
+              combinedBuffer.set(chunk.data, offset);
+              offset += chunk.data.length;
+            }
+            
+            // Step 5: Create blob and download
+            const blob = new Blob([combinedBuffer], { type: 'audio/mp4' });
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+            
+            toast.success(`Download complete! (${Math.round(totalLength / 1024 / 1024)}MB)`);
+            setDownloadLoading(false);
+            return;
+            
+          } catch (mixcloudError) {
+            console.error('Client-side parallel download failed:', mixcloudError);
+            toast.error("Parallel download failed. Using standard method...");
+            // Fall through to standard download
           }
-          
-          const blob = await response.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = blobUrl;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(blobUrl);
-          
-          toast.success("Download successful!");
-        } else {
-          // Standard download for other platforms
-          const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform }), })
-          if (!response.ok) throw new Error('Download failed')
-          const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
-          toast.success("Download successful!")
         }
+        
+        // Standard download for other platforms
+        const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform }), })
+        if (!response.ok) throw new Error('Download failed')
+        const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
+        toast.success("Download successful!")
       } catch (error) {
         console.error('Download error:', error); 
         toast.error("Download failed. Using direct download method...");
