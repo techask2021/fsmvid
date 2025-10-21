@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { detectPlatform } from "@/lib/platform-detector"
 
 export const runtime = "nodejs" // Use Node.js runtime for better compatibility with media CDNs
+export const maxDuration = 60 // Allow up to 60 seconds for large file downloads
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,10 +21,13 @@ export async function POST(request: NextRequest) {
     // and detectPlatform(directMediaUrl) would likely fail or be incorrect.
     const platformToUse = originalPlatform || detectPlatform(url) || ''; // Fallback if not provided, though it should be
     const isDailymotion = platformToUse === 'dailymotion';
-    const isWeibo = platformToUse === 'weibo';
+    const isWeibo = platformToUse === 'weibo' || url.includes('weibo.com') || url.includes('weibocdn.com') || url.includes('miaopai.com');
     const isBluesky = platformToUse === 'bsky';
     const isReddit = platformToUse === 'reddit';
     const isYoutube = platformToUse === 'youtube';
+    const isMixcloud = platformToUse === 'mixcloud' || url.includes('mixcloud.stream');
+    const isSoundcloud = platformToUse === 'soundcloud' || url.includes('soundcloud.com') || url.includes('sndcdn.com');
+    const isSpotify = platformToUse === 'spotify' || url.includes('spotify.com') || url.includes('spotifycdn.com');
     const isGoogleVideoLink = url.includes('.googlevideo.com') || url.includes('youtube.com');
 
     console.log(`Downloading file from ${url} (Original Platform: ${platformToUse})`);
@@ -44,13 +48,39 @@ export async function POST(request: NextRequest) {
       headers['Referer'] = 'https://www.dailymotion.com/';
       headers['Origin'] = 'https://www.dailymotion.com';
     } else if (isWeibo) {
-      headers['Referer'] = 'https://weibo.com/'; // Adding a generic Weibo referer
+      headers['Referer'] = 'https://weibo.com/';
+      headers['Origin'] = 'https://weibo.com';
+      // Weibo requires these headers to avoid 403
+      headers['Accept'] = 'video/mp4,video/*;q=0.9,*/*;q=0.8';
+      headers['Accept-Language'] = 'zh-CN,zh;q=0.9,en;q=0.8';
+      headers['Sec-Fetch-Dest'] = 'video';
+      headers['Sec-Fetch-Mode'] = 'no-cors';
+      headers['Sec-Fetch-Site'] = 'cross-site';
     } else if (isBluesky) {
       headers['Referer'] = 'https://bsky.app/';
       headers['Origin'] = 'https://bsky.app';
     } else if (isReddit) {
       headers['Referer'] = 'https://www.reddit.com/';
       headers['Origin'] = 'https://www.reddit.com';
+    } else if (isMixcloud) {
+      headers['Referer'] = 'https://www.mixcloud.com/';
+      headers['Origin'] = 'https://www.mixcloud.com';
+      headers['Accept'] = 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8';
+    } else if (isSoundcloud) {
+      headers['Referer'] = 'https://soundcloud.com/';
+      headers['Origin'] = 'https://soundcloud.com';
+      headers['Accept'] = 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8';
+      // SoundCloud requires these specific headers to avoid 401
+      headers['Sec-Fetch-Dest'] = 'audio';
+      headers['Sec-Fetch-Mode'] = 'no-cors';
+      headers['Sec-Fetch-Site'] = 'cross-site';
+    } else if (isSpotify) {
+      headers['Referer'] = 'https://open.spotify.com/';
+      headers['Origin'] = 'https://open.spotify.com';
+      headers['Accept'] = 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8';
+      headers['Sec-Fetch-Dest'] = 'audio';
+      headers['Sec-Fetch-Mode'] = 'no-cors';
+      headers['Sec-Fetch-Site'] = 'cross-site';
     }
 
     // Apply YouTube/googlevideo specific headers when needed (even if platform is 'universal')
@@ -108,9 +138,15 @@ export async function POST(request: NextRequest) {
       // Get content type from response or infer from filename
       let contentType = fileResponse.headers.get('Content-Type') || 'application/octet-stream';
       
-      // If we have an MP4 file but wrong content type, fix it
+      // Fix content type based on file extension
       if (filename.endsWith('.mp4') && !contentType.includes('mp4')) {
         contentType = 'video/mp4';
+      } else if (filename.endsWith('.m4a') && !contentType.includes('m4a') && !contentType.includes('audio')) {
+        contentType = 'audio/mp4';
+      } else if (filename.endsWith('.mp3') && !contentType.includes('mp3') && !contentType.includes('audio')) {
+        contentType = 'audio/mpeg';
+      } else if (filename.endsWith('.webm') && !contentType.includes('webm')) {
+        contentType = 'video/webm';
       }
       
       // Set headers for download

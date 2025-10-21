@@ -11,8 +11,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "error", message: "URL and platform are required" }, { status: 400 })
     }
 
-    // Normalize Dailymotion short URLs
+    // Normalize URLs for different platforms
     let processUrl = url;
+    
+    // Normalize Vimeo URLs
+    if (platform === 'vimeo') {
+      // Extract video ID from various Vimeo URL formats
+      let videoId = null;
+      
+      // Handle player.vimeo.com URLs
+      if (url.includes('player.vimeo.com/video/')) {
+        videoId = url.split('player.vimeo.com/video/').pop()?.split('?')[0].split('#')[0];
+      }
+      // Handle standard vimeo.com URLs
+      else if (url.includes('vimeo.com/')) {
+        const parts = url.split('vimeo.com/').pop()?.split('?')[0].split('#')[0].split('/');
+        videoId = parts?.[0];
+      }
+      
+      if (videoId && videoId.match(/^\d+$/)) {
+        processUrl = `https://vimeo.com/${videoId}`;
+        console.log("Normalized Vimeo URL:", processUrl);
+      }
+    }
+    
+    // Normalize Dailymotion short URLs
     if (platform === 'dailymotion' && url.includes('dai.ly/')) {
       // Convert dai.ly short URLs to full dailymotion URLs
       const videoId = url.split('dai.ly/').pop()?.split('?')[0].split('#')[0];
@@ -22,6 +45,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Normalize Tumblr URLs
+    if (platform === 'tumblr') {
+      // Ensure clean Tumblr post URLs
+      if (url.includes('tumblr.com/post/')) {
+        // Remove any trailing parameters that might cause issues
+        processUrl = url.split('?')[0].split('#')[0];
+        console.log("Normalized Tumblr URL:", processUrl);
+      }
+    }
+    
+    // Normalize Snapchat URLs
+    if (platform === 'snapchat') {
+      // Ensure clean Snapchat URLs
+      processUrl = url.split('?')[0].split('#')[0];
+      console.log("Normalized Snapchat URL:", processUrl);
+    }
+    
     // Normalize Reddit URLs
     if (platform === 'reddit' || (platform === 'universal' && url.includes('reddit.com'))) {
       // Ensure Reddit URLs are in the proper format
@@ -67,22 +107,72 @@ export async function POST(request: NextRequest) {
     console.log("Using API URL:", apiUrl);
     console.log("Request headers:", JSON.stringify(options.headers));
 
-    try {
-      // Make the request to the new ZM API endpoint using POST with body
-      console.log("Making POST request to:", apiUrl);
-      
-      const response = await fetch(
-        apiUrl, 
-        options
-      )
-      
-      // Get the response data
-      const data = await response.json()
-      
-      // Log the response for debugging
-      console.log("ZM API Status:", response.status)
-      console.log("ZM API Response Headers:", JSON.stringify(Object.fromEntries([...response.headers.entries()])))
-      console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
+    // Retry logic for handling intermittent failures
+    const maxRetries = 3;
+    const retryDelay = 1500; // 1.5 seconds between retries
+    let lastError = null;
+    let data = null;
+    let response = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Make the request to the new ZM API endpoint using POST with body
+        console.log(`Making POST request to: ${apiUrl} (Attempt ${attempt}/${maxRetries})`);
+        
+        response = await fetch(apiUrl, options)
+        data = await response.json()
+        
+        // Log the response for debugging
+        console.log("ZM API Status:", response.status)
+        console.log("ZM API Response Headers:", JSON.stringify(Object.fromEntries([...response.headers.entries()])))
+        console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
+        
+        // Check if we got a successful response with media
+        const hasMedia = data.medias || data.formats;
+        const isNoMediaError = data.error === true && data.message && data.message.toLowerCase().includes("no medias found");
+        
+        // If successful or it's a permanent error (not a temporary "no media" issue), break the loop
+        if (response.ok && hasMedia && !isNoMediaError) {
+          console.log(`✓ Success on attempt ${attempt}`);
+          break;
+        }
+        
+        // If it's a "no medias found" error and we have retries left, try again
+        if (isNoMediaError && attempt < maxRetries) {
+          console.log(`⚠ No medias found on attempt ${attempt}, retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        
+        // If it's another type of error, break immediately
+        if (!response.ok || data.error === true) {
+          lastError = data;
+          break;
+        }
+        
+      } catch (fetchError) {
+        console.error(`✗ Fetch error on attempt ${attempt}:`, fetchError);
+        lastError = fetchError;
+        
+        // If we have retries left, wait and try again
+        if (attempt < maxRetries) {
+          console.log(`Retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+      }
+    }
+    
+    // Use the last response and data from the loop
+    if (!response || !data) {
+      console.error("All retry attempts failed");
+      return NextResponse.json({ 
+        status: "error", 
+        message: "Failed to connect to the video processing service after multiple attempts" 
+      }, { 
+        status: 500 
+      })
+    }
 
       // Return error if the API call fails
       if (!response.ok) {
@@ -98,11 +188,33 @@ export async function POST(request: NextRequest) {
       }
 
       // Even if response.ok is true, the API might have its own error flag/message
-      if (data.error === true || (data.status && data.status !== 200 && data.status !== "success" && data.status !== 203 && data.message && data.message.toLowerCase().includes("no medias found"))) {
-        // The ZM API for Bilibili returns status 203 with "No medias found"
-        // For other errors, use a 422 or 404 if appropriate, or relay the API's status if it's an error status
-        const errorStatus = (data.status && data.status >= 400) ? data.status : 
-                            (data.message && data.message.toLowerCase().includes("no medias found")) ? 404 : 422; // Unprocessable Entity or Not Found
+      if (data.error === true || (data.status && data.status !== 200 && data.status !== "success")) {
+        // Handle "No medias found" errors with platform-specific messages
+        if (data.message && data.message.toLowerCase().includes("no medias found")) {
+          const errorStatus = 404;
+          console.error("API Error (logical):", data.message || "No media found or API logical error");
+          
+          // Provide platform-specific error messages
+          let customMessage = data.message;
+          if (platform === 'vimeo') {
+            customMessage = "This Vimeo video cannot be downloaded. It may be private, password-protected, or have download restrictions enabled by the owner.";
+          } else if (platform === 'tumblr') {
+            customMessage = "This Tumblr content cannot be downloaded. It may be private or removed.";
+          } else if (platform === 'snapchat') {
+            customMessage = "This Snapchat content cannot be downloaded. Only public Spotlight videos and public stories are supported.";
+          }
+          
+          return NextResponse.json({
+            status: "error",
+            message: customMessage,
+            details: data
+          }, {
+            status: errorStatus 
+          });
+        }
+        
+        // For other errors, use a 422 or 404 if appropriate
+        const errorStatus = (data.status && data.status >= 400) ? data.status : 422;
         console.error("API Error (logical):", data.message || "No media found or API logical error");
         return NextResponse.json({
           status: "error",
@@ -231,15 +343,6 @@ export async function POST(request: NextRequest) {
         status: "success",
         formats: data.formats
       })
-    } catch (fetchError) {
-      console.error("Fetch error:", fetchError)
-      return NextResponse.json({ 
-        status: "error", 
-        message: "Failed to connect to the video processing service" 
-      }, { 
-        status: 500 
-      })
-    }
   } catch (error) {
     console.error("Proxy error:", error)
     return NextResponse.json({ 
