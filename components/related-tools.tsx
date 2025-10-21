@@ -17,7 +17,6 @@ export default function RelatedTools({ currentPlatform, limit = 6 }: RelatedTool
     "facebook",
     "twitter",
     "instagram",
-    "vimeo",
     "dailymotion",
     "telegram",
     "tumblr",

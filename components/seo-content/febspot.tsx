@@ -191,7 +191,6 @@ export const FebspotSEOContent = () => {
                     <span><InterlinkText currentPlatform={platform}>YouTube</InterlinkText>: Download your favorite YouTube videos and shorts.</span>,
                     <span><InterlinkText currentPlatform={platform}>Facebook</InterlinkText>: Save social media videos for offline viewing.</span>,
                     <span><InterlinkText currentPlatform={platform}>TikTok</InterlinkText>: Keep trending videos available offline.</span>,
-                    <span><InterlinkText currentPlatform={platform}>Vimeo</InterlinkText>: Professional content download support.</span>,
                     <span><InterlinkText currentPlatform={platform}>Instagram</InterlinkText>: Stories, reels, and regular video content.</span>,
                     <span><InterlinkText currentPlatform={platform}>Twitter</InterlinkText>: Social media video preservation.</span>
                 ])}

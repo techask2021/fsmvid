@@ -12,7 +12,6 @@ const initialPlatformsData = [
   { name: "Facebook", icon: "/icons/facebook.svg", slug: getUrlSlug("facebook"), description: "Download Facebook videos and photos", popular: true },
   { name: "Twitter", icon: "/icons/twitter.svg", slug: getUrlSlug("twitter"), description: "Save Twitter videos and GIFs", popular: true },
   { name: "Instagram", icon: "/icons/instagram.svg", slug: getUrlSlug("instagram"), description: "Download Instagram photos and videos", popular: true },
-  { name: "Vimeo", icon: "/icons/vimeo.svg", slug: getUrlSlug("vimeo"), description: "Save Vimeo videos in high quality", popular: false },
   { name: "Dailymotion", icon: "/icons/dailymotion.svg", slug: getUrlSlug("dailymotion"), description: "Download Dailymotion videos easily", popular: false },
   { name: "Telegram", icon: "/icons/telegram.svg", slug: getUrlSlug("telegram"), description: "Save Telegram media files", popular: false },
   { name: "Tumblr", icon: "/icons/tumblr.svg", slug: getUrlSlug("tumblr"), description: "Download Tumblr photos and videos", popular: false },

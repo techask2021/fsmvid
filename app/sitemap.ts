@@ -11,7 +11,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "facebook",
     "twitter",
     "instagram",
-    "vimeo",
     "dailymotion",
     "telegram",
     "tumblr",

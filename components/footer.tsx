@@ -16,7 +16,6 @@ export default function Footer() {
     {
       title: "More Platforms",
       links: [
-        { name: "Vimeo Downloader", href: "/vimeo-video-extractor" }, // Adjusted
         { name: "Pinterest Downloader", href: "/pinterest-media-saver" }, // Adjusted
         { name: "LinkedIn Downloader", href: "/linkedin-content-saver" }, // Adjusted
         { name: "Snapchat Downloader", href: "/snapchat-story-saver" }, // Adjusted

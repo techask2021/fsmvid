@@ -550,8 +550,7 @@ export const ThreadsSEOContent = () => {
                     <a href="/facebook-media-grabber" className="text-blue-600 hover:underline dark:text-blue-400">Facebook</a>,
                     <a href="/instagram-media-saver" className="text-pink-600 hover:underline dark:text-pink-400">Instagram</a>,
                     <a href="/twitter-video-saver" className="text-blue-400 hover:underline dark:text-blue-300">Twitter</a>,
-                    <a href="/tiktok-video-saver" className="text-gray-800 hover:underline dark:text-gray-200">TikTok</a>,
-                    <a href="/vimeo-video-extractor" className="text-teal-600 hover:underline dark:text-teal-400">Vimeo</a>
+                    <a href="/tiktok-video-saver" className="text-gray-800 hover:underline dark:text-gray-200">TikTok</a>
                 ])}
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
                     <InterlinkText currentPlatform={platform}>

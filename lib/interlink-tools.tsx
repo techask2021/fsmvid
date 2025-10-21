@@ -9,7 +9,6 @@ const allPlatforms: Platform[] = [
   "facebook",
   "twitter",
   "instagram",
-  "vimeo",
   "dailymotion",
   "telegram",
   "tumblr",

@@ -63,7 +63,6 @@ export async function indexAllSitePages() {
     'facebook',
     'twitter',
     'instagram',
-    'vimeo',
     'dailymotion',
     'telegram',
     'tumblr',

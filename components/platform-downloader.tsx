@@ -232,7 +232,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             const format = media.ext || media.type || "mp4";
             let quality = media.label || media.quality || `${media.height}p`;
             const hasAudio = (() => {
-              if (['tiktok', 'facebook', 'twitter', 'instagram', 'vimeo', 'telegram', 'tumblr', 'snapchat', 'pinterest', 'linkedin', 'dailymotion', 'rumble', 'youtube'].includes(platform)) return true;
+              if (['tiktok', 'facebook', 'twitter', 'instagram', 'telegram', 'tumblr', 'snapchat', 'pinterest', 'linkedin', 'dailymotion', 'rumble', 'youtube'].includes(platform)) return true;
               if (platform === 'imgur') return (format.toLowerCase() === 'mp4' || format.toLowerCase() === 'webm' || (media.mimeType && media.mimeType.includes('video')));
               return !!(media.audioQuality || (media.mimeType && media.mimeType.includes('mp4a')) || (media.codecs && media.codecs.includes('mp4a')) || media.formatId === 18 || quality.toLowerCase().includes('audio') || format.toLowerCase() === 'mp3' || format.toLowerCase() === 'm4a');
             })();

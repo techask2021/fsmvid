@@ -86,22 +86,6 @@ export function InstagramIcon({ className, size = 24, ...props }: IconProps) {
   )
 }
 
-export function VimeoIcon({ className, size = 24, ...props }: IconProps) {
-  return (
-    <div className={className} {...props}>
-      <Image 
-        src="/icons/vimeo.svg" 
-        alt="Vimeo" 
-        width={size} 
-        height={size} 
-        className="w-full h-full" 
-        loading="lazy"
-        sizes={`${size}px`}
-      />
-    </div>
-  )
-}
-
 export function DailymotionIcon({ className, size = 24, ...props }: IconProps) {
   return (
     <div className={className} {...props}>

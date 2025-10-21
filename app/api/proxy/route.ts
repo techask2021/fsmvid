@@ -14,27 +14,6 @@ export async function POST(request: NextRequest) {
     // Normalize URLs for different platforms
     let processUrl = url;
     
-    // Normalize Vimeo URLs
-    if (platform === 'vimeo') {
-      // Extract video ID from various Vimeo URL formats
-      let videoId = null;
-      
-      // Handle player.vimeo.com URLs
-      if (url.includes('player.vimeo.com/video/')) {
-        videoId = url.split('player.vimeo.com/video/').pop()?.split('?')[0].split('#')[0];
-      }
-      // Handle standard vimeo.com URLs
-      else if (url.includes('vimeo.com/')) {
-        const parts = url.split('vimeo.com/').pop()?.split('?')[0].split('#')[0].split('/');
-        videoId = parts?.[0];
-      }
-      
-      if (videoId && videoId.match(/^\d+$/)) {
-        processUrl = `https://vimeo.com/${videoId}`;
-        console.log("Normalized Vimeo URL:", processUrl);
-      }
-    }
-    
     // Normalize Dailymotion short URLs
     if (platform === 'dailymotion' && url.includes('dai.ly/')) {
       // Convert dai.ly short URLs to full dailymotion URLs
@@ -196,9 +175,7 @@ export async function POST(request: NextRequest) {
           
           // Provide platform-specific error messages
           let customMessage = data.message;
-          if (platform === 'vimeo') {
-            customMessage = "This Vimeo video cannot be downloaded. It may be private, password-protected, or have download restrictions enabled by the owner.";
-          } else if (platform === 'tumblr') {
+          if (platform === 'tumblr') {
             customMessage = "This Tumblr content cannot be downloaded. It may be private or removed.";
           } else if (platform === 'snapchat') {
             customMessage = "This Snapchat content cannot be downloaded. Only public Spotlight videos and public stories are supported.";

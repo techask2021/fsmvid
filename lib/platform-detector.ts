@@ -4,7 +4,6 @@ export type Platform =
   | "facebook"
   | "twitter"
   | "instagram"
-  | "vimeo"
   | "dailymotion"
   | "telegram"
   | "tumblr"
@@ -47,7 +46,6 @@ export function detectPlatform(url: string): Platform {
       return "facebook"
     if (hostname.includes("twitter.com") || hostname.includes("x.com")) return "twitter"
     if (hostname.includes("instagram.com")) return "instagram"
-    if (hostname.includes("vimeo.com")) return "vimeo"
     if (
       hostname.includes("dailymotion.com") ||
       url.includes('dailymotion.com/video/') ||
@@ -101,8 +99,6 @@ export function getPlatformName(platform: Platform): string {
       return "Twitter"
     case "instagram":
       return "Instagram"
-    case "vimeo":
-      return "Vimeo"
     case "dailymotion":
       return "Dailymotion"
     case "telegram":
@@ -174,8 +170,6 @@ export function getUrlSlug(platform: Platform): string {
       return "twitter-video-saver"
     case "instagram":
       return "instagram-media-saver"
-    case "vimeo":
-      return "vimeo-video-extractor"
     case "dailymotion":
       return "dailymotion-video-saver"
     case "telegram":
@@ -247,8 +241,6 @@ export function getPlatformFromSlug(slug: string): Platform {
       return "twitter"
     case "instagram-media-saver":
       return "instagram"
-    case "vimeo-video-extractor":
-      return "vimeo"
     case "dailymotion-video-saver":
       return "dailymotion"
     case "telegram-media-saver":

@@ -70,7 +70,6 @@ export function HomeSEOContent() {
     { name: "Instagram", href: "/instagram-media-saver" },
     { name: "Facebook", href: "/facebook-media-grabber" },
     { name: "Twitter", href: "/twitter-video-saver" },
-    { name: "Vimeo", href: "/vimeo-video-extractor" },
     { name: "Dailymotion", href: "/dailymotion-video-saver" },
     { name: "Pinterest", href: "/pinterest-media-saver" },
     { name: "LinkedIn", href: "/linkedin-content-saver" },
