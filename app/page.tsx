@@ -84,7 +84,7 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <div className="w-full max-w-4xl mb-8 animate-fade-in-up delay-1000" id="downloader">
+          <div className="w-full max-w-4xl mb-2 animate-fade-in-up delay-1000" id="downloader">
             <AdSenseBanner />
             <PlatformDownloader platform="universal" />
           </div>

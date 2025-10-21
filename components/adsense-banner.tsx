@@ -15,10 +15,10 @@ export default function AdSenseBanner() {
   }, [])
 
   return (
-    <div className="w-full flex justify-center my-6">
+    <div className="w-full flex justify-center my-3">
       <ins
         className="adsbygoogle"
-        style={{ display: 'inline-block', width: '728px', height: '250px' }}
+        style={{ display: 'inline-block', width: '880px', height: '250px' }}
         data-ad-client="ca-pub-2918771713238080"
         data-ad-slot="2669514106"
       />
