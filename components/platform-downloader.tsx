@@ -343,11 +343,41 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           toast.info("This is a streaming format (m3u8).", { duration: 6000 });
           if (!confirm("This is a streaming format. Download m3u8 file? (Cancel to copy link)")) { setDownloadLoading(false); copyToClipboard(); return; }
         }
-        const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform }), })
-        if (!response.ok) throw new Error('Download failed')
-        const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
-        toast.success("Download successful!")
+        // Use parallel download for Mixcloud (faster!)
+        const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
+        
+        if (isMixcloud) {
+          toast.info("Downloading with parallel chunks (faster method)...", { duration: 4000 });
+          
+          const response = await fetch('/api/mixcloud-download', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ url: downloadUrl, filename }), 
+          })
+          
+          if (!response.ok) {
+            throw new Error('Parallel download failed')
+          }
+          
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+          
+          toast.success("Download successful!");
+        } else {
+          // Standard download for other platforms
+          const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform }), })
+          if (!response.ok) throw new Error('Download failed')
+          const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
+          toast.success("Download successful!")
+        }
       } catch (error) {
         console.error('Download error:', error); 
         toast.error("Download failed. Using direct download method...");
