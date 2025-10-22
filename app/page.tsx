@@ -23,13 +23,13 @@ const ContentLoading = () => <div className="h-40 w-full bg-muted/30 animate-pul
 export const metadata: Metadata = {
   title: "FSMVID | Free Social Media Video Downloader",
   description:
-    "Free Social Media Video Downloader website to download a free online videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
+    "FSMVID is a powerful and user-friendly free social media video downloader tool that allows you to download videos, images, and shorts from popular platforms including YouTube, TikTok, Facebook, Twitter, Instagram, and more. Download high-quality content from any social media platform with our fast, free online downloader tool - no registration required.",
   keywords: [
     "Free Social Media Video Downloader", "video downloader", "social media downloader", "YouTube downloader", "TikTok downloader", "Facebook downloader", "Twitter downloader", "Instagram downloader",
   ],
   openGraph: {
     title: "FSMVID | Free Social Media Video Downloader",
-    description: "Free Social Media Video Downloader website to download a free online videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
+    description: "FSMVID is a powerful and user-friendly free social media video downloader tool that allows you to download videos, images, and shorts from popular platforms including YouTube, TikTok, Facebook, Twitter, Instagram, and more. Download high-quality content from any social media platform with our fast, free online downloader tool - no registration required.",
     url: process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com",
     siteName: "FSMVID",
     images: [ { url: "/images/free-social-media-video-downloader.jpg", width: 1200, height: 630, alt: "FSMVID | Free Social Media Video Downloader", }, ],
@@ -347,7 +347,7 @@ export default async function Home() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
             "@context": "https://schema.org", "@type": "WebApplication", name: "FSMVID", applicationCategory: "UtilityApplication", operatingSystem: "Web",
             offers: { "@type": "Offer", },
-            description: "Free Social Media Video Downloader website to download videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
+            description: "FSMVID is a powerful and user-friendly free social media video downloader tool that allows you to download videos, images, and shorts from popular platforms including YouTube, TikTok, Facebook, Twitter, Instagram, and more. Download high-quality content from any social media platform with our fast, free online downloader tool - no registration required.",
         }),}}/>
       </div>
   )
