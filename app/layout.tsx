@@ -188,53 +188,24 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
           crossOrigin="anonymous"
           strategy="beforeInteractive"
-          data-ad-client="ca-pub-2918771713238080"
-          data-overlays="bottom"
         />
         
-        {/* Auto Ads Configuration */}
+        {/* Auto Ads Configuration - Only initialize once */}
         <Script
           id="auto-ads-config"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              window.adsbygoogle = window.adsbygoogle || [];
-              (adsbygoogle = window.adsbygoogle || []).push({
-                google_ad_client: "ca-pub-2918771713238080",
-                enable_page_level_ads: true,
-                overlays: {bottom: true}
-              });
-            `,
-          }}
-        />
-        
-        {/* Critical Ads Preloader - Ensures ads are ready ASAP */}
-        <Script
-          id="ads-preloader"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
               (function() {
-                // Initialize adsbygoogle array immediately
+                if (window.adsConfigInitialized) return;
+                window.adsConfigInitialized = true;
+                
                 window.adsbygoogle = window.adsbygoogle || [];
-                
-                // Function to ensure ads load
-                function ensureAdsLoad() {
-                  if (typeof window !== 'undefined' && window.adsbygoogle) {
-                    // Mark that we're ready for ads
-                    window.adsReady = true;
-                  }
-                }
-                
-                // Try immediately
-                ensureAdsLoad();
-                
-                // Also try on DOMContentLoaded
-                if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', ensureAdsLoad);
-                } else {
-                  ensureAdsLoad();
-                }
+                window.adsbygoogle.push({
+                  google_ad_client: "ca-pub-2918771713238080",
+                  enable_page_level_ads: true,
+                  overlays: {bottom: true}
+                });
               })();
             `,
           }}
