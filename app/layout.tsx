@@ -10,6 +10,8 @@ import { Toaster } from "@/components/ui/toaster"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Analytics } from "@/components/analytics"
+import AdBlockerDetector from "@/components/ad-blocker-detector"
+import AdOptimizer from "@/components/ad-optimizer"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -164,6 +166,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
+        {/* Preconnect to Google Ads domains for faster ad loading */}
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://adservice.google.com" />
+        <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+        <link rel="preconnect" href="https://www.google.com" />
+        <link rel="preconnect" href="https://www.gstatic.com" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://adservice.google.com" />
+        
         {/* Meta tags for Core Web Vitals optimization */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#2563EB" />
@@ -171,12 +182,63 @@ export default function RootLayout({
         {/* Galaksion domain verification */}
         <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
         
-        {/* Google AdSense */}
+        {/* Google AdSense - Load early with beforeInteractive strategy for critical ads */}
         <Script
+          id="adsbygoogle-init"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
           crossOrigin="anonymous"
+          strategy="beforeInteractive"
+          data-ad-client="ca-pub-2918771713238080"
+          data-overlays="bottom"
+        />
+        
+        {/* Auto Ads Configuration */}
+        <Script
+          id="auto-ads-config"
           strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.adsbygoogle = window.adsbygoogle || [];
+              (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-2918771713238080",
+                enable_page_level_ads: true,
+                overlays: {bottom: true}
+              });
+            `,
+          }}
+        />
+        
+        {/* Critical Ads Preloader - Ensures ads are ready ASAP */}
+        <Script
+          id="ads-preloader"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Initialize adsbygoogle array immediately
+                window.adsbygoogle = window.adsbygoogle || [];
+                
+                // Function to ensure ads load
+                function ensureAdsLoad() {
+                  if (typeof window !== 'undefined' && window.adsbygoogle) {
+                    // Mark that we're ready for ads
+                    window.adsReady = true;
+                  }
+                }
+                
+                // Try immediately
+                ensureAdsLoad();
+                
+                // Also try on DOMContentLoaded
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', ensureAdsLoad);
+                } else {
+                  ensureAdsLoad();
+                }
+              })();
+            `,
+          }}
         />
       </head>
       <body className={cn(
@@ -197,6 +259,8 @@ export default function RootLayout({
           </div>
           <Toaster />
           <Analytics />
+          <AdBlockerDetector />
+          <AdOptimizer />
         </ThemeProvider>
         <WebVitalsMonitoring />
       </body>

@@ -198,7 +198,7 @@ const nextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-XSS-Protection',
@@ -265,17 +265,19 @@ const nextConfig = {
                 https://va.vercel-scripts.com 
                 https://ep2.adtrafficquality.google
                 https://www.google.com
-                https://www.gstatic.com;
-              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-              font-src 'self' https://fonts.gstatic.com;
-              img-src 'self' data: https:;
-              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com;
-              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
+                https://www.gstatic.com
+                https://*.googlesyndication.com
+                https://*.doubleclick.net;
+              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://googleads.g.doubleclick.net https://www.gstatic.com;
+              font-src 'self' https://fonts.gstatic.com https://www.gstatic.com;
+              img-src 'self' data: https: blob:;
+              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
+              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net;
               media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob:;
-              object-src 'self';
+              object-src 'none';
               worker-src 'self' blob:;
               form-action 'self';
-              frame-ancestors 'none';
+              frame-ancestors 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
               base-uri 'self';
               upgrade-insecure-requests;
               block-all-mixed-content
