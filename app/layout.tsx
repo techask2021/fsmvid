@@ -10,7 +10,6 @@ import { Toaster } from "@/components/ui/toaster"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Analytics } from "@/components/analytics"
-import AdBlockerDetector from "@/components/ad-blocker-detector"
 import AdOptimizer from "@/components/ad-optimizer"
 
 const inter = Inter({ 
@@ -259,7 +258,6 @@ export default function RootLayout({
           </div>
           <Toaster />
           <Analytics />
-          <AdBlockerDetector />
           <AdOptimizer />
         </ThemeProvider>
         <WebVitalsMonitoring />
