@@ -23,13 +23,13 @@ const ContentLoading = () => <div className="h-40 w-full bg-muted/30 animate-pul
 export const metadata: Metadata = {
   title: "FSMVID | Free Social Media Video Downloader",
   description:
-    "Free Social Media Video Downloader website to download videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
+    "Free Social Media Video Downloader website to download a free online videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
   keywords: [
     "Free Social Media Video Downloader", "video downloader", "social media downloader", "YouTube downloader", "TikTok downloader", "Facebook downloader", "Twitter downloader", "Instagram downloader",
   ],
   openGraph: {
     title: "FSMVID | Free Social Media Video Downloader",
-    description: "Free Social Media Video Downloader website to download videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
+    description: "Free Social Media Video Downloader website to download a free online videos, images, and videos and shorts from YouTube, TikTok, Facebook, Twitter, Instagram, and more with our free online downloader tool.",
     url: process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com",
     siteName: "FSMVID",
     images: [ { url: "/images/free-social-media-video-downloader.jpg", width: 1200, height: 630, alt: "FSMVID | Free Social Media Video Downloader", }, ],
@@ -70,7 +70,7 @@ export default async function Home() {
           </h1>
           <p className="text-lg md:text-xl text-blue-100 mb-6 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
             Download videos, images, and shorts from{" "}
-            <span className="font-semibold text-cyan-300">YouTube, TikTok, Facebook, Instagram, Twitter</span>, and 15+ other platforms.<br />
+            <span className="font-semibold text-cyan-300">YouTube, TikTok, Facebook, Instagram, Twitter</span>, and 30+ other platforms.<br />
             <span className="text-base text-blue-200">Fast, secure, and completely free.</span>
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4 animate-fade-in-up delay-800">
