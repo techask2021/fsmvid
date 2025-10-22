@@ -44,6 +44,9 @@ export default function RelatedTools({ currentPlatform, limit = 6 }: RelatedTool
     "weibo",
     "xiaohongshu",
     "zingmp3",
+    "bilibili",
+    "deezer",
+    "castbox",
   ]
 
   // Filter out the current platform and get random related platforms

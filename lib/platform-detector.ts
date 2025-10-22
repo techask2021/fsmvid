@@ -31,6 +31,9 @@ export type Platform =
   | "zingmp3"
   | "kuaishou"
   | "bsky" // Bluesky
+  | "bilibili"
+  | "deezer"
+  | "castbox"
   | null
 
 export function detectPlatform(url: string): Platform {
@@ -80,6 +83,9 @@ export function detectPlatform(url: string): Platform {
     if (hostname.includes("zingmp3.vn")) return "zingmp3"
     if (hostname.includes("bsky.app")) return "bsky"
     if (hostname.includes("kuaishou.com") || hostname.includes("kwai.com")) return "kuaishou"
+    if (hostname.includes("bilibili.com") || hostname.includes("b23.tv")) return "bilibili"
+    if (hostname.includes("deezer.com")) return "deezer"
+    if (hostname.includes("castbox.fm")) return "castbox"
 
     return null
   } catch (error) {
@@ -153,6 +159,12 @@ export function getPlatformName(platform: Platform): string {
       return "Bluesky"
     case "kuaishou":
       return "Kuaishou"
+    case "bilibili":
+      return "Bilibili"
+    case "deezer":
+      return "Deezer"
+    case "castbox":
+      return "Castbox"
     default:
       return ""
   }
@@ -224,6 +236,12 @@ export function getUrlSlug(platform: Platform): string {
       return "bluesky-video-saver"
     case "kuaishou":
       return "kuaishou-video-saver"
+    case "bilibili":
+      return "bilibili-video-saver"
+    case "deezer":
+      return "deezer-music-saver"
+    case "castbox":
+      return "castbox-podcast-saver"
     default:
       return ""
   }
@@ -295,6 +313,12 @@ export function getPlatformFromSlug(slug: string): Platform {
       return "bsky"
     case "kuaishou-video-saver":
       return "kuaishou"
+    case "bilibili-video-saver":
+      return "bilibili"
+    case "deezer-music-saver":
+      return "deezer"
+    case "castbox-podcast-saver":
+      return "castbox"
     default:
       return null
   }

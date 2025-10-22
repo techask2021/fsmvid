@@ -116,6 +116,9 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       weibo: "https://weibo.com/tv/show/...",
       xiaohongshu: "https://www.xiaohongshu.com/explore/...",
       zingmp3: "https://zingmp3.vn/bai-hat/...",
+      bilibili: "https://www.bilibili.com/video/...",
+      deezer: "https://www.deezer.com/track/...",
+      castbox: "https://castbox.fm/episode/id...",
       universal: "Enter any video URL...",
     }
     return placeholders[platform] || `Enter ${platform} URL...`
@@ -138,6 +141,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       return;
     }
 
+    // Enhanced URL extraction - handles text before URL (including Chinese characters in brackets)
     let extractedUrl = currentInput; 
     const httpIndex = currentInput.toLowerCase().indexOf('http://');
     const httpsIndex = currentInput.toLowerCase().indexOf('https://');
@@ -150,11 +154,33 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
     }
 
     if (startIndex !== -1) {
+      // Extract URL starting from http(s)://
       let potentialUrl = currentInput.substring(startIndex);
-      const spaceIndex = potentialUrl.search(/\s/);
-      if (spaceIndex !== -1) {
-        potentialUrl = potentialUrl.substring(0, spaceIndex);
+      
+      // Stop at whitespace, newline, or common text delimiters
+      const stopPatterns = [
+        /\s/,           // Whitespace
+        /[\n\r]/,       // Newlines
+        /[【】]/,       // Chinese brackets (in case they appear after URL)
+        /[\[\]]/,       // Square brackets
+        /[<>]/,         // Angle brackets
+      ];
+      
+      let earliestStop = potentialUrl.length;
+      stopPatterns.forEach(pattern => {
+        const match = potentialUrl.search(pattern);
+        if (match !== -1 && match < earliestStop) {
+          earliestStop = match;
+        }
+      });
+      
+      if (earliestStop < potentialUrl.length) {
+        potentialUrl = potentialUrl.substring(0, earliestStop);
       }
+      
+      // Clean up any trailing characters that aren't part of URLs
+      potentialUrl = potentialUrl.replace(/[，。！？；：、,\s]+$/, '').trim();
+      
       extractedUrl = potentialUrl;
       setUrl(extractedUrl); 
     }

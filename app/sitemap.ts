@@ -38,6 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "zingmp3",
     "bsky",
     "kuaishou",
+    "bilibili",
+    "deezer",
+    "castbox",
   ] as Platform[]
 
   const routes = platforms.map((platform) => ({

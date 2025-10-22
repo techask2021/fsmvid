@@ -38,7 +38,10 @@ const initialPlatformsData = [
   { name: "Xiaohongshu", icon: "/icons/xiaohongshu.svg", slug: getUrlSlug("xiaohongshu"), description: "Download Xiaohongshu content (小红书)", popular: false },
   { name: "Zing MP3", icon: "/icons/zingmp3.svg", slug: getUrlSlug("zingmp3"), description: "Download Zing MP3 songs", popular: false },
   { name: "Kuaishou", icon: "/icons/kuaishou.svg", slug: getUrlSlug("kuaishou"), description: "Download Kuaishou / Kwai videos", popular: false },
-  { name: "Bluesky", icon: "/icons/bsky.svg", slug: getUrlSlug("bsky"), description: "Download Bluesky content", popular: false }
+  { name: "Bluesky", icon: "/icons/bsky.svg", slug: getUrlSlug("bsky"), description: "Download Bluesky content", popular: false },
+  { name: "Bilibili", icon: "/icons/bilibili.svg", slug: getUrlSlug("bilibili"), description: "Download Bilibili videos (哔哩哔哩)", popular: false },
+  { name: "Deezer", icon: "/icons/deezer.svg", slug: getUrlSlug("deezer"), description: "Download Deezer music & playlists", popular: false },
+  { name: "Castbox", icon: "/icons/castbox.svg", slug: getUrlSlug("castbox"), description: "Download Castbox podcasts", popular: false }
 ];
 
 const colorStyles = [

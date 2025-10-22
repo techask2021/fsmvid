@@ -213,3 +213,51 @@ export function RumbleIcon({ className, size = 24, ...props }: IconProps) {
     </div>
   )
 }
+
+export function BilibiliIcon({ className, size = 24, ...props }: IconProps) {
+  return (
+    <div className={className} {...props}>
+      <Image 
+        src="/icons/bilibili.svg" 
+        alt="Bilibili" 
+        width={size} 
+        height={size} 
+        className="w-full h-full" 
+        loading="lazy"
+        sizes={`${size}px`}
+      />
+    </div>
+  )
+}
+
+export function DeezerIcon({ className, size = 24, ...props }: IconProps) {
+  return (
+    <div className={className} {...props}>
+      <Image 
+        src="/icons/deezer.svg" 
+        alt="Deezer" 
+        width={size} 
+        height={size} 
+        className="w-full h-full" 
+        loading="lazy"
+        sizes={`${size}px`}
+      />
+    </div>
+  )
+}
+
+export function CastboxIcon({ className, size = 24, ...props }: IconProps) {
+  return (
+    <div className={className} {...props}>
+      <Image 
+        src="/icons/castbox.svg" 
+        alt="Castbox" 
+        width={size} 
+        height={size} 
+        className="w-full h-full" 
+        loading="lazy"
+        sizes={`${size}px`}
+      />
+    </div>
+  )
+}
