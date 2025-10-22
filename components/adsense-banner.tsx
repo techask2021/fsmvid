@@ -11,6 +11,19 @@ declare global {
 export default function AdSenseBanner() {
   const adRef = useRef<HTMLModElement>(null)
   const hasInitialized = useRef(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    // Detect mobile on mount
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     // Prevent double initialization in React Strict Mode
@@ -60,17 +73,19 @@ export default function AdSenseBanner() {
 
   return (
     <div 
-      className="w-full flex justify-center mt-1 mb-[23px]" 
+      className="w-full flex justify-center mt-1 mb-4" 
       style={{ minHeight: '250px' }}
     >
       <ins
         ref={adRef}
         className="adsbygoogle"
-        style={{ display: 'block', width: '880px', height: '250px' }}
+        style={{ 
+          display: 'inline-block', 
+          width: isMobile ? '300px' : '880px', 
+          height: '250px' 
+        }}
         data-ad-client="ca-pub-2918771713238080"
-        data-ad-slot="2669514106"
-        data-ad-format="auto"
-        data-full-width-responsive="false"
+        data-ad-slot={isMobile ? "9471969443" : "2669514106"}
       />
     </div>
   )
