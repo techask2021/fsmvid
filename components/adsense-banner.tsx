@@ -10,74 +10,53 @@ declare global {
 
 export default function AdSenseBanner() {
   const adRef = useRef<HTMLModElement>(null)
-  const [isAdLoaded, setIsAdLoaded] = useState(false)
-  const [retryCount, setRetryCount] = useState(0)
-  const maxRetries = 3
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
+    // Prevent double initialization in React Strict Mode
+    if (hasInitialized.current) return
+    
     const loadAd = () => {
       try {
         // Ensure the ad container exists
         if (!adRef.current) {
-          console.warn('AdSense: Ad container not found')
+          return
+        }
+
+        // Check if ad already has status (already initialized)
+        if (adRef.current.getAttribute('data-adsbygoogle-status')) {
           return
         }
 
         // Check if adsbygoogle script is loaded
         if (typeof window === 'undefined' || !window.adsbygoogle) {
-          console.warn('AdSense: Script not loaded yet, retrying...')
-          
-          if (retryCount < maxRetries) {
-            setTimeout(() => {
-              setRetryCount(prev => prev + 1)
-            }, 1000)
-          }
+          // Retry after 100ms if script not loaded yet
+          setTimeout(loadAd, 100)
           return
         }
 
-        // Check if ad is already pushed (avoid duplicate pushes)
-        if (isAdLoaded) {
-          return
-        }
+        // Mark as initialized
+        hasInitialized.current = true
 
         // Push ad to AdSense
-        try {
-          window.adsbygoogle = window.adsbygoogle || []
-          window.adsbygoogle.push({})
-          setIsAdLoaded(true)
-          console.log('AdSense: Ad loaded successfully')
-        } catch (pushError) {
-          console.error('AdSense push error:', pushError)
-          
-          // Retry mechanism
-          if (retryCount < maxRetries) {
-            setTimeout(() => {
-              setRetryCount(prev => prev + 1)
-            }, 2000)
-          }
-        }
-      } catch (err) {
-        console.error('AdSense error:', err)
+        window.adsbygoogle = window.adsbygoogle || []
+        window.adsbygoogle.push({})
         
-        // Retry mechanism
-        if (retryCount < maxRetries) {
-          setTimeout(() => {
-            setRetryCount(prev => prev + 1)
-          }, 2000)
+      } catch (err) {
+        // Silently handle errors in production
+        if (process.env.NODE_ENV === 'development') {
+          console.error('AdSense error:', err)
         }
       }
     }
 
-    // Immediate load attempt
-    loadAd()
-
-    // Also try after a short delay to ensure script is loaded
-    const timeoutId = setTimeout(loadAd, 500)
+    // Single load attempt after a short delay
+    const timeoutId = setTimeout(loadAd, 100)
 
     return () => {
       clearTimeout(timeoutId)
     }
-  }, [retryCount, isAdLoaded])
+  }, [])
 
   return (
     <div 

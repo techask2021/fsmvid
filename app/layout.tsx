@@ -181,14 +181,11 @@ export default function RootLayout({
         {/* Galaksion domain verification */}
         <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
         
-        {/* Google AdSense - Load early with beforeInteractive strategy for critical ads */}
-        <Script
-          id="adsbygoogle-init"
+        {/* Google AdSense - Simple async loading */}
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
           crossOrigin="anonymous"
-          strategy="lazyOnload"
-          data-ad-client="ca-pub-2918771713238080"
         />
       </head>
       <body className={cn(
