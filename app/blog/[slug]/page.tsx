@@ -32,6 +32,9 @@ type Props = {
   }
 }
 
+// Revalidate this page every 60 seconds (ISR)
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const post = await getPostBySlug(params.slug).catch(() => null)

@@ -8,7 +8,9 @@ export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder-project-id',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2025-04-14',
-  useCdn: process.env.NODE_ENV === 'production',
+  useCdn: false, // Disable CDN to always get fresh content
+  token: process.env.SANITY_API_TOKEN, // Optional: for draft content
+  perspective: 'published', // Only fetch published documents
 });
 
 // Helper function to generate full URL for a blog post

@@ -30,6 +30,9 @@ export const metadata: Metadata = {
   description: "Read our latest articles about video downloading tips, social media trends, and tutorials.",
 }
 
+// Revalidate this page every 60 seconds (ISR)
+export const revalidate = 60;
+
 export default async function BlogPage({
   searchParams,
 }: {
