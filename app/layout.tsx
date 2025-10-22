@@ -187,28 +187,8 @@ export default function RootLayout({
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
-        />
-        
-        {/* Auto Ads Configuration - Only initialize once */}
-        <Script
-          id="auto-ads-config"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (window.adsConfigInitialized) return;
-                window.adsConfigInitialized = true;
-                
-                window.adsbygoogle = window.adsbygoogle || [];
-                window.adsbygoogle.push({
-                  google_ad_client: "ca-pub-2918771713238080",
-                  enable_page_level_ads: true,
-                  overlays: {bottom: true}
-                });
-              })();
-            `,
-          }}
+          strategy="lazyOnload"
+          data-ad-client="ca-pub-2918771713238080"
         />
       </head>
       <body className={cn(
