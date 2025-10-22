@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     // Use the platform passed from the client, as 'url' is now a direct media link
     // and detectPlatform(directMediaUrl) would likely fail or be incorrect.
     const platformToUse = originalPlatform || detectPlatform(url) || ''; // Fallback if not provided, though it should be
+    const isTikTok = platformToUse === 'tiktok' || url.includes('tiktok.com') || url.includes('tiktokcdn.com');
     const isDailymotion = platformToUse === 'dailymotion';
     const isWeibo = platformToUse === 'weibo' || url.includes('weibo.com') || url.includes('weibocdn.com') || url.includes('miaopai.com');
     const isBluesky = platformToUse === 'bsky';
@@ -44,7 +45,14 @@ export async function POST(request: NextRequest) {
     };
     
     // Add platform-specific headers
-    if (isDailymotion) {
+    if (isTikTok) {
+      headers['Referer'] = 'https://www.tiktok.com/';
+      headers['Origin'] = 'https://www.tiktok.com';
+      headers['Accept'] = 'video/mp4,video/*;q=0.9,*/*;q=0.8';
+      headers['Sec-Fetch-Dest'] = 'video';
+      headers['Sec-Fetch-Mode'] = 'no-cors';
+      headers['Sec-Fetch-Site'] = 'cross-site';
+    } else if (isDailymotion) {
       headers['Referer'] = 'https://www.dailymotion.com/';
       headers['Origin'] = 'https://www.dailymotion.com';
     } else if (isWeibo) {
@@ -149,8 +157,10 @@ export async function POST(request: NextRequest) {
         contentType = 'video/webm';
       }
       
-      // Set headers for download
-      response.headers.set('Content-Disposition', `attachment; filename="${filename}"`)
+      // Set headers for download with proper encoding for non-ASCII characters
+      // Use RFC 5987 encoding for filenames with special characters
+      const encodedFilename = encodeURIComponent(filename);
+      response.headers.set('Content-Disposition', `attachment; filename="${filename.replace(/[^\x00-\x7F]/g, '_')}"; filename*=UTF-8''${encodedFilename}`)
       response.headers.set('Content-Type', contentType)
       const contentLength = fileResponse.headers.get('Content-Length')
       if (contentLength) {

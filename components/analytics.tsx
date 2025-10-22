@@ -7,11 +7,17 @@ import Script from "next/script"
 // Google Analytics Measurement ID
 const GA_MEASUREMENT_ID = "G-0YWLSNQ3NK";
 
+// Only enable analytics in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 function AnalyticsContent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   useEffect(() => {
+    // Only track in production
+    if (!isProduction) return;
+    
     // Track page view when path changes
     if (pathname && window.gtag) {
       const url = searchParams?.toString() ? `${pathname}?${searchParams.toString()}` : pathname
@@ -25,6 +31,12 @@ function AnalyticsContent() {
 }
 
 export function Analytics() {
+  // Don't render analytics in development
+  if (!isProduction) {
+    console.log('[Analytics] Disabled in development environment');
+    return null;
+  }
+
   return (
     <>
       <Suspense fallback={null}>

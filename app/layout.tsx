@@ -46,6 +46,13 @@ export const metadata: Metadata = {
 
 // Optimized Web Vitals reporting function
 const WebVitalsMonitoring = () => {
+  // Only enable in production
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (!isProduction) {
+    return null;
+  }
+
   return (
     <Script id="web-vitals" strategy="worker"> {/* Changed to worker strategy */}
       {`

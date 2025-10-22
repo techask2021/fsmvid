@@ -236,7 +236,9 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
               if (platform === 'imgur') return (format.toLowerCase() === 'mp4' || format.toLowerCase() === 'webm' || (media.mimeType && media.mimeType.includes('video')));
               return !!(media.audioQuality || (media.mimeType && media.mimeType.includes('mp4a')) || (media.codecs && media.codecs.includes('mp4a')) || media.formatId === 18 || quality.toLowerCase().includes('audio') || format.toLowerCase() === 'mp3' || format.toLowerCase() === 'm4a');
             })();
-            if (platform === 'tiktok') {
+            // Check if platform is TikTok or if universal mode detected TikTok
+            const isTikTokVideo = platform === 'tiktok' || (platform === 'universal' && detectedPlatform === 'tiktok');
+            if (isTikTokVideo) {
               if (quality.includes('no_watermark') || quality.includes('hd_no_watermark')) { quality = quality.includes('hd') ? 'HD' : 'SD'; media.noWatermark = true; }
               else if (quality.includes('watermark')) { quality = quality.includes('hd') ? 'HD with Watermark' : 'SD with Watermark'; media.noWatermark = false; }
               if (format.toLowerCase() === 'mp3' || format.toLowerCase() === 'm4a') { quality = 'Audio'; media.noWatermark = undefined; }
@@ -252,7 +254,9 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         })
       }
 
-      if (platform === 'tiktok') {
+      // Check if platform is TikTok or if universal mode detected TikTok
+      const isTikTokVideo = platform === 'tiktok' || (platform === 'universal' && detectedPlatform === 'tiktok');
+      if (isTikTokVideo) {
         const qualityMap = new Map();
         options.forEach(option => {
           const qualityKey = option.quality;
@@ -313,15 +317,24 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
   const handleDownload = async () => {
     if (downloadUrl) {
+      // Prepare variables outside try-catch for use in error handling
+      const detectedPlatform = detectPlatform(url);
+      const platformName = platform === 'universal' ? (detectedPlatform || 'download') : platform;
+      
+      // Sanitize video title for use in filename
+      const sanitizedTitle = videoTitle
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g, '') // Remove invalid filename characters
+        .replace(/\s+/g, '_') // Replace spaces with underscores
+        .trim()
+        .substring(0, 100); // Limit length to 100 characters
+      
+      // Create filename with title or fallback to platform_timestamp
+      const baseFilename = sanitizedTitle || `${platformName}_${Date.now()}`;
+      let filename = `${baseFilename}.${selectedFormat?.toLowerCase() || 'mp4'}`;
+      
       try {
         setDownloadLoading(true)
         toast.info("Starting download...", { duration: 3000 })
-        const detectedPlatform = detectPlatform(url);
-        
-        // Generate unique filename with timestamp to prevent overwriting
-        const platformName = platform === 'universal' ? (detectedPlatform || 'download') : platform;
-        const timestamp = Date.now();
-        let filename = `${platformName}_${timestamp}.${selectedFormat?.toLowerCase() || 'mp4'}`;
         
         // We're working on improving YouTube direct downloads
         // For now, users can use the direct download link from the "Direct Link" tab
@@ -331,10 +344,10 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
           toast.info("Downloading m3u8 streaming file...", { duration: 8000 });
-          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: `${platform === 'universal' ? detectedPlatform : platform}_${Date.now()}` }), });
+          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_${Date.now()}` }), });
           if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || 'Download failed'); }
           const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a'); link.href = blobUrl; link.download = `${platform === 'universal' ? detectedPlatform : platform}_stream_${Date.now()}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
+          const link = document.createElement('a'); link.href = blobUrl; link.download = `${sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_stream_${Date.now()}`}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
           toast.success("Download successful! Use VLC Media Player to open.");
           setDownloadLoading(false); return;
         } 
@@ -441,18 +454,38 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         toast.success("Download successful!")
       } catch (error) {
         console.error('Download error:', error); 
-        toast.error("Download failed. Using direct download method...");
-        // Instead of opening in new tab, force download using direct link with download attribute
-        const detectedPlatform = detectPlatform(url);
-        const platformName = platform === 'universal' ? (detectedPlatform || 'download') : platform;
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = `${platformName}_${Date.now()}.${selectedFormat?.toLowerCase() || 'mp4'}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        toast.error("Download failed. Trying alternative method...");
+        // Try direct download without opening new tab
+        try {
+          const response = await fetch(downloadUrl, {
+            mode: 'cors',
+            credentials: 'omit'
+          });
+          if (response.ok) {
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `${sanitizedTitle || `${platformName}_${Date.now()}`}.${selectedFormat?.toLowerCase() || 'mp4'}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+            toast.success("Download successful!");
+          } else {
+            throw new Error('Direct download failed');
+          }
+        } catch (directError) {
+          console.error('Direct download also failed:', directError);
+          // Last resort: force download attribute (may open in new tab for some browsers/URLs)
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = `${sanitizedTitle || `${platformName}_${Date.now()}`}.${selectedFormat?.toLowerCase() || 'mp4'}`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          toast.info("If download didn't start, right-click the video and select 'Save video as...'");
+        }
       } finally {
         setDownloadLoading(false)
       }
@@ -600,7 +633,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                                     {selectedQuality}
                                     {selectedFormat && selectedQuality && (
                                       <>
-                                        {platform === 'tiktok' 
+                                        {(platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok'))
                                           ? (selectedFormat.toLowerCase() === 'mp3' || selectedFormat.toLowerCase() === 'm4a'
                                               ? "" 
                                               : (downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === selectedQuality)?.noWatermark === false ? " • With Watermark" : " • No Watermark"))
@@ -623,7 +656,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                               const option = downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === quality);
                               const sizeInfo = option?.size && option.size !== "Unknown" ? ` (${option.size})` : "";
                               let extraInfo = "";
-                              if (platform === 'tiktok') {
+                              if (platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok')) {
                                 if (option?.format.toLowerCase() === 'mp3' || option?.format.toLowerCase() === 'm4a') extraInfo = "";
                                 else extraInfo = option?.noWatermark === false ? " • With Watermark" : " • No Watermark";
                               } else if (platform === 'youtube' || (platform === 'universal' && detectPlatform(url) === 'youtube')) {
