@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 declare global {
   interface Window {
@@ -11,19 +11,6 @@ declare global {
 export default function AdSenseBanner() {
   const adRef = useRef<HTMLModElement>(null)
   const hasInitialized = useRef(false)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    // Detect mobile on mount
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   useEffect(() => {
     // Prevent double initialization in React Strict Mode
@@ -38,6 +25,14 @@ export default function AdSenseBanner() {
 
         // Check if ad already has status (already initialized)
         if (adRef.current.getAttribute('data-adsbygoogle-status')) {
+          return
+        }
+
+        // Ensure the container has proper width before initializing
+        const containerWidth = adRef.current.parentElement?.offsetWidth || 0
+        if (containerWidth === 0) {
+          // Retry if container doesn't have width yet
+          setTimeout(loadAd, 100)
           return
         }
 
@@ -63,8 +58,8 @@ export default function AdSenseBanner() {
       }
     }
 
-    // Single load attempt after a short delay
-    const timeoutId = setTimeout(loadAd, 100)
+    // Longer delay to ensure DOM is fully laid out
+    const timeoutId = setTimeout(loadAd, 300)
 
     return () => {
       clearTimeout(timeoutId)
@@ -72,20 +67,14 @@ export default function AdSenseBanner() {
   }, [])
 
   return (
-    <div 
-      className="w-full flex justify-center mt-1 mb-4" 
-      style={{ minHeight: '250px' }}
-    >
+    <div className="w-full mt-1 mb-4">
       <ins
         ref={adRef}
         className="adsbygoogle"
-        style={{ 
-          display: 'inline-block', 
-          width: isMobile ? '300px' : '880px', 
-          height: '250px' 
-        }}
+        style={{ display: 'block' }}
         data-ad-client="ca-pub-2918771713238080"
-        data-ad-slot={isMobile ? "9471969443" : "2669514106"}
+        data-ad-slot="2669514106"
+        data-ad-format="auto"
       />
     </div>
   )
