@@ -26,8 +26,24 @@ const PostsLoadingFallback = () => (
 )
 
 export const metadata: Metadata = {
-  title: "Blog | FSMVID",
-  description: "Read our latest articles about video downloading tips, social media trends, and tutorials.",
+  title: "Video Downloading Tips, Tutorials, Reviews | FSMVID Blog",
+  description: "FSMVID Blog – Tips, Tutorials & Reviews for Downloading Videos from YouTube, TikTok, Instagram, and 30+ Social Media Sites. Learn how to save videos online, discover expert guides, and stay updated with the latest trends in social video content.",
+  openGraph: {
+    title: "Video Downloading Tips, Tutorials, Reviews | FSMVID Blog",
+    description: "FSMVID Blog – Tips, Tutorials & Reviews for Downloading Videos from YouTube, TikTok, Instagram, and 30+ Social Media Sites. Learn how to save videos online, discover expert guides, and stay updated with the latest trends in social video content.",
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog`,
+    siteName: "FSMVID",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Video Downloading Tips, Tutorials, Reviews | FSMVID Blog",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 }
 
 // Revalidate this page every 60 seconds (ISR)
