@@ -261,3 +261,19 @@ export function CastboxIcon({ className, size = 24, ...props }: IconProps) {
     </div>
   )
 }
+
+export function TruthSocialIcon({ className, size = 24, ...props }: IconProps) {
+  return (
+    <div className={className} {...props}>
+      <Image 
+        src="/icons/truth-social.svg" 
+        alt="Truth Social" 
+        width={size} 
+        height={size} 
+        className="w-full h-full" 
+        loading="lazy"
+        sizes={`${size}px`}
+      />
+    </div>
+  )
+}

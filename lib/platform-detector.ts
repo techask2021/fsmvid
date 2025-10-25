@@ -34,6 +34,7 @@ export type Platform =
   | "bilibili"
   | "deezer"
   | "castbox"
+  | "truthsocial"
   | null
 
 export function detectPlatform(url: string): Platform {
@@ -86,6 +87,7 @@ export function detectPlatform(url: string): Platform {
     if (hostname.includes("bilibili.com") || hostname.includes("b23.tv")) return "bilibili"
     if (hostname.includes("deezer.com")) return "deezer"
     if (hostname.includes("castbox.fm")) return "castbox"
+    if (hostname.includes("truthsocial.com")) return "truthsocial"
 
     return null
   } catch (error) {
@@ -165,6 +167,8 @@ export function getPlatformName(platform: Platform): string {
       return "Deezer"
     case "castbox":
       return "Castbox"
+    case "truthsocial":
+      return "Truth Social"
     default:
       return ""
   }
@@ -242,6 +246,8 @@ export function getUrlSlug(platform: Platform): string {
       return "deezer-music-saver"
     case "castbox":
       return "castbox-podcast-saver"
+    case "truthsocial":
+      return "truthsocial-video-saver"
     default:
       return ""
   }
@@ -319,6 +325,8 @@ export function getPlatformFromSlug(slug: string): Platform {
       return "deezer"
     case "castbox-podcast-saver":
       return "castbox"
+    case "truthsocial-video-saver":
+      return "truthsocial"
     default:
       return null
   }

@@ -41,7 +41,8 @@ const initialPlatformsData = [
   { name: "Bluesky", icon: "/icons/bsky.svg", slug: getUrlSlug("bsky"), description: "Download Bluesky content", popular: false },
   { name: "Bilibili", icon: "/icons/bilibili.svg", slug: getUrlSlug("bilibili"), description: "Download Bilibili videos (哔哩哔哩)", popular: false },
   { name: "Deezer", icon: "/icons/deezer.svg", slug: getUrlSlug("deezer"), description: "Download Deezer music & playlists", popular: false },
-  { name: "Castbox", icon: "/icons/castbox.svg", slug: getUrlSlug("castbox"), description: "Download Castbox podcasts", popular: false }
+  { name: "Castbox", icon: "/icons/castbox.svg", slug: getUrlSlug("castbox"), description: "Download Castbox podcasts", popular: false },
+  { name: "Truth Social", icon: "/icons/truth-social.svg", slug: getUrlSlug("truthsocial"), description: "Download Truth Social videos", popular: false }
 ];
 
 const colorStyles = [

@@ -17,6 +17,7 @@ const allPlatforms: Platform[] = [
   "linkedin",
   "imgur",
   "rumble",
+  "truthsocial",
   "9gag",
   "bitchute",
   "bsky",

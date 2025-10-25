@@ -98,6 +98,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       imgur: "https://imgur.com/gallery/...",
       rumble: "https://rumble.com/...",
       "9gag": "https://9gag.com/gag/...",
+      truthsocial: "https://truthsocial.com/@username/postid",
       bitchute: "https://www.bitchute.com/video/...",
       bsky: "https://bsky.app/profile/user.bsky.social/post/...",
       capcut: "https://www.capcut.com/template-detail/...",
@@ -212,6 +213,79 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         }
       }
 
+      // Special handling for Truth Social - uses client-side fetch then proxy download
+      if (detectedPlatform === 'truthsocial' || platform === 'truthsocial') {
+        const response = await fetch("/api/truthsocial-info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: finalUrlToProcess }),
+        })
+
+        const data: any = await response.json()
+
+        if (!response.ok || data.status === "error") {
+          setError(data.message || "Failed to fetch Truth Social video information")
+          setLoading(false)
+          return
+        }
+
+        // Truth Social returns apiUrl for client-side fetching
+        if (data.status === "client_fetch" && data.apiUrl) {
+          try {
+            // Fetch directly from Truth Social API (browser allows CORS)
+            const truthResponse = await fetch(data.apiUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              }
+            })
+
+            if (!truthResponse.ok) {
+              setError(`Failed to fetch from Truth Social (${truthResponse.status})`)
+              setLoading(false)
+              return
+            }
+
+            const postData = await truthResponse.json()
+            
+            // Extract video from media_attachments
+            const mediaAttachments = postData.media_attachments || []
+            const videoAttachment = mediaAttachments.find((media: any) => media.type === 'video')
+
+            if (!videoAttachment || !videoAttachment.url) {
+              setError("No video found in this Truth Social post")
+              setLoading(false)
+              return
+            }
+
+            // Set video info
+            setVideoTitle(postData.account?.display_name ? `${postData.account.display_name} - Truth Social` : "Truth Social Video")
+            setThumbnail(videoAttachment.preview_url || postData.account?.avatar || "")
+            setDownloadOptions([
+              {
+                url: videoAttachment.url,
+                quality: "Original",
+                format: "mp4",
+                size: undefined,
+                hasAudio: true,
+              }
+            ])
+            setLoading(false)
+            return
+
+          } catch (fetchError: any) {
+            setError(`Failed to fetch video information: ${fetchError.message}`)
+            setLoading(false)
+            return
+          }
+        }
+
+        setError("Unexpected response from Truth Social API")
+        setLoading(false)
+        return
+      }
+
+      // All other platforms use ZM API proxy
       const response = await fetch("/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json", },
@@ -366,6 +440,39 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         // For now, users can use the direct download link from the "Direct Link" tab
         // Store the video URL in session storage for reference
         sessionStorage.setItem('lastDownloadUrl', downloadUrl);
+        
+        // Special handling for Truth Social - uses dedicated download endpoint with proxy pool
+        if (detectedPlatform === 'truthsocial' || platform === 'truthsocial') {
+          toast.info("Downloading Truth Social video via secure proxy...", { duration: 4000 });
+          
+          const response = await fetch('/api/truthsocial-download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              url: downloadUrl, 
+              filename: filename 
+            }),
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Truth Social download failed');
+          }
+          
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+          
+          toast.success("Truth Social video downloaded successfully!");
+          setDownloadLoading(false);
+          return;
+        }
         
         if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');

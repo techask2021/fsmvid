@@ -106,11 +106,19 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Fetch the file from the URL
-    const fileResponse = await fetch(url, {
-      headers,
-      redirect: 'follow' // Follow redirects which are common with streaming services
-    })
+    // Fetch the file from the URL with increased timeout for slow CDNs
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+    
+    try {
+      var fileResponse = await fetch(url, {
+        headers,
+        redirect: 'follow', // Follow redirects which are common with streaming services
+        signal: controller.signal
+      })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     if (!fileResponse.ok) {
       console.error(`Download failed: ${fileResponse.status} ${fileResponse.statusText}`);

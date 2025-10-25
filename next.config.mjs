@@ -270,10 +270,10 @@ const nextConfig = {
                 https://*.doubleclick.net;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://googleads.g.doubleclick.net https://www.gstatic.com;
               font-src 'self' https://fonts.gstatic.com https://www.gstatic.com;
-              img-src 'self' data: https: blob:;
-              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
-              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net;
-              media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob:;
+              img-src 'self' data: https: blob: https://truthsocial.com https://*.truthsocial.com;
+              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://truthsocial.com https://*.truthsocial.com https://ephemeral-proxies.p.rapidapi.com;
+              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net https://truthsocial.com;
+              media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob: https://truthsocial.com https://*.truthsocial.com;
               object-src 'none';
               worker-src 'self' blob:;
               form-action 'self';

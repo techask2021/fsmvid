@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "linkedin",
     "imgur",
     "rumble",
+    "truthsocial",
     "9gag",
     "bitchute",
     "capcut",
