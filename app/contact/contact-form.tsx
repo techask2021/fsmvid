@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "@/components/ui/card"
 import { sendEmail, FormState } from "./actions"
 import { RecaptchaButton } from "@/components/recaptcha"
+import { trackLeadGeneration } from "@/components/analytics"
 
 const initialState: FormState = {
   message: "",
@@ -21,6 +22,24 @@ export default function ContactForm() {
         title: "Success!",
         description: state.message,
       })
+      
+      // Track lead generation events for business inquiries
+      const formElement = formRef.current
+      if (formElement) {
+        const subjectField = formElement.querySelector('select[name="subject"]') as HTMLSelectElement
+        const subject = subjectField?.value
+        
+        // Track generate_lead event for business-related contacts
+        if (subject && ['guest-post', 'ad-placement', 'partnership'].includes(subject)) {
+          trackLeadGeneration(subject, {
+            form_location: 'contact_page',
+            subject_name: subject === 'guest-post' ? 'Guest Post Inquiry' : 
+                          subject === 'ad-placement' ? 'Ad Placement' : 
+                          'Business Partnership'
+          })
+        }
+      }
+      
       formRef.current?.reset()
     } else if (state.message && state.errors) {
       toast({
@@ -80,6 +99,9 @@ export default function ContactForm() {
               required
             >
               <option value="">Select a subject</option>
+              <option value="guest-post">🎯 Guest Post Inquiry</option>
+              <option value="ad-placement">📢 Ad Placement</option>
+              <option value="partnership">🤝 Business Partnership</option>
               <option value="general">General Inquiry</option>
               <option value="support">Technical Support</option>
               <option value="feedback">Feedback</option>

@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { HelpCircle, Zap, Shield, Code, MessageCircle, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions | FSMVID",
@@ -11,17 +15,58 @@ export const metadata: Metadata = {
 
 export default function FAQPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Find answers to common questions about our Free Social Media Video Downloader tool and how to use it effectively.
-        </p>
-      </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 py-16 md:py-20 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-300 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container max-w-5xl mx-auto px-4 relative z-10 text-center">
+          <Badge className="mb-4 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-2 text-sm font-semibold">
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Help Center
+          </Badge>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
+            Find quick answers to common questions about our video downloader tool.
+            <br />
+            <span className="text-lg">Everything you need to know in one place.</span>
+          </p>
+        </div>
+      </section>
+
+      {/* Quick Links Section */}
+      <section className="bg-gray-50 dark:bg-slate-900 py-8">
+        <div className="container max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { icon: Zap, title: "General", description: "Basic questions about our service", color: "from-blue-500 to-cyan-600" },
+              { icon: Code, title: "Technical", description: "How our tool works", color: "from-purple-500 to-pink-600" },
+              { icon: Shield, title: "Legal", description: "Terms and privacy info", color: "from-green-500 to-emerald-600" }
+            ].map((item, index) => (
+              <div key={index} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
+                <div className={`w-12 h-12 mb-3 bg-gradient-to-br ${item.color} rounded-lg flex items-center justify-center`}>
+                  <item.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1">{item.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Main FAQ Content */}
+      <section className="bg-white dark:bg-slate-950 py-16">
+        <div className="container mx-auto px-4">
 
       <div className="max-w-4xl mx-auto">
         <Tabs defaultValue="general" className="mb-8">
-          <TabsList className="grid grid-cols-4 mb-4">
+          <TabsList className="grid grid-cols-4 mb-4 h-auto p-2 bg-gray-100 dark:bg-slate-800">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="technical">Technical</TabsTrigger>
             <TabsTrigger value="legal">Legal</TabsTrigger>
@@ -29,10 +74,13 @@ export default function FAQPage() {
           </TabsList>
           
           <TabsContent value="general">
-            <Card>
-              <CardHeader>
-                <CardTitle>General Questions</CardTitle>
-                <CardDescription>Common questions about our downloader service</CardDescription>
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-700">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  General Questions
+                </CardTitle>
+                <CardDescription className="text-base">Common questions about our downloader service</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -78,10 +126,13 @@ export default function FAQPage() {
           </TabsContent>
           
           <TabsContent value="technical">
-            <Card>
-              <CardHeader>
-                <CardTitle>Technical Questions</CardTitle>
-                <CardDescription>Questions about technical aspects of our service</CardDescription>
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-700">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Code className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  Technical Questions
+                </CardTitle>
+                <CardDescription className="text-base">Questions about technical aspects of our service</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -128,10 +179,13 @@ export default function FAQPage() {
           </TabsContent>
           
           <TabsContent value="legal">
-            <Card>
-              <CardHeader>
-                <CardTitle>Legal Questions</CardTitle>
-                <CardDescription>Questions about legal aspects of downloading content</CardDescription>
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-700">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Shield className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  Legal Questions
+                </CardTitle>
+                <CardDescription className="text-base">Questions about legal aspects of downloading content</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -170,10 +224,13 @@ export default function FAQPage() {
           </TabsContent>
           
           <TabsContent value="platforms">
-            <Card>
-              <CardHeader>
-                <CardTitle>Platform-Specific Questions</CardTitle>
-                <CardDescription>Questions about downloading from specific platforms</CardDescription>
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="border-b bg-gradient-to-r from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-700">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <MessageCircle className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  Platform-Specific Questions
+                </CardTitle>
+                <CardDescription className="text-base">Questions about downloading from specific platforms</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -217,18 +274,32 @@ export default function FAQPage() {
           </TabsContent>
         </Tabs>
         
-        <div className="text-center mt-12">
-          <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-          <p className="text-muted-foreground mb-6">
-            If you couldn't find the answer to your question, feel free to contact us.
-          </p>
-          <div className="flex justify-center">
-            <a href="/contact" className="bg-primary text-white px-6 py-3 rounded-md hover:bg-primary/90 transition-colors">
-              Contact Us
-            </a>
-          </div>
-        </div>
+        <Card className="mt-12 border-0 shadow-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700">
+          <CardContent className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <MessageCircle className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold mb-3 text-gray-900 dark:text-white">Still Have Questions?</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Couldn't find the answer you're looking for? Our friendly support team is here to help! 
+              Get in touch and we'll respond within 24 hours.
+            </p>
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
+              asChild
+            >
+              <Link href="/contact">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Contact Support
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+        </div>
+      </section>
     </div>
   )
 }
