@@ -1,12 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { proxyPool } from "./proxy-pool"
+import { proxyManager } from "./proxy-pool"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
 
 /**
- * Truth Social Download Endpoint (Uses Rotating Proxies)
- * Downloads videos through Ephemeral Proxies to bypass CDN restrictions
+ * Truth Social Download Endpoint (Uses Ephemeral Proxies)
+ * Downloads videos through datacenter proxies to bypass CDN restrictions
+ * Serverless-compatible: Fetches a fresh proxy on each request
  */
 export async function POST(request: NextRequest) {
   try {
@@ -35,32 +36,21 @@ export async function POST(request: NextRequest) {
     const nodeFetch = await import('node-fetch')
     const { HttpsProxyAgent } = await import('https-proxy-agent')
 
-    // Step 1: Initialize proxy pool (if not already initialized)
-    console.log('Step 1: Initializing proxy pool...')
-    
-    try {
-      await proxyPool.initialize(rapidApiKey, rapidApiHost)
-    } catch (initError: any) {
-      console.error('Failed to initialize proxy pool:', initError)
-      return NextResponse.json(
-        { message: `Failed to initialize proxy pool: ${initError.message}` },
-        { status: 500 }
-      )
-    }
-
-    // Step 2: Try multiple proxies until one works (max 3 attempts)
-    console.log('Step 2: Trying proxies...')
-    
+    // Try up to 3 different proxies
+    const maxAttempts = 3
     let videoResponse: any = null
     let successfulProxy: any = null
-    const maxAttempts = 3
-    
+
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const proxy = proxyPool.getRandomProxy()
-        console.log(`Attempt ${attempt}/${maxAttempts}: Trying proxy ${proxy.host}:${proxy.port} (${proxy.country})`)
+        console.log(`\n🔄 Attempt ${attempt}/${maxAttempts}: Fetching proxy...`)
         
-        // Construct proxy URL for fetch
+        // Fetch a fresh proxy from API
+        const proxy = await proxyManager.getProxy(rapidApiKey, rapidApiHost)
+        
+        console.log(`Trying to download through proxy: ${proxy.host}:${proxy.port} (${proxy.country})`)
+        
+        // Construct proxy URL for node-fetch
         const proxyUrl = `http://${proxy.host}:${proxy.port}`
         
         // Create proxy agent
@@ -68,7 +58,7 @@ export async function POST(request: NextRequest) {
         
         // Use node-fetch with proxy agent (with timeout)
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 20000) // 20 second timeout
         
         try {
           videoResponse = await nodeFetch.default(url, {
@@ -89,19 +79,26 @@ export async function POST(request: NextRequest) {
             console.log(`✅ Video fetched successfully through proxy ${proxy.host} (${proxy.country})!`)
             break
           } else {
-            console.log(`❌ Proxy ${proxy.host} returned ${videoResponse.status}, trying next...`)
+            console.log(`❌ Proxy ${proxy.host} returned ${videoResponse.status}`)
+            if (attempt < maxAttempts) {
+              console.log(`Trying another proxy...`)
+            }
           }
         } catch (fetchError: any) {
           clearTimeout(timeoutId)
-          console.log(`❌ Proxy ${proxy.host} failed: ${fetchError.message}, trying next...`)
-          if (attempt === maxAttempts) throw fetchError
+          console.log(`❌ Proxy ${proxy.host} failed: ${fetchError.message}`)
+          if (attempt < maxAttempts) {
+            console.log(`Trying another proxy...`)
+          } else {
+            throw fetchError
+          }
         }
         
       } catch (proxyError: any) {
         console.log(`❌ Attempt ${attempt} failed: ${proxyError.message}`)
         if (attempt === maxAttempts) {
           return NextResponse.json(
-            { message: `All proxy attempts failed. Please try again later.` },
+            { message: `Failed to download video. Please try again later. (${proxyError.message})` },
             { status: 500 }
           )
         }
@@ -111,17 +108,17 @@ export async function POST(request: NextRequest) {
     if (!videoResponse || !videoResponse.ok) {
       console.error('Failed to fetch video after all attempts')
       return NextResponse.json(
-        { message: 'Failed to fetch video after multiple attempts' },
+        { message: 'Failed to download video after multiple attempts. Please try again.' },
         { status: 500 }
       )
     }
 
-    // Step 4: Stream the video response back to the client
+    // Stream the video response back to the client
     const contentType = videoResponse.headers.get('Content-Type') || 'video/mp4'
     const contentLength = videoResponse.headers.get('Content-Length')
 
     if (contentLength) {
-      console.log(`File size: ${Math.round(parseInt(contentLength) / 1024 / 1024)}MB`)
+      console.log(`📦 File size: ${Math.round(parseInt(contentLength) / 1024 / 1024)}MB`)
     }
 
     // Create response with video stream
@@ -141,6 +138,7 @@ export async function POST(request: NextRequest) {
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
 
+    console.log(`✅ Download completed successfully!`)
     return response
 
   } catch (error: any) {
@@ -163,4 +161,3 @@ export async function OPTIONS() {
     },
   })
 }
-
