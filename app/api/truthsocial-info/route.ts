@@ -5,8 +5,14 @@ export const maxDuration = 60
 
 /**
  * Truth Social API Info Endpoint
- * Returns the API URL for client-side fetching
- * Truth Social blocks server requests but allows browser CORS requests
+ * Returns the API URL for CLIENT-SIDE fetching
+ * 
+ * Truth Social's API:
+ * ✅ Allows direct browser requests (CORS-friendly)
+ * ❌ Blocks all server requests (403)
+ * ❌ Blocks datacenter proxy requests (403)
+ * 
+ * Solution: Browser fetches API directly, then uses proxy for video download
  */
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +41,7 @@ export async function POST(request: NextRequest) {
     console.log(`Truth Social post ID: ${postId}, API URL: ${apiUrl}`)
 
     // Return the API URL for client-side fetching
-    // Truth Social allows CORS requests from browsers but blocks server requests
+    // Truth Social allows CORS requests from browsers
     return NextResponse.json({
       status: "client_fetch",
       apiUrl: apiUrl,

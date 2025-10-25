@@ -213,7 +213,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         }
       }
 
-      // Special handling for Truth Social - uses client-side fetch then proxy download
+      // Special handling for Truth Social - browser fetches API, proxy downloads video
       if (detectedPlatform === 'truthsocial' || platform === 'truthsocial') {
         const response = await fetch("/api/truthsocial-info", {
           method: "POST",
@@ -229,10 +229,10 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           return
         }
 
-        // Truth Social returns apiUrl for client-side fetching
+        // Truth Social returns apiUrl for client-side fetching (browser can access it directly)
         if (data.status === "client_fetch" && data.apiUrl) {
           try {
-            // Fetch directly from Truth Social API (browser allows CORS)
+            // Fetch directly from Truth Social API in browser (bypasses server restrictions)
             const truthResponse = await fetch(data.apiUrl, {
               method: 'GET',
               headers: {
