@@ -36,79 +36,72 @@ export async function POST(request: NextRequest) {
     const nodeFetch = await import('node-fetch')
     const { HttpsProxyAgent } = await import('https-proxy-agent')
 
-    // Try up to 3 different proxies
-    const maxAttempts = 3
+    // Get proxy (cached or fresh) - avoids rate limit issues
     let videoResponse: any = null
-    let successfulProxy: any = null
+    let proxy: any = null
 
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // Get a proxy (will use cached one if available)
+      proxy = await proxyManager.getProxy(rapidApiKey, rapidApiHost)
+      
+      console.log(`📥 Downloading through proxy: ${proxy.host}:${proxy.port} (${proxy.country})`)
+      
+      // Construct proxy URL for node-fetch
+      const proxyUrl = `http://${proxy.host}:${proxy.port}`
+      
+      // Create proxy agent
+      const agent = new HttpsProxyAgent(proxyUrl)
+      
+      // Use node-fetch with proxy agent (with timeout)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+      
       try {
-        console.log(`\n🔄 Attempt ${attempt}/${maxAttempts}: Fetching proxy...`)
+        videoResponse = await nodeFetch.default(url, {
+          method: 'GET',
+          signal: controller.signal,
+          // @ts-ignore - node-fetch accepts agent option
+          agent: agent,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': '*/*',
+            'Referer': 'https://truthsocial.com/',
+          },
+        })
+        clearTimeout(timeoutId)
         
-        // Fetch a fresh proxy from API
-        const proxy = await proxyManager.getProxy(rapidApiKey, rapidApiHost)
-        
-        console.log(`Trying to download through proxy: ${proxy.host}:${proxy.port} (${proxy.country})`)
-        
-        // Construct proxy URL for node-fetch
-        const proxyUrl = `http://${proxy.host}:${proxy.port}`
-        
-        // Create proxy agent
-        const agent = new HttpsProxyAgent(proxyUrl)
-        
-        // Use node-fetch with proxy agent (with timeout)
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 20000) // 20 second timeout
-        
-        try {
-          videoResponse = await nodeFetch.default(url, {
-            method: 'GET',
-            signal: controller.signal,
-            // @ts-ignore - node-fetch accepts agent option
-            agent: agent,
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': '*/*',
-              'Referer': 'https://truthsocial.com/',
-            },
-          })
-          clearTimeout(timeoutId)
-          
-          if (videoResponse.ok) {
-            successfulProxy = proxy
-            console.log(`✅ Video fetched successfully through proxy ${proxy.host} (${proxy.country})!`)
-            break
-          } else {
-            console.log(`❌ Proxy ${proxy.host} returned ${videoResponse.status}`)
-            if (attempt < maxAttempts) {
-              console.log(`Trying another proxy...`)
-            }
-          }
-        } catch (fetchError: any) {
-          clearTimeout(timeoutId)
-          console.log(`❌ Proxy ${proxy.host} failed: ${fetchError.message}`)
-          if (attempt < maxAttempts) {
-            console.log(`Trying another proxy...`)
-          } else {
-            throw fetchError
-          }
-        }
-        
-      } catch (proxyError: any) {
-        console.log(`❌ Attempt ${attempt} failed: ${proxyError.message}`)
-        if (attempt === maxAttempts) {
+        if (!videoResponse.ok) {
+          console.log(`❌ Proxy returned ${videoResponse.status}`)
+          // Clear cache so next request gets a fresh proxy
+          proxyManager.clearCache()
           return NextResponse.json(
-            { message: `Failed to download video. Please try again later. (${proxyError.message})` },
+            { message: `Download failed (HTTP ${videoResponse.status}). Please try again to get a different proxy.` },
             { status: 500 }
           )
         }
+
+        console.log(`✅ Video fetched successfully through proxy ${proxy.host} (${proxy.country})!`)
+        
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId)
+        console.log(`❌ Download failed: ${fetchError.message}`)
+        // Clear cache so next request gets a fresh proxy
+        proxyManager.clearCache()
+        throw fetchError
       }
+      
+    } catch (error: any) {
+      console.log(`❌ Proxy error: ${error.message}`)
+      return NextResponse.json(
+        { message: `Failed to download video: ${error.message}. Please try again.` },
+        { status: 500 }
+      )
     }
 
     if (!videoResponse || !videoResponse.ok) {
-      console.error('Failed to fetch video after all attempts')
+      console.error('Failed to fetch video')
       return NextResponse.json(
-        { message: 'Failed to download video after multiple attempts. Please try again.' },
+        { message: 'Failed to download video. Please try again.' },
         { status: 500 }
       )
     }

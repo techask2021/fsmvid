@@ -198,6 +198,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
     try {
       const detectedPlatform = detectPlatform(finalUrlToProcess)
+      console.log(`🔍 Detected platform: ${detectedPlatform} for URL: ${finalUrlToProcess}`)
 
       if (platform !== "universal" && detectedPlatform !== platform) {
         if (platform === 'pinterest' && (url.includes('pin.it') || url.includes('pinterest.com') || url.includes('pinterest.'))) {
@@ -215,6 +216,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
       // Special handling for Truth Social - browser fetches API, proxy downloads video
       if (detectedPlatform === 'truthsocial' || platform === 'truthsocial') {
+        console.log('✅ Truth Social detected - using specialized endpoint')
         const response = await fetch("/api/truthsocial-info", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
