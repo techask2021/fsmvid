@@ -21,14 +21,14 @@ const GridLoading = () => <div className="h-80 w-full bg-muted/30 animate-pulse 
 const ContentLoading = () => <div className="h-40 w-full bg-muted/30 animate-pulse rounded-lg"></div>
 
 export const metadata: Metadata = {
-  title: "FSMVID | Free Social Media Video Downloader & Online Video Converter",
+  title: "FSMVID | Free Social Media Video Downloader",
   description:
     "Free online video downloader and converter tool that works. Download videos from 30+ platforms including YouTube, TikTok, Facebook, Instagram, Twitter with no software installation. Web-based video download utility with 4K quality, multiple formats (MP4, MKV, WebM, MP3), and built-in format conversion. No registration required—completely free video download software.",
   keywords: [
     "Free Social Media Video Downloader", "video downloader", "online video downloader", "video download software", "video download utility", "video converter", "download utilities", "social media downloader", "YouTube downloader", "TikTok downloader", "Facebook downloader", "Twitter downloader", "Instagram downloader", "media downloader tool", "format converter", "video converter tool",
   ],
   openGraph: {
-    title: "FSMVID | Free Social Media Video Downloader & Online Video Converter",
+    title: "FSMVID | Free Social Media Video Downloader",
     description: "Free online video downloader and converter that supports 30+ platforms. No software installation, no registration—just a straightforward web-based video download utility. Download in 4K, 1080p, 720p with built-in format conversion to MP4, MKV, WebM, and MP3.",
     url: process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com",
     siteName: "FSMVID",
