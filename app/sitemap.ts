@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "linkedin",
     "imgur",
     "rumble",
-    "truthsocial",
+    // "truthsocial", // Temporarily hidden - working on production fix
     "9gag",
     "bitchute",
     "capcut",

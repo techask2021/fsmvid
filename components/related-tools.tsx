@@ -25,7 +25,7 @@ export default function RelatedTools({ currentPlatform, limit = 6 }: RelatedTool
     "linkedin",
     "imgur",
     "rumble",
-    "truthsocial",
+    // "truthsocial", // Temporarily hidden
     "9gag",
     "bitchute",
     "bsky",

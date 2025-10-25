@@ -42,7 +42,7 @@ const initialPlatformsData = [
   { name: "Bilibili", icon: "/icons/bilibili.svg", slug: getUrlSlug("bilibili"), description: "Download Bilibili videos (哔哩哔哩)", popular: false },
   { name: "Deezer", icon: "/icons/deezer.svg", slug: getUrlSlug("deezer"), description: "Download Deezer music & playlists", popular: false },
   { name: "Castbox", icon: "/icons/castbox.svg", slug: getUrlSlug("castbox"), description: "Download Castbox podcasts", popular: false },
-  { name: "Truth Social", icon: "/icons/truth-social.svg", slug: getUrlSlug("truthsocial"), description: "Download Truth Social videos", popular: false }
+  // { name: "Truth Social", icon: "/icons/truth-social.svg", slug: getUrlSlug("truthsocial"), description: "Download Truth Social videos", popular: false } // Temporarily hidden - working on production fix
 ];
 
 const colorStyles = [
