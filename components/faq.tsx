@@ -14,34 +14,49 @@ const faqItemBackgrounds = [
 export default function FAQSection() {
   const faqs = [
     {
+      question: "How do I download a video from any social media platform?",
+      answer:
+        "It's actually simpler. Copy the video URL from whatever platform you're on—YouTube, TikTok, Instagram, wherever. Paste that URL into FSMVID's input box, select your preferred quality and format, and hit download. The whole process takes maybe 10 seconds.",
+    },
+    {
+      question: "Is there any free video downloader?",
+      answer:
+        "Yes, and you're looking at one. FSMVID is completely free with no catches. No \"3 downloads per day\" limits, no premium features locked behind paywalls, no forced account creation.",
+    },
+    {
       question: "Which social media platforms are supported?",
       answer:
-        "Our downloader works with Instagram, Facebook, TikTok, Twitter, YouTube, Pinterest, and many more social media platforms. We regularly update our system to add support for new platforms and maintain compatibility with existing ones.",
+        "We support over 30 platforms, with additional platforms to be added soon. The major ones are YouTube, TikTok, Instagram, Facebook, Twitter (X), Pinterest, Reddit, LinkedIn, Snapchat, Dailymotion, Vimeo, Twitch, IMDb, Telegram, and Threads.",
     },
     {
       question: "What file formats can I download?",
       answer:
-        "Depending on the platform, you can download videos in various formats including MP4, WebM, and MKV. For audio, we offer MP3 and other audio formats. Images can be downloaded in formats like JPG, PNG, and WebP.",
+        "We support the formats that actually matter: MP4 is our default format and works on virtually everything—phones, computers, tablets, smart TVs. MKV if you want the absolute highest quality and plan to archive or edit the video. WebM for lightweight files perfect for web use. MP3 for audio-only downloads when you don't need the video part. Our built-in video converter automatically selects the format according to your preference.",
     },
     {
       question: "Is there a limit to how many videos I can download?",
       answer:
-        "No, there is no limit to the number of videos you can download. You can use our service as much as you need, completely free of charge.",
+        "Nope. Download one video or a hundred—there's no artificial limit. We're not going to hit you with a \"you've reached your daily limit\" message after three downloads like some video download utilities do.",
     },
     {
       question: "Do I need to create an account?",
       answer:
-        "No, you don't need to create an account to use our service. Our tool is designed to be hassle-free, requiring no registration, login, or personal information.",
+        "Absolutely not. No account, no registration, no email required. Just visit the site and start downloading. Creating accounts for every online tool is annoying and unnecessary. Your email is valuable—don't give it away for basic video download software that should work without all that friction.",
     },
     {
       question: "How do I download videos on my mobile device?",
       answer:
-        "Our service works the same way on mobile as it does on desktop. Simply copy the URL of the video you want to download, paste it into our tool, and then tap the download button. The video will be saved to your device's storage.",
+        "The same way as on a desktop. FSMVID works identically on mobile browsers—Safari on iPhone, Chrome on Android, and any other browser you use. Open your mobile browser, go to FSMVID, paste the video URL, select your format and quality, and download. The video saves to your device's storage. On iPhone, it goes to your Files app. On Android, it goes to your Downloads folder.",
     },
     {
       question: "Is the tool safe to use?",
       answer:
-        "Yes, our tool is completely safe to use. We don't store your downloads or personal information, and there's no risk of malware or viruses. We prioritize your privacy and security.",
+        "Yes. FSMVID is a web-based tool that doesn't require installing any software on your device. That's inherently safer than desktop video download software that could contain malware or unwanted programs. We don't collect your personal data, we don't track what you download, and we don't sell your information. The video download process is secure, and download links expire quickly for privacy reasons.",
+    },
+    {
+      question: "Is it legal to download FB videos?",
+      answer:
+        "The legal answer is: it depends on what you do with them. Downloading Facebook videos for personal viewing is generally fine. Downloading a funny video your friend shared to watch offline? That's not going to get you in trouble. What's NOT legal: downloading someone else's Facebook video and reposting it as your own content. That's copyright infringement, plain and simple. The same goes for using downloaded videos commercially without permission. The creator owns the copyright regardless of whether you can technically download the file. If you're downloading for business purposes, marketing campaigns, or public use, get permission from the creator first.",
     },
   ];
 

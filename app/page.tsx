@@ -21,15 +21,15 @@ const GridLoading = () => <div className="h-80 w-full bg-muted/30 animate-pulse 
 const ContentLoading = () => <div className="h-40 w-full bg-muted/30 animate-pulse rounded-lg"></div>
 
 export const metadata: Metadata = {
-  title: "FSMVID | Free Social Media Video Downloader",
+  title: "FSMVID | Free Social Media Video Downloader & Online Video Converter",
   description:
-    "FSMVID is a powerful and user-friendly free social media video downloader tool that allows you to download videos, images, and shorts from popular platforms including YouTube, TikTok, Facebook, Twitter, Instagram, and more. Download high-quality content from any social media platform with our fast, free online downloader tool - no registration required.",
+    "Free online video downloader and converter tool that works. Download videos from 30+ platforms including YouTube, TikTok, Facebook, Instagram, Twitter with no software installation. Web-based video download utility with 4K quality, multiple formats (MP4, MKV, WebM, MP3), and built-in format conversion. No registration required—completely free video download software.",
   keywords: [
-    "Free Social Media Video Downloader", "video downloader", "social media downloader", "YouTube downloader", "TikTok downloader", "Facebook downloader", "Twitter downloader", "Instagram downloader",
+    "Free Social Media Video Downloader", "video downloader", "online video downloader", "video download software", "video download utility", "video converter", "download utilities", "social media downloader", "YouTube downloader", "TikTok downloader", "Facebook downloader", "Twitter downloader", "Instagram downloader", "media downloader tool", "format converter", "video converter tool",
   ],
   openGraph: {
-    title: "FSMVID | Free Social Media Video Downloader",
-    description: "FSMVID is a powerful and user-friendly free social media video downloader tool that allows you to download videos, images, and shorts from popular platforms including YouTube, TikTok, Facebook, Twitter, Instagram, and more. Download high-quality content from any social media platform with our fast, free online downloader tool - no registration required.",
+    title: "FSMVID | Free Social Media Video Downloader & Online Video Converter",
+    description: "Free online video downloader and converter that supports 30+ platforms. No software installation, no registration—just a straightforward web-based video download utility. Download in 4K, 1080p, 720p with built-in format conversion to MP4, MKV, WebM, and MP3.",
     url: process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com",
     siteName: "FSMVID",
     images: [ { url: "/images/free-social-media-video-downloader.jpg", width: 1200, height: 630, alt: "FSMVID | Free Social Media Video Downloader", }, ],
@@ -69,9 +69,8 @@ export default async function Home() {
             <span className="bg-gradient-to-r from-cyan-300 via-blue-200 to-indigo-200 bg-clip-text text-transparent inline-block animate-fade-in-up delay-400">Video Downloader</span>
           </h1>
           <p className="text-lg md:text-xl text-blue-100 mb-6 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
-            Download videos, images, and shorts from{" "}
-            <span className="font-semibold text-cyan-300">YouTube, TikTok, Facebook, Instagram, Twitter</span>, and 30+ other platforms.<br />
-            <span className="text-base text-blue-200">Fast, secure, and completely free.</span>
+            You're scrolling through your feed and see that perfect video. A business tutorial you need for work, a TikTok for your digital marketing campaign, or an Instagram tutorial to study offline.<br />
+            <span className="text-base text-blue-200">But the platform won't let you save it. That's exactly why FSMVID exists.</span>
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-4 animate-fade-in-up delay-800">
             {[
