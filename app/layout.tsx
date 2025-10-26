@@ -23,16 +23,27 @@ export const metadata: Metadata = {
     default: "FSMVID | Free Social Media Video Downloader",
     template: "%s | FSMVID",
   },
-  description: "Download videos and content from multiple social media platforms",
+  description: "Free online video downloader and converter tool that works. Download videos from 30+ platforms including YouTube, TikTok, Facebook, Instagram, Twitter with no software installation. Web-based video download utility with 4K quality, multiple formats (MP4, MKV, WebM, MP3), and built-in format conversion. No registration required—completely free video download software.",
   generator: 'v0.dev',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: [
+      { url: '/favicon/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/favicon/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      { rel: 'icon', url: '/favicon/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png' },
+      { rel: 'icon', url: '/favicon/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
   },
+  manifest: '/favicon/site.webmanifest',
   openGraph: {
     images: [
       {
-        url: '/images/free-social-media-video-downloader.jpg',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'FSMVID - Free Social Media Video Downloader',
@@ -155,11 +166,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preload critical assets */}
-        <link rel="preload" href="/favicon.ico" as="image" />
-        <link rel="preload" href="/icons/youtube.svg" as="image" />
-        <link rel="preload" href="/icons/tiktok.svg" as="image" />
-        <link rel="preload" href="/icons/facebook.svg" as="image" />
-        <link rel="preload" href="/icons/instagram.svg" as="image" />
+        <link rel="preload" href="/favicon/favicon.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/icons/youtube.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/icons/tiktok.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/icons/facebook.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/icons/instagram.svg" as="image" type="image/svg+xml" />
         
         {/* Preconnect to any external domains used for assets */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
