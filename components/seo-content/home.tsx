@@ -501,18 +501,6 @@ export function HomeSEOContent() {
             <p className="mt-4">The core mission stays the same: make video downloading and format conversion simple, fast, and accessible to everyone. Whether you need basic download utilities or advanced video converter features, FSMVID aims to be your complete solution.</p>
           </SectionCard>
 
-          <SectionCard title="Final Thoughts on Free Social Media Video Download Software" icon={Star} iconBgGradient="from-sky-500 to-blue-600" cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"> 
-            <p className="mb-4">Social media platforms have revolutionized the way we consume video content. But that content shouldn't be locked inside apps, dependent on internet connections and platform whims.</p>
-            
-            <p className="mb-4">FSMVID exists to give you control over the content you want to save. Whether you're a content creator analyzing competitors, a student saving educational materials, a business professional preparing presentations, or just someone who wants to keep memories safe, you deserve video download utilities that work without hassle.</p>
-            
-            <p className="mb-4">We built FSMVID to be that tool: no registration, no hidden fees, no complicated setup. Just a straightforward online video downloader and converter that supports 30+ platforms, offers multiple quality options, and works on any device. Cloud-based processing eliminates the need for software installation, and our integrated video converter automatically handles format changes.</p>
-            
-            <p className="mb-4">Unlike traditional video download software that requires installation and system resources, or browser extensions that compromise your privacy, FSMVID operates entirely in your browser. It's safer, faster, and more convenient than desktop download utilities while offering the same functionality.</p>
-            
-            <p>Happy downloading, and use these video converter tools responsibly.</p>
-          </SectionCard>
-
         </div>
       </div>
     </div>

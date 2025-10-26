@@ -11,8 +11,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "error", message: "URL and platform are required" }, { status: 400 })
     }
 
+    // Enable debug mode to see verbose logs (set DEBUG_MODE=true in .env)
+    const DEBUG_MODE = process.env.DEBUG_MODE === 'true';
+
     // Normalize URLs for different platforms
     let processUrl = url;
+    
+    // Normalize YouTube Shorts URLs to regular watch URLs
+    if ((platform === 'youtube' || url.includes('youtube.com/shorts/') || url.includes('youtu.be/shorts/')) && url.includes('/shorts/')) {
+      const videoId = url.split('/shorts/').pop()?.split('?')[0].split('#')[0].split('&')[0];
+      if (videoId) {
+        processUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        if (DEBUG_MODE) console.log("✅ Normalized YouTube Shorts URL:", processUrl);
+      }
+    }
+    
+    // Normalize YouTube short links (youtu.be)
+    if ((platform === 'youtube' || url.includes('youtu.be/')) && url.includes('youtu.be/') && !url.includes('/shorts/')) {
+      const videoId = url.split('youtu.be/').pop()?.split('?')[0].split('#')[0].split('&')[0];
+      if (videoId) {
+        processUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        if (DEBUG_MODE) console.log("✅ Normalized youtu.be URL:", processUrl);
+      }
+    }
     
     // Normalize Dailymotion short URLs
     if (platform === 'dailymotion' && url.includes('dai.ly/')) {
@@ -20,7 +41,7 @@ export async function POST(request: NextRequest) {
       const videoId = url.split('dai.ly/').pop()?.split('?')[0].split('#')[0];
       if (videoId) {
         processUrl = `https://www.dailymotion.com/video/${videoId}`;
-        console.log("Normalized Dailymotion URL:", processUrl);
+        if (DEBUG_MODE) console.log("✅ Normalized Dailymotion URL:", processUrl);
       }
     }
 
@@ -30,7 +51,7 @@ export async function POST(request: NextRequest) {
       if (url.includes('tumblr.com/post/')) {
         // Remove any trailing parameters that might cause issues
         processUrl = url.split('?')[0].split('#')[0];
-        console.log("Normalized Tumblr URL:", processUrl);
+        if (DEBUG_MODE) console.log("✅ Normalized Tumblr URL:", processUrl);
       }
     }
     
@@ -38,7 +59,7 @@ export async function POST(request: NextRequest) {
     if (platform === 'snapchat') {
       // Ensure clean Snapchat URLs
       processUrl = url.split('?')[0].split('#')[0];
-      console.log("Normalized Snapchat URL:", processUrl);
+      if (DEBUG_MODE) console.log("✅ Normalized Snapchat URL:", processUrl);
     }
     
     // Normalize Reddit URLs
@@ -49,14 +70,14 @@ export async function POST(request: NextRequest) {
         const postId = url.split('redd.it/').pop()?.split('?')[0].split('#')[0];
         if (postId) {
           processUrl = `https://www.reddit.com/comments/${postId}`;
-          console.log("Normalized Reddit URL:", processUrl);
+          if (DEBUG_MODE) console.log("✅ Normalized Reddit URL:", processUrl);
         }
       } else if (url.includes('reddit.com/r/') && !url.includes('/comments/')) {
         // Convert subreddit post URLs to comment URLs
         const match = url.match(/reddit\.com\/r\/([^\/]+)\/comments\/([^\/]+)/);
         if (match) {
           processUrl = `https://www.reddit.com/comments/${match[2]}`;
-          console.log("Normalized Reddit URL:", processUrl);
+          if (DEBUG_MODE) console.log("✅ Normalized Reddit URL:", processUrl);
         }
       }
     }
@@ -79,12 +100,12 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ url: processUrl })
     }
 
-    // Log the request for debugging
-    console.log(`Proxying POST request to: ${apiUrl}`);
-    console.log("Request body:", JSON.stringify({ url: processUrl }));
-    console.log("Using API key:", apiKey.substring(0, 5) + "..." + apiKey.substring(apiKey.length - 5));
-    console.log("Using API URL:", apiUrl);
-    console.log("Request headers:", JSON.stringify(options.headers));
+    // Minimal logging for production
+    if (DEBUG_MODE) {
+      console.log(`Proxying POST request to: ${apiUrl}`);
+      console.log("Request body:", JSON.stringify({ url: processUrl }));
+      console.log("Using API key:", apiKey.substring(0, 5) + "..." + apiKey.substring(apiKey.length - 5));
+    }
 
     // Retry logic for handling intermittent failures
     const maxRetries = 3;
@@ -96,15 +117,18 @@ export async function POST(request: NextRequest) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         // Make the request to the new ZM API endpoint using POST with body
-        console.log(`Making POST request to: ${apiUrl} (Attempt ${attempt}/${maxRetries})`);
+        if (DEBUG_MODE) {
+          console.log(`Making POST request to: ${apiUrl} (Attempt ${attempt}/${maxRetries})`);
+        }
         
         response = await fetch(apiUrl, options)
         data = await response.json()
         
-        // Log the response for debugging
-        console.log("ZM API Status:", response.status)
-        console.log("ZM API Response Headers:", JSON.stringify(Object.fromEntries([...response.headers.entries()])))
-        console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
+        // Only log in debug mode or on errors
+        if (DEBUG_MODE) {
+          console.log("ZM API Status:", response.status)
+          console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
+        }
         
         // Check if we got a successful response with media
         const hasMedia = data.medias || data.formats;
@@ -112,13 +136,13 @@ export async function POST(request: NextRequest) {
         
         // If successful or it's a permanent error (not a temporary "no media" issue), break the loop
         if (response.ok && hasMedia && !isNoMediaError) {
-          console.log(`✓ Success on attempt ${attempt}`);
+          if (DEBUG_MODE) console.log(`✓ Success on attempt ${attempt}`);
           break;
         }
         
         // If it's a "no medias found" error and we have retries left, try again
         if (isNoMediaError && attempt < maxRetries) {
-          console.log(`⚠ No medias found on attempt ${attempt}, retrying in ${retryDelay}ms...`);
+          if (DEBUG_MODE) console.log(`⚠ No medias found on attempt ${attempt}, retrying in ${retryDelay}ms...`);
           await new Promise(resolve => setTimeout(resolve, retryDelay));
           continue;
         }
@@ -130,12 +154,14 @@ export async function POST(request: NextRequest) {
         }
         
       } catch (fetchError) {
-        console.error(`✗ Fetch error on attempt ${attempt}:`, fetchError);
+        // Only log critical fetch errors (not API errors)
+        if (DEBUG_MODE || attempt === maxRetries) {
+          console.error(`✗ Fetch error on attempt ${attempt}:`, fetchError);
+        }
         lastError = fetchError;
         
         // If we have retries left, wait and try again
         if (attempt < maxRetries) {
-          console.log(`Retrying in ${retryDelay}ms...`);
           await new Promise(resolve => setTimeout(resolve, retryDelay));
           continue;
         }
@@ -144,7 +170,8 @@ export async function POST(request: NextRequest) {
     
     // Use the last response and data from the loop
     if (!response || !data) {
-      console.error("All retry attempts failed");
+      // Only log critical connection failures
+      console.error("⚠️ CRITICAL: All retry attempts failed - API unreachable");
       return NextResponse.json({ 
         status: "error", 
         message: "Failed to connect to the video processing service after multiple attempts" 
@@ -154,12 +181,29 @@ export async function POST(request: NextRequest) {
     }
 
       // Return error if the API call fails
+      // Only log non-503 errors (503 is too common/noisy)
       if (!response.ok) {
-        console.error("API Error (non-2xx):", data)
-        console.error("Full error response (non-2xx):", JSON.stringify(data))
+        // Only log if it's not a common temporary error
+        const isTemporaryError = data.code === 'NETWORK_UNAVAILABLE' || response.status === 503;
+        
+        if (DEBUG_MODE || (!isTemporaryError && response.status >= 500)) {
+          console.error(`API Error (${response.status}):`, data.message || data.error);
+        }
+        
+        // Provide user-friendly messages for common API errors
+        let userMessage = data.message || "Unknown error";
+        
+        if (data.code === "NETWORK_UNAVAILABLE" || response.status === 503) {
+          userMessage = "The video processing service is temporarily unavailable. Please try again in a few moments.";
+        } else if (response.status === 429) {
+          userMessage = "Too many requests. Please wait a moment and try again.";
+        } else if (response.status >= 500) {
+          userMessage = "The video processing service is experiencing issues. Please try again later.";
+        }
+        
         return NextResponse.json({ 
           status: "error", 
-          message: `API error: ${response.status} - ${data.message || data.error || "Unknown error"}`,
+          message: userMessage,
           details: data
         }, { 
           status: response.status 
@@ -171,7 +215,10 @@ export async function POST(request: NextRequest) {
         // Handle "No medias found" errors with platform-specific messages
         if (data.message && data.message.toLowerCase().includes("no medias found")) {
           const errorStatus = 404;
-          console.error("API Error (logical):", data.message || "No media found or API logical error");
+          // Don't log "not found" errors - they're expected when users submit invalid URLs
+          if (DEBUG_MODE) {
+            console.error("API Error (logical):", data.message || "No media found");
+          }
           
           // Provide platform-specific error messages
           let customMessage = data.message;
@@ -192,7 +239,10 @@ export async function POST(request: NextRequest) {
         
         // For other errors, use a 422 or 404 if appropriate
         const errorStatus = (data.status && data.status >= 400) ? data.status : 422;
-        console.error("API Error (logical):", data.message || "No media found or API logical error");
+        // Only log non-404 errors (404s are too common)
+        if (DEBUG_MODE || errorStatus !== 404) {
+          console.error("API Error (logical):", data.message || "No media found");
+        }
         return NextResponse.json({
           status: "error",
           message: data.message || "Failed to process video or no media found.",
@@ -210,7 +260,9 @@ export async function POST(request: NextRequest) {
         // If "No medias found" was the specific message, we should have caught it above.
         // This block now handles cases where the structure is unexpected but no explicit error was flagged by the API.
         if (data.message && data.message.toLowerCase().includes("no medias found")) {
-             console.warn("API Warning: No medias found, but not caught by primary error check. Data:", JSON.stringify(data));
+             if (DEBUG_MODE) {
+               console.warn("API Warning: No medias found (unexpected path)");
+             }
              return NextResponse.json({
                 status: "error",
                 message: data.message,
@@ -321,7 +373,8 @@ export async function POST(request: NextRequest) {
         formats: data.formats
       })
   } catch (error) {
-    console.error("Proxy error:", error)
+    // Always log unexpected errors - these indicate code problems
+    console.error("⚠️ CRITICAL - Unexpected proxy error:", error)
     return NextResponse.json({ 
       status: "error", 
       message: "Failed to process request" 
