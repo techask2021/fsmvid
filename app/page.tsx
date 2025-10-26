@@ -68,10 +68,17 @@ export default async function Home() {
             <span className="inline-block animate-fade-in-up delay-200">Free Social Media</span><br />
             <span className="bg-gradient-to-r from-cyan-300 via-blue-200 to-indigo-200 bg-clip-text text-transparent inline-block animate-fade-in-up delay-400">Video Downloader</span>
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 mb-6 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
-            You're scrolling through your feed and see that perfect video. A business tutorial you need for work, a TikTok for your digital marketing campaign, or an Instagram tutorial to study offline.<br />
-            <span className="text-base text-blue-200">But the platform won't let you save it. That's exactly why FSMVID exists.</span>
-          </p>
+          <div className="max-w-4xl mb-8 space-y-5 animate-fade-in-up delay-600">
+            {/* Opening Hook */}
+            <p className="text-base md:text-lg text-white font-medium leading-relaxed drop-shadow-lg">
+              You're scrolling and find that <span className="text-cyan-300">perfect video</span>—a business tutorial, YouTube marketing masterclass, or Instagram tutorial you need offline. <span className="text-cyan-200">But the platform won't let you save it.</span> <span className="text-cyan-300 font-semibold">That's why FSMVid exists.</span>
+            </p>
+            
+            {/* Solution & Features paragraph */}
+            <p className="text-sm md:text-base text-blue-100 leading-relaxed bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+              <span className="font-bold text-cyan-300">FSMVid</span> is a free online video downloader that converts <span className="text-cyan-300">YouTube to MP4</span>, downloads HD videos, and extracts <span className="text-cyan-300">MP3 audio</span> from multiple platforms—<span className="font-bold text-white">no software needed</span>. Whether you need a YouTube to MP3 converter for podcasts, a video converter for presentations, or downloads for digital marketing and content creation, we handle it all.
+            </p>
+          </div>
           <div className="flex flex-wrap justify-center gap-3 mb-4 animate-fade-in-up delay-800">
             {[
               { icon: CheckCircle, text: "No registration required" }, { icon: CheckCircle, text: "100% free forever" },
