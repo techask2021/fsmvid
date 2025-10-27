@@ -61,6 +61,15 @@ export default defineType({
       of: [
         {
           type: "block",
+          marks: {
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                fields: [{ name: "url", type: "url" }],
+              },
+            ],
+          },
         },
         {
           type: "image",
@@ -72,6 +81,39 @@ export default defineType({
               description: "Important for SEO and accessibility",
             },
           ],
+        },
+        {
+          name: "table",
+          type: "object",
+          fields: [
+            {
+              name: "rows",
+              type: "array",
+              of: [
+                {
+                  type: "object",
+                  fields: [
+                    {
+                      name: "cells",
+                      type: "array",
+                      of: [{ type: "string" }],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          preview: {
+            select: {
+              rows: "rows",
+            },
+            prepare({ rows }) {
+              return {
+                title: rows ? `${rows.length} rows` : "Table",
+                subtitle: "Table",
+              }
+            },
+          },
         },
       ],
     }),

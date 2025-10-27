@@ -67,7 +67,8 @@ export async function sendEmail(
 
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "support@fsmvid.com",
+      replyTo: email,
       to: "amtrip2020@gmail.com",
       subject: `Contact Form: ${subject}`,
       html: `
