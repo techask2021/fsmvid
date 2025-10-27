@@ -510,10 +510,10 @@ async function MainPostContent({ post }: { post: any }) {
 
 async function RelatedPostsSection({ slug }: { slug: string }) {
   // Get related posts based on categories, excluding current post
-  const relatedPosts = await getFeaturedPosts(3).catch(() => []);
+  const relatedPosts = await getFeaturedPosts(4).catch(() => []);
   
-  // Filter out the current post
-  const filteredPosts = relatedPosts.filter(post => post.slug.current !== slug);
+  // Filter out the current post and limit to 3
+  const filteredPosts = relatedPosts.filter(post => post.slug.current !== slug).slice(0, 3);
   
   if (filteredPosts.length === 0) return null;
   
