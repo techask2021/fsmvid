@@ -1,10 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { detectPlatform } from "@/lib/platform-detector"
+import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
+import { RATE_LIMITS } from "@/lib/rate-limit"
 
 export const runtime = "nodejs" // Use Node.js runtime for better compatibility with media CDNs
 export const maxDuration = 60 // Allow up to 60 seconds for large file downloads
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD)
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!
+  }
+
   try {
     // Destructure platform from the request body as well
     const { url, filename, platform: originalPlatform } = await request.json();
@@ -175,7 +183,8 @@ export async function POST(request: NextRequest) {
         response.headers.set('Content-Length', contentLength)
       }
       
-      return response
+      // Add rate limit headers to response
+      return addRateLimitHeaders(response, rateLimitResult.headers!)
     } catch (downloadError) {
       console.error('Error downloading file:', downloadError);
       return NextResponse.json({ message: 'Error downloading file content' }, { status: 500 });

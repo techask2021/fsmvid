@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { withRateLimit } from '@/lib/rate-limit-middleware';
+import { RATE_LIMITS } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -7,6 +9,12 @@ export const fetchCache = 'force-no-store';
 export const maxDuration = 60; // 60 seconds (Vercel limit)
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!;
+  }
+
   try {
     // Extract the m3u8 URL from the request
     const { url, title = 'dailymotion_video' } = await request.json();

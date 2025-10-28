@@ -4,6 +4,8 @@ import { join } from 'path';
 import { writeFile, unlink, readFile, stat } from 'fs/promises';
 import { randomBytes } from 'crypto';
 import { Readable } from 'stream';
+import { withRateLimit } from '@/lib/rate-limit-middleware';
+import { RATE_LIMITS } from '@/lib/rate-limit';
 
 export const maxDuration = 60; // Maximum allowed duration for Vercel Hobby plan
 export const dynamic = 'force-dynamic';
@@ -59,6 +61,12 @@ async function downloadVideo(url: string, outputPath: string): Promise<void> {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!;
+  }
+
   const tempFilePath = getTempFilePath();
   
   try {

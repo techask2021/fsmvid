@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { withRateLimit } from "@/lib/rate-limit-middleware"
+import { RATE_LIMITS } from "@/lib/rate-limit"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -15,6 +17,12 @@ export const maxDuration = 60
  * Solution: Browser fetches API directly, then uses proxy for video download
  */
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.VIDEO_INFO)
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!
+  }
+
   try {
     const { url } = await request.json()
 

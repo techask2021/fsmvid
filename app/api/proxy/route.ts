@@ -1,7 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
+import { RATE_LIMITS } from "@/lib/rate-limit"
 
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY)
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!
+  }
+
   try {
     // Parse the request body
     const body = await request.json()
@@ -360,18 +368,20 @@ export async function POST(request: NextRequest) {
       }
 
       // Return the formatted API response - if we have medias, retain the original format
+      let finalResponse;
       if (data.medias) {
-        return NextResponse.json({
+        finalResponse = NextResponse.json({
           status: "success",
           ...data
         })
+      } else {
+        // Otherwise return the formats as is
+        finalResponse = NextResponse.json({
+          status: "success",
+          formats: data.formats
+        })
       }
-
-      // Otherwise return the formats as is
-      return NextResponse.json({
-        status: "success",
-        formats: data.formats
-      })
+      return addRateLimitHeaders(finalResponse, rateLimitResult.headers!)
   } catch (error) {
     // Always log unexpected errors - these indicate code problems
     console.error("⚠️ CRITICAL - Unexpected proxy error:", error)

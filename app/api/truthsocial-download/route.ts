@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { proxyManager } from "./proxy-pool"
+import { withRateLimit } from "@/lib/rate-limit-middleware"
+import { RATE_LIMITS } from "@/lib/rate-limit"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -10,6 +12,12 @@ export const maxDuration = 60
  * Serverless-compatible: Fetches a fresh proxy on each request
  */
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD)
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!
+  }
+
   try {
     const { url, filename } = await request.json()
 
