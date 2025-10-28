@@ -17,14 +17,18 @@ export const maxDuration = 60
  * Solution: Browser fetches API directly, then uses proxy for video download
  */
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.VIDEO_INFO)
-  if (!rateLimitResult.success) {
-    return rateLimitResult.response!
-  }
-
   try {
-    const { url } = await request.json()
+    const { url, isHomepage } = await request.json()
+    
+    // ALWAYS apply Redis rate limiting to protect API from bots
+    // This applies to BOTH homepage and tool pages
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.VIDEO_INFO)
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!
+    }
+    
+    // Note: Client-side download limit (3 per platform) is only on homepage
+    // But API rate limiting (200/hour) applies to ALL pages for security
 
     if (!url) {
       return NextResponse.json(

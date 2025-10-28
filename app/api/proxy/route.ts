@@ -4,16 +4,20 @@ import { RATE_LIMITS } from "@/lib/rate-limit"
 
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY)
-  if (!rateLimitResult.success) {
-    return rateLimitResult.response!
-  }
-
   try {
     // Parse the request body
     const body = await request.json()
-    const { url, platform } = body
+    const { url, platform, isHomepage } = body
+    
+    // ALWAYS apply Redis rate limiting to protect API from bots
+    // This applies to BOTH homepage and tool pages
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY)
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!
+    }
+    
+    // Note: Client-side download limit (3 per platform) is only on homepage
+    // But API rate limiting (200/hour) applies to ALL pages for security
 
     if (!url || !platform) {
       return NextResponse.json({ status: "error", message: "URL and platform are required" }, { status: 400 })
@@ -116,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Retry logic for handling intermittent failures
-    const maxRetries = 3;
+    const maxRetries = 5;
     const retryDelay = 1500; // 1.5 seconds between retries
     let lastError = null;
     let data = null;
@@ -381,7 +385,9 @@ export async function POST(request: NextRequest) {
           formats: data.formats
         })
       }
-      return addRateLimitHeaders(finalResponse, rateLimitResult.headers!)
+      
+      // Add rate limit headers (applied to all requests)
+      return addRateLimitHeaders(finalResponse, rateLimitResult.headers || {})
   } catch (error) {
     // Always log unexpected errors - these indicate code problems
     console.error("⚠️ CRITICAL - Unexpected proxy error:", error)

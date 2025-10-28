@@ -2,7 +2,8 @@
 
 import type React from "react"
 import Link from "next/link"
-import { useState, lazy, Suspense } from "react"
+import { useState, lazy, Suspense, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +12,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert" // A
 import { detectPlatform } from "@/lib/platform-detector"
 import type { DownloadResult } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
+import { useDownloadLimit } from "@/hooks/use-download-limit"
+import { DownloadLimitModal } from "./download-limit-modal"
+import { DownloadHintBanner } from "./download-hint-banner"
 
 // Lazy load the download results component
 const DownloadResults = lazy(() => import("./download-results"))
@@ -21,9 +25,22 @@ export default function UniversalDownloader() {
   const [error, setError] = useState("")
   const [downloadData, setDownloadData] = useState<DownloadResult | null>(null)
   const { toast } = useToast()
+  
+  // Download limit tracking (only on homepage)
+  const pathname = usePathname()
+  const isHomepage = pathname === '/'
+  const { limitState, checkLimit, handleBypass, handleProceed } = useDownloadLimit()
+  const [showLimitModal, setShowLimitModal] = useState(false)
+  const [showHint, setShowHint] = useState(false)
+  const [currentPlatform, setCurrentPlatform] = useState("")
+  const [platformUrl, setPlatformUrl] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    console.log('[DEBUG] handleSubmit called')
+    console.log('[DEBUG] pathname:', pathname)
+    console.log('[DEBUG] isHomepage:', isHomepage)
 
     if (!url) {
       setError("Please enter a URL")
@@ -33,12 +50,40 @@ export default function UniversalDownloader() {
     setLoading(true)
     setError("")
     setDownloadData(null)
+    setShowHint(false) // Hide hint when starting new download
 
     try {
       const platform = detectPlatform(url)
+      console.log('[DEBUG] Detected platform:', platform)
 
       if (!platform) {
         throw new Error("Unsupported platform or invalid URL")
+      }
+
+      // Check download limit (only on homepage)
+      console.log('[DEBUG] About to check if homepage...', { isHomepage, pathname })
+      if (isHomepage) {
+        console.log('[Download Limit] ✅ IS HOMEPAGE - Checking limit for platform:', platform)
+        const limitStatus = checkLimit(platform, true)
+        console.log('[Download Limit] Status:', limitStatus)
+        setCurrentPlatform(platform)
+        
+        // Get platform URL for modal (don't call handleProceed, just construct URL)
+        const platformUrl = `/` + platform.toLowerCase() + '-video-saver'
+        setPlatformUrl(platformUrl)
+        
+        // Show modal if limit reached
+        if (limitStatus.shouldShowModal) {
+          console.log('[Download Limit] SHOWING MODAL!')
+          setShowLimitModal(true)
+          // Don't block the download, just show modal
+        }
+        
+        // Show hint if on second download
+        if (limitStatus.shouldShowHint && limitStatus.remainingDownloads > 0) {
+          console.log('[Download Limit] SHOWING HINT! Remaining:', limitStatus.remainingDownloads)
+          setShowHint(true)
+        }
       }
 
       const response = await fetch("/api/download", {
@@ -97,12 +142,23 @@ export default function UniversalDownloader() {
   }
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-lg bg-white/5 border-white/10 backdrop-blur-lg" id="download" data-downloader="true"> {/* Optional: Added some glassmorphism to card */}
-      <CardHeader className="pb-2">
-        <CardTitle className="text-2xl font-bold text-center text-white/90">Download Any Content</CardTitle> {/* Adjusted text color */}
-      </CardHeader>
-      <CardContent className="pt-4">
-        <form onSubmit={handleSubmit} translate="no" className="space-y-4">
+    <>
+      <Card className="w-full max-w-3xl mx-auto shadow-lg bg-white/5 border-white/10 backdrop-blur-lg" id="download" data-downloader="true"> {/* Optional: Added some glassmorphism to card */}
+        <CardHeader className="pb-2">
+          <CardTitle className="text-2xl font-bold text-center text-white/90">Download Any Content</CardTitle> {/* Adjusted text color */}
+        </CardHeader>
+        <CardContent className="pt-4">
+          {/* Show hint banner if on download #2 */}
+          {showHint && limitState && isHomepage && (
+            <DownloadHintBanner
+              remainingDownloads={limitState.remainingDownloads}
+              platformName={currentPlatform}
+              platformUrl={platformUrl}
+              onDismiss={() => setShowHint(false)}
+            />
+          )}
+
+          <form onSubmit={handleSubmit} translate="no" className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
               type="url"
@@ -158,5 +214,23 @@ export default function UniversalDownloader() {
         </form>
       </CardContent>
     </Card>
+
+    {/* Download Limit Modal - only show on homepage */}
+    {isHomepage && limitState && (
+      <DownloadLimitModal
+        open={showLimitModal}
+        onOpenChange={setShowLimitModal}
+        platform={currentPlatform}
+        platformUrl={platformUrl}
+        count={limitState.count}
+        limit={limitState.limit}
+        resetTimestamp={limitState.resetTimestamp}
+        onProceed={() => {
+          handleProceed(currentPlatform)
+          setShowLimitModal(false)
+        }}
+      />
+    )}
+    </>
   )
 }

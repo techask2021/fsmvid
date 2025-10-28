@@ -9,15 +9,19 @@ export const fetchCache = 'force-no-store';
 export const maxDuration = 60; // 60 seconds (Vercel limit)
 
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
-  if (!rateLimitResult.success) {
-    return rateLimitResult.response!;
-  }
-
   try {
     // Extract the m3u8 URL from the request
-    const { url, title = 'dailymotion_video' } = await request.json();
+    const { url, title = 'dailymotion_video', isHomepage } = await request.json();
+    
+    // ALWAYS apply Redis rate limiting to protect API from bots
+    // This applies to BOTH homepage and tool pages
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!;
+    }
+    
+    // Note: Client-side download limit (3 per platform) is only on homepage
+    // But API rate limiting (200/hour) applies to ALL pages for security
 
     if (!url) {
       return NextResponse.json({ error: 'Missing URL parameter' }, { status: 400 });

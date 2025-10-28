@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { AlertCircle, Check, Copy, Download, Loader2, Play, ArrowRight } from "lucide-react"
 import { toast } from "sonner"
 
@@ -10,6 +11,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useDownloadLimit } from "@/hooks/use-download-limit"
+import { DownloadLimitModal } from "./download-limit-modal"
+import { DownloadHintBanner } from "./download-hint-banner"
 import {
   Select,
   SelectContent,
@@ -67,6 +71,54 @@ interface ApiResponse {
   }[]
 }
 
+/**
+ * Get correct platform page URL based on actual routes
+ */
+function getPlatformPageUrl(platform: string): string {
+  const platformUrls: Record<string, string> = {
+    youtube: '/youtube-video-saver',
+    tiktok: '/tiktok-video-saver',
+    instagram: '/instagram-media-saver',
+    facebook: '/facebook-media-grabber',
+    twitter: '/twitter-video-saver',
+    reddit: '/reddit-video-saver',
+    dailymotion: '/dailymotion-video-saver',
+    snapchat: '/snapchat-story-saver',
+    pinterest: '/pinterest-media-saver',
+    tumblr: '/tumblr-content-saver',
+    linkedin: '/linkedin-content-saver',
+    threads: '/threads-video-saver',
+    soundcloud: '/soundcloud-mp3-saver',
+    spotify: '/spotify-mp3-saver',
+    mixcloud: '/mixcloud-mp3-saver',
+    vimeo: '/vimeo-video-extractor',
+    rumble: '/rumble-video-grabber',
+    bluesky: '/bluesky-video-saver',
+    bsky: '/bluesky-video-saver',
+    truthsocial: '/truthsocial-video-saver',
+    telegram: '/telegram-media-saver',
+    imgur: '/imgur-media-saver',
+    weibo: '/weibo-video-saver',
+    douyin: '/douyin-video-saver',
+    kuaishou: '/kuaishou-video-saver',
+    bilibili: '/bilibili-video-saver',
+    '9gag': '/9gag-video-saver',
+    imdb: '/imdb-video-saver',
+    espn: '/espn-video-saver',
+    ted: '/ted-video-saver',
+    capcut: '/capcut-video-saver',
+    febspot: '/febspot-video-saver',
+    ifunny: '/ifunny-video-saver',
+    bitchute: '/bitchute-video-saver',
+    xiaohongshu: '/xiaohongshu-video-saver',
+    castbox: '/castbox-podcast-saver',
+    deezer: '/deezer-music-saver',
+    zingmp3: '/zingmp3-saver',
+  }
+
+  return platformUrls[platform.toLowerCase()] || '/'
+}
+
 export default function PlatformDownloader({ platform }: { platform: string }) {
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
@@ -80,6 +132,15 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
   const [showPlayer, setShowPlayer] = useState(false)
   const [videoTitle, setVideoTitle] = useState("")
   const [thumbnail, setThumbnail] = useState("")
+  
+  // Download limit tracking (only on homepage/universal downloader)
+  const pathname = usePathname()
+  const isHomepage = pathname === '/' || platform === 'universal'
+  const { limitState, checkLimit, handleBypass, handleProceed } = useDownloadLimit()
+  const [showLimitModal, setShowLimitModal] = useState(false)
+  const [showHint, setShowHint] = useState(false)
+  const [currentPlatform, setCurrentPlatform] = useState("")
+  const [platformUrl, setPlatformUrl] = useState("")
 
   const getPlaceholder = (platform: string) => {
     const placeholders: { [key: string]: string } = {
@@ -200,6 +261,28 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       const detectedPlatform = detectPlatform(finalUrlToProcess)
       console.log(`🔍 Detected platform: ${detectedPlatform} for URL: ${finalUrlToProcess}`)
 
+      // Check download limit (only on homepage/universal downloader)
+      if (isHomepage && detectedPlatform) {
+        const limitStatus = checkLimit(detectedPlatform, isHomepage)
+        setCurrentPlatform(detectedPlatform)
+        
+        // Get platform URL for modal - use correct route mapping
+        const detectedPlatformUrl = getPlatformPageUrl(detectedPlatform)
+        setPlatformUrl(detectedPlatformUrl)
+        
+        // If limit exceeded, show modal and BLOCK download
+        if (!limitStatus.allowed) {
+          setShowLimitModal(true)
+          setLoading(false)
+          return // STOP - don't proceed with download
+        }
+        
+        // Show hint if on second download (1 remaining)
+        if (limitStatus.shouldShowHint && limitStatus.remainingDownloads > 0) {
+          setShowHint(true)
+        }
+      }
+
       if (platform !== "universal" && detectedPlatform !== platform) {
         if (platform === 'pinterest' && (url.includes('pin.it') || url.includes('pinterest.com') || url.includes('pinterest.'))) {
           // Allow Pinterest
@@ -220,7 +303,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         const response = await fetch("/api/truthsocial-info", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: finalUrlToProcess }),
+          body: JSON.stringify({ url: finalUrlToProcess, isHomepage }),
         })
 
         const data: any = await response.json()
@@ -291,14 +374,34 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       const response = await fetch("/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json", },
-        body: JSON.stringify({ url: finalUrlToProcess, platform: detectedPlatform || platform }), 
+        body: JSON.stringify({ 
+          url: finalUrlToProcess, 
+          platform: detectedPlatform || platform,
+          isHomepage: isHomepage // Pass homepage flag for rate limiting
+        }), 
       })
 
       const data: ApiResponse = await response.json()
 
       if (!response.ok) {
         const errorMessage = data.message || (data.details ? JSON.stringify(data.details) : "Unknown error");
-        if (response.status === 500) {
+        
+        // YouTube 403 Fallback - Open video player in new tab
+        if (response.status === 403 && (detectedPlatform === 'youtube' || platform === 'youtube')) {
+          // Open YouTube watch page, not the direct video URL
+          const youtubeWatchUrl = finalUrlToProcess.includes('youtube.com') || finalUrlToProcess.includes('youtu.be')
+            ? finalUrlToProcess
+            : url
+          window.open(youtubeWatchUrl, '_blank', 'noopener,noreferrer')
+          toast.info("YouTube blocked our download. We've opened the video - click the 3-dot menu and select 'Download' to save it!", { duration: 10000 })
+          setLoading(false)
+          return
+        }
+        
+        if (response.status === 429) {
+          // Rate limit - show friendly message
+          setError("Our service is experiencing high traffic right now. Please wait a moment and try again, or visit our dedicated platform page for better service.");
+        } else if (response.status === 500) {
           setError(platform !== "universal" ? "We couldn't process this URL. Try using our Universal downloader instead." : "We couldn't process this URL. The video may be private, removed, or from an unsupported source.");
         } else if (response.status === 404) {
           setError("The video could not be found. It may have been deleted or made private.");
@@ -306,6 +409,8 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           setError(platform !== "universal" ? "This URL format isn't supported. Try our Universal downloader." : "This URL format isn't supported. Please use a valid video link.");
         } else if (errorMessage.includes("timeout")) {
           setError("The request timed out. Please try again later.");
+        } else if (errorMessage.includes("Too many requests")) {
+          setError("We're processing lots of requests right now! Please wait a moment, or try our platform-specific downloader for faster service.");
         } else {
           setError(`We encountered an issue: ${errorMessage}`);
         }
@@ -452,7 +557,8 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               url: downloadUrl, 
-              filename: filename 
+              filename: filename,
+              isHomepage 
             }),
           });
           
@@ -479,7 +585,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         if ((downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') && (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')))) {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
           toast.info("Downloading m3u8 streaming file...", { duration: 8000 });
-          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_${Date.now()}` }), });
+          const response = await fetch('/api/hls-download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, title: sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_${Date.now()}`, isHomepage }), });
           if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || 'Download failed'); }
           const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
           const link = document.createElement('a'); link.href = blobUrl; link.download = `${sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_stream_${Date.now()}`}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
@@ -582,13 +688,23 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         }
         
         // Standard download for other platforms
-        const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform }), })
+        const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform, isHomepage }), })
         if (!response.ok) throw new Error('Download failed')
         const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
         const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
         toast.success("Download successful!")
       } catch (error) {
         console.error('Download error:', error); 
+        
+        // YouTube 403 Fallback - Open direct video link in new tab when download fails
+        if (detectedPlatform === 'youtube' || platform === 'youtube') {
+          // Open the direct video URL (googlevideo.com) so user can save it
+          window.open(downloadUrl, '_blank', 'noopener,noreferrer')
+          toast.info("YouTube blocked the download. We've opened the direct video link - right-click and select 'Save video as...' to download!", { duration: 10000 })
+          setDownloadLoading(false)
+          return
+        }
+        
         toast.error("Download failed. Trying alternative method...");
         // Try direct download without opening new tab
         try {
@@ -666,7 +782,17 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
   const availableQualities = selectedFormat ? downloadOptions.filter((option) => option.format === selectedFormat).map((option) => option.quality) : []
 
   return (
-    <div data-downloader="true"> 
+    <div data-downloader="true">
+      {/* Show hint banner if on download #2 (only on homepage/universal) */}
+      {showHint && limitState && isHomepage && (
+        <DownloadHintBanner
+          remainingDownloads={limitState.remainingDownloads}
+          platformName={currentPlatform}
+          platformUrl={platformUrl}
+          onDismiss={() => setShowHint(false)}
+        />
+      )}
+ 
       <form onSubmit={handleSubmit} translate="no" className="space-y-4">
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-500">
           <div className="flex flex-col lg:flex-row gap-6">
@@ -889,6 +1015,23 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             </div>
           )}
         </form>
+
+      {/* Download Limit Modal - only show on homepage/universal */}
+      {isHomepage && limitState && (
+        <DownloadLimitModal
+          open={showLimitModal}
+          onOpenChange={setShowLimitModal}
+          platform={currentPlatform}
+          platformUrl={platformUrl}
+          count={limitState.count}
+          limit={limitState.limit}
+          resetTimestamp={limitState.resetTimestamp}
+          onProceed={() => {
+            handleProceed(currentPlatform)
+            setShowLimitModal(false)
+          }}
+        />
+      )}
     </div> 
   )
 }

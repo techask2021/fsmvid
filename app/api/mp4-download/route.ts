@@ -61,12 +61,6 @@ async function downloadVideo(url: string, outputPath: string): Promise<void> {
 }
 
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
-  if (!rateLimitResult.success) {
-    return rateLimitResult.response!;
-  }
-
   const tempFilePath = getTempFilePath();
   
   try {
@@ -75,7 +69,7 @@ export async function POST(request: NextRequest) {
     if (!text) {
       return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
     }
-
+    
     // Parse the JSON safely
     let data;
     try {
@@ -84,7 +78,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
     }
 
-    const { url, title = 'dailymotion_video' } = data;
+    const { url, title = 'dailymotion_video', isHomepage } = data;
+    
+    // ALWAYS apply Redis rate limiting to protect API from bots
+    // This applies to BOTH homepage and tool pages
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD);
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!;
+    }
+    
+    // Note: Client-side download limit (3 per platform) is only on homepage
+    // But API rate limiting (200/hour) applies to ALL pages for security
 
     if (!url) {
       return NextResponse.json({ error: 'Missing URL parameter' }, { status: 400 });
@@ -130,7 +134,7 @@ export async function POST(request: NextRequest) {
 
     // Read the file and stream it to the response
     const fileBuffer = await readFile(tempFilePath);
-    const response = new NextResponse(fileBuffer);
+    const response = new NextResponse(fileBuffer as unknown as BodyInit);
 
     response.headers.set('Content-Type', 'video/mp4');
     response.headers.set('Content-Disposition', `attachment; filename="${filename}"`);

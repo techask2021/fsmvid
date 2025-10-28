@@ -7,15 +7,19 @@ export const runtime = "nodejs" // Use Node.js runtime for better compatibility 
 export const maxDuration = 60 // Allow up to 60 seconds for large file downloads
 
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD)
-  if (!rateLimitResult.success) {
-    return rateLimitResult.response!
-  }
-
   try {
     // Destructure platform from the request body as well
-    const { url, filename, platform: originalPlatform } = await request.json();
+    const { url, filename, platform: originalPlatform, isHomepage } = await request.json();
+    
+    // ALWAYS apply Redis rate limiting to protect API from bots
+    // This applies to BOTH homepage and tool pages
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD)
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!
+    }
+    
+    // Note: Client-side download limit (3 per platform) is only on homepage
+    // But API rate limiting (200/hour) applies to ALL pages for security
 
     if (!url) {
       return NextResponse.json({ message: "URL is required" }, { status: 400 });
@@ -183,8 +187,8 @@ export async function POST(request: NextRequest) {
         response.headers.set('Content-Length', contentLength)
       }
       
-      // Add rate limit headers to response
-      return addRateLimitHeaders(response, rateLimitResult.headers!)
+      // Add rate limit headers (applied to all requests)
+      return addRateLimitHeaders(response, rateLimitResult.headers || {})
     } catch (downloadError) {
       console.error('Error downloading file:', downloadError);
       return NextResponse.json({ message: 'Error downloading file content' }, { status: 500 });
