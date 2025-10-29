@@ -135,7 +135,9 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
   
   // Download limit tracking (only on homepage/universal downloader)
   const pathname = usePathname()
-  const isHomepage = !!(pathname === '/' || platform === 'universal')
+  // isHomepage should ONLY depend on pathname, not platform prop
+  // This ensures requests from homepage always show Homepage: true
+  const isHomepage = pathname === '/'
   const { limitState, checkLimit, handleBypass, handleProceed } = useDownloadLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [showHint, setShowHint] = useState(false)

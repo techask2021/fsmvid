@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
 import { RATE_LIMITS } from "@/lib/rate-limit"
+import { getCachedResponse, setCachedResponse } from "@/lib/api-cache"
 
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
@@ -95,6 +96,13 @@ export async function POST(request: NextRequest) {
           if (DEBUG_MODE) console.log("✅ Normalized Reddit URL:", processUrl);
         }
       }
+    }
+
+    // Check cache first to avoid unnecessary API calls
+    const cachedData = getCachedResponse(processUrl)
+    if (cachedData) {
+      console.info(`[CACHE] Returning cached data for ${platform}`)
+      return NextResponse.json(cachedData, { status: 200 })
     }
 
     // Get the new ZM API credentials from environment variables
@@ -374,20 +382,20 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      // Return the formatted API response - if we have medias, retain the original format
-      let finalResponse;
-      if (data.medias) {
-        finalResponse = NextResponse.json({
-          status: "success",
-          ...data
-        })
-      } else {
-        // Otherwise return the formats as is
-        finalResponse = NextResponse.json({
-          status: "success",
-          formats: data.formats
-        })
+      // Prepare response data
+      const responseData = data.medias ? {
+        status: "success",
+        ...data
+      } : {
+        status: "success",
+        formats: data.formats
       }
+      
+      // Cache the successful response to avoid repeated API calls
+      setCachedResponse(processUrl, responseData)
+      
+      // Return the formatted API response
+      const finalResponse = NextResponse.json(responseData)
       
       // Add rate limit headers (applied to all requests)
       return addRateLimitHeaders(finalResponse, rateLimitResult.headers || {})

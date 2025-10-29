@@ -110,10 +110,10 @@ export function getClientIP(headers: Headers): string {
  * Different rate limit tiers for different endpoints
  */
 export const RATE_LIMITS = {
-  // Expensive endpoints - generous limits (platform pages need unlimited)
-  DOWNLOAD: { interval: 3600, limit: 200 },       // 200 downloads per hour (very generous)
-  VIDEO_INFO: { interval: 3600, limit: 200 },     // 200 info requests per hour
-  PROXY: { interval: 3600, limit: 200 },          // 200 proxy requests per hour
+  // Expensive endpoints - reduced to save API costs (80 requests per hour)
+  DOWNLOAD: { interval: 3600, limit: 80 },        // 80 downloads per hour (cost-optimized)
+  VIDEO_INFO: { interval: 3600, limit: 80 },      // 80 info requests per hour
+  PROXY: { interval: 3600, limit: 80 },           // 80 proxy requests per hour
   
   // Less expensive endpoints - relaxed limits
   GENERAL: { interval: 3600, limit: 300 },        // 300 requests per hour
