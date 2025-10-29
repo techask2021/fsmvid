@@ -20,8 +20,12 @@ interface RequestTracker {
 const requestTracking = new Map<string, RequestTracker>()
 
 // Thresholds for bot detection
-const BOT_THRESHOLD = 30 // requests (reduced from 50 for faster bot detection)
+// These are set to allow legitimate users who retry downloads or download multiple videos
+// while still catching automated bots quickly
+const BOT_THRESHOLD = 50 // requests in 10 minutes (allows batch downloads by real users)
 const TIME_WINDOW = 10 * 60 * 1000 // 10 minutes in milliseconds
+const RAPID_FIRE_THRESHOLD = 12 // requests in 10 seconds (allows retries but catches bots)
+const RAPID_FIRE_WINDOW = 10 * 1000 // 10 seconds
 
 /**
  * Track a request and check if it's bot behavior
@@ -60,9 +64,10 @@ export function trackAndDetectBot(ip: string): {
   // Update count based on recent timestamps
   const recentCount = tracker.timestamps.length
   
-  // Bot detection: 30+ requests in 10 minutes
+  // Bot detection: 50+ requests in 10 minutes
+  // This allows real users to download multiple videos or retry failures
   if (recentCount >= BOT_THRESHOLD) {
-    const reason = `Bot detected: ${recentCount} requests in 10 minutes`
+    const reason = `Bot detected: ${recentCount} requests in 10 minutes (automated behavior)`
     
     // Auto-blacklist this IP
     addToTempBlacklist(ip, reason)
@@ -76,13 +81,50 @@ export function trackAndDetectBot(ip: string): {
     }
   }
   
-  // Check for rapid-fire requests (5 requests in 10 seconds = suspicious)
-  const last10Seconds = tracker.timestamps.filter(
-    timestamp => now - timestamp < 10 * 1000
+  // ADVANCED: Check for rapid-fire requests (12 requests in 10 seconds = bot)
+  // Allows users to retry failed downloads (5-10 retries) but catches automation
+  const rapidFireRequests = tracker.timestamps.filter(
+    timestamp => now - timestamp < RAPID_FIRE_WINDOW
   )
   
-  if (last10Seconds.length >= 5) {
-    console.info(`[BOT DETECTOR] Suspicious rapid requests: ${last10Seconds.length} in 10s - IP: ${ip}`)
+  if (rapidFireRequests.length >= RAPID_FIRE_THRESHOLD) {
+    const reason = `Bot detected: ${rapidFireRequests.length} requests in 10 seconds (too fast - likely automated)`
+    addToTempBlacklist(ip, reason)
+    console.warn(`[BOT DETECTOR] ${reason} - IP: ${ip}`)
+    return {
+      isBot: true,
+      requestCount: recentCount,
+      reason,
+    }
+  }
+  
+  // ADVANCED: Check for too-perfect timing (consistent intervals = bot)
+  // Only check if we have enough data points and requests are very fast
+  if (tracker.timestamps.length >= 10) {
+    const intervals: number[] = []
+    for (let i = 1; i < tracker.timestamps.length; i++) {
+      intervals.push(tracker.timestamps[i] - tracker.timestamps[i - 1])
+    }
+    
+    // Calculate average and variance
+    const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
+    const variance = intervals.reduce((sum, interval) => {
+      return sum + Math.pow(interval - avg, 2)
+    }, 0) / intervals.length
+    
+    // If variance is VERY low (perfect timing) AND fast requests, likely a bot
+    // Real humans have irregular timing, even when working through a list
+    // Only flag if average is less than 3 seconds AND variance is very low
+    if (variance < 50000 && avg < 3000) {
+      const reason = `Bot detected: Perfect automated timing (avg: ${Math.round(avg)}ms, variance: ${Math.round(variance)})`
+      addToTempBlacklist(ip, reason)
+      console.warn(`[BOT DETECTOR] ${reason} - IP: ${ip}`)
+      return {
+        isBot: true,
+        requestCount: recentCount,
+        reason,
+      }
+    }
   }
   
   return {

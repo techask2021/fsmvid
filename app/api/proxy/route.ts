@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return rateLimitResult.response!
     }
     
-    // Smart bot detection: Auto-block at 30 requests in 10 minutes
+    // Smart bot detection: Auto-block at 50 requests in 10 minutes OR 12 requests in 10 seconds
     const clientIP = getClientIP(request.headers)
     const botCheck = trackAndDetectBot(clientIP)
     
@@ -36,12 +36,24 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Validate request origin/referer to block direct API calls
+    // Advanced validation: Check origin, referer, User-Agent, and browser headers
     const userAgent = request.headers.get('user-agent')
     const origin = request.headers.get('origin')
     const referer = request.headers.get('referer')
     
-    const validation = validateRequest(origin, referer, userAgent)
+    const validation = validateRequest(origin, referer, userAgent, request.headers)
+    
+    // If bot detected via User-Agent or missing headers, BLOCK immediately
+    if (validation.isBot) {
+      console.warn(`[BOT DETECTOR] Bot detected via advanced checks from ${clientIP}: ${validation.reasons.join(', ')}`)
+      return NextResponse.json(
+        {
+          status: 'error',
+          message: 'Bot detected. Access denied.',
+        },
+        { status: 403 }
+      )
+    }
     
     if (!validation.valid) {
       console.warn(`[REQUEST VALIDATOR] Suspicious request from ${clientIP}: ${validation.reasons.join(', ')}`)
