@@ -20,7 +20,7 @@ interface RequestTracker {
 const requestTracking = new Map<string, RequestTracker>()
 
 // Thresholds for bot detection
-const BOT_THRESHOLD = 50 // requests
+const BOT_THRESHOLD = 30 // requests (reduced from 50 for faster bot detection)
 const TIME_WINDOW = 10 * 60 * 1000 // 10 minutes in milliseconds
 
 /**
@@ -60,7 +60,7 @@ export function trackAndDetectBot(ip: string): {
   // Update count based on recent timestamps
   const recentCount = tracker.timestamps.length
   
-  // Bot detection: 50+ requests in 10 minutes
+  // Bot detection: 30+ requests in 10 minutes
   if (recentCount >= BOT_THRESHOLD) {
     const reason = `Bot detected: ${recentCount} requests in 10 minutes`
     

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return rateLimitResult.response!
     }
     
-    // Smart bot detection: Track requests and auto-block suspicious IPs
+    // Smart bot detection: Auto-block at 30 requests in 10 minutes
     const clientIP = getClientIP(request.headers)
     const botCheck = trackAndDetectBot(clientIP)
     

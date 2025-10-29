@@ -152,8 +152,9 @@ export function validateRequest(
     recommendedAction = 'allow'
     suspicious = false // Override
   } else if (!originCheck.valid) {
-    // Origin/Referer check failed = likely direct API call
-    recommendedAction = 'strict_limit' // Apply 50/hour limit instead of 200
+    // Origin/Referer check failed = likely direct API call or outside domain
+    // BLOCK COMPLETELY - No access from outside the website!
+    recommendedAction = 'block'
   }
   
   return {
