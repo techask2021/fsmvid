@@ -44,8 +44,8 @@ const nextConfig = {
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error', 'warn'],
-    } : false, // Remove console logs in production
+      exclude: ['error', 'warn', 'info'], // Keep error, warn, and info logs in production
+    } : false, // Remove only console.log and console.debug in production
   },
   reactStrictMode: true, // Helps catch potential issues
   poweredByHeader: false, // Remove X-Powered-By header

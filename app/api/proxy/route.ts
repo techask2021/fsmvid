@@ -13,11 +13,14 @@ export async function POST(request: NextRequest) {
     // This applies to BOTH homepage and tool pages
     const rateLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY)
     if (!rateLimitResult.success) {
+      console.info(`[RATE LIMIT] Blocked request for platform: ${platform}`)
       return rateLimitResult.response!
     }
     
     // Note: Client-side download limit (3 per platform) is only on homepage
     // But API rate limiting (200/hour) applies to ALL pages for security
+    
+    console.info(`[PROXY] Request for ${platform} - Homepage: ${isHomepage}`)
 
     if (!url || !platform) {
       return NextResponse.json({ status: "error", message: "URL and platform are required" }, { status: 400 })
@@ -130,7 +133,7 @@ export async function POST(request: NextRequest) {
       try {
         // Make the request to the new ZM API endpoint using POST with body
         if (DEBUG_MODE) {
-          console.log(`Making POST request to: ${apiUrl} (Attempt ${attempt}/${maxRetries})`);
+          console.info(`Making POST request to: ${apiUrl} (Attempt ${attempt}/${maxRetries})`);
         }
         
         response = await fetch(apiUrl, options)
@@ -138,8 +141,8 @@ export async function POST(request: NextRequest) {
         
         // Only log in debug mode or on errors
         if (DEBUG_MODE) {
-          console.log("ZM API Status:", response.status)
-          console.log("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
+          console.info("ZM API Status:", response.status)
+          console.info("ZM API Response:", JSON.stringify(data).substring(0, 200) + "...")
         }
         
         // Check if we got a successful response with media
@@ -148,13 +151,13 @@ export async function POST(request: NextRequest) {
         
         // If successful or it's a permanent error (not a temporary "no media" issue), break the loop
         if (response.ok && hasMedia && !isNoMediaError) {
-          if (DEBUG_MODE) console.log(`✓ Success on attempt ${attempt}`);
+          if (DEBUG_MODE) console.info(`✓ Success on attempt ${attempt}`);
           break;
         }
         
         // If it's a "no medias found" error and we have retries left, try again
         if (isNoMediaError && attempt < maxRetries) {
-          if (DEBUG_MODE) console.log(`⚠ No medias found on attempt ${attempt}, retrying in ${retryDelay}ms...`);
+          if (DEBUG_MODE) console.info(`⚠ No medias found on attempt ${attempt}, retrying in ${retryDelay}ms...`);
           await new Promise(resolve => setTimeout(resolve, retryDelay));
           continue;
         }

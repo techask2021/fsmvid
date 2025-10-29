@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     // This applies to BOTH homepage and tool pages
     const rateLimitResult = await withRateLimit(request, RATE_LIMITS.DOWNLOAD)
     if (!rateLimitResult.success) {
+      console.info(`[RATE LIMIT] Blocked download for platform: ${originalPlatform}`)
       return rateLimitResult.response!
     }
     
@@ -32,6 +33,8 @@ export async function POST(request: NextRequest) {
     // Use the platform passed from the client, as 'url' is now a direct media link
     // and detectPlatform(directMediaUrl) would likely fail or be incorrect.
     const platformToUse = originalPlatform || detectPlatform(url) || ''; // Fallback if not provided, though it should be
+    
+    console.info(`[DOWNLOAD] Starting download - Platform: ${platformToUse}, Filename: ${filename}`)
     const isTikTok = platformToUse === 'tiktok' || url.includes('tiktok.com') || url.includes('tiktokcdn.com');
     const isDailymotion = platformToUse === 'dailymotion';
     const isWeibo = platformToUse === 'weibo' || url.includes('weibo.com') || url.includes('weibocdn.com') || url.includes('miaopai.com');
@@ -186,6 +189,8 @@ export async function POST(request: NextRequest) {
       if (contentLength) {
         response.headers.set('Content-Length', contentLength)
       }
+      
+      console.info(`[DOWNLOAD] Success - Platform: ${platformToUse}, Size: ${contentLength || 'unknown'}`)
       
       // Add rate limit headers (applied to all requests)
       return addRateLimitHeaders(response, rateLimitResult.headers || {})

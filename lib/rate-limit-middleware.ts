@@ -37,6 +37,7 @@ export async function withRateLimit(
   if (!result.success) {
     // Rate limit exceeded
     const retryAfter = Math.ceil((result.reset - Date.now()) / 1000)
+    console.info(`[RATE LIMIT] IP ${ip} exceeded limit (${result.limit} req/hour)`)
     
     return {
       success: false,
@@ -57,6 +58,11 @@ export async function withRateLimit(
         }
       ),
     }
+  }
+
+  // Rate limit check passed - log only when getting close to limit
+  if (result.remaining <= 10) {
+    console.info(`[RATE LIMIT] IP ${ip} has ${result.remaining} requests remaining`)
   }
 
   // Rate limit check passed

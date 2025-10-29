@@ -84,14 +84,14 @@ export function DownloadLimitModal({
               Great Job! 🎉
             </DialogTitle>
           </div>
-          <DialogDescription className="text-base space-y-3 pt-2">
+          <div className="text-base space-y-3 pt-2">
             <p className="text-lg font-medium text-foreground">
               You've completed {limit} downloads on the homepage!
             </p>
-            <p>
+            <p className="text-muted-foreground">
               For <span className="font-semibold text-primary">unlimited {platformName} downloads</span>, visit our dedicated page with enhanced features:
             </p>
-          </DialogDescription>
+          </div>
         </DialogHeader>
 
         <div className="grid gap-3 py-4">
