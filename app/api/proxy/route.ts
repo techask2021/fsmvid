@@ -5,107 +5,6 @@ import { getCachedResponse, setCachedResponse } from "@/lib/api-cache"
 import { trackAndDetectBot, isSuspiciousPattern } from "@/lib/bot-detector"
 import { getClientIP } from "@/lib/rate-limit"
 import { validateRequest } from "@/lib/request-validator"
-import { cacheYouTubeDownloadUrl } from "@/lib/youtube-download-cache"
-
-/**
- * Cache YouTube download URLs and replace with proxied URLs
- * This prevents 403 errors by routing downloads through our server
- */
-async function cacheYouTubeUrls(responseData: any, originalVideoUrl: string, videoTitle: string): Promise<any> {
-  console.info('[YOUTUBE CACHE] Processing YouTube URLs for caching...')
-  
-  try {
-    // Handle medias array format (common YouTube API response)
-    if (responseData.medias && Array.isArray(responseData.medias)) {
-      const proxiedMedias = await Promise.all(
-        responseData.medias.map(async (media: any) => {
-          if (media.url && media.url.includes('googlevideo.com')) {
-            // Extract quality and format
-            const quality = media.label || media.quality || media.height ? `${media.height}p` : 'unknown'
-            const format = media.ext || media.extension || 'mp4'
-            const filename = `${videoTitle.replace(/[^a-z0-9]/gi, '_').substring(0, 50)}_${quality}.${format}`
-            
-            // Cache the URL and get proxied path
-            const proxiedUrl = await cacheYouTubeDownloadUrl(
-              media.url,
-              filename,
-              quality,
-              format,
-              videoTitle,
-              originalVideoUrl
-            )
-            
-            console.info(`[YOUTUBE CACHE] ✓ Cached: ${quality} ${format}`)
-            
-            // Return media object with proxied URL
-            return {
-              ...media,
-              url: proxiedUrl,
-              originalUrl: media.url, // Keep original for reference
-            }
-          }
-          return media
-        })
-      )
-      
-      return {
-        ...responseData,
-        medias: proxiedMedias,
-      }
-    }
-    
-    // Handle formats object format
-    if (responseData.formats && typeof responseData.formats === 'object') {
-      const proxiedFormats: any = {}
-      
-      for (const [formatType, qualities] of Object.entries(responseData.formats)) {
-        proxiedFormats[formatType] = {}
-        
-        for (const [quality, details] of Object.entries(qualities as any)) {
-          const detailsObj = details as any
-          
-          if (detailsObj.url && detailsObj.url.includes('googlevideo.com')) {
-            const filename = `${videoTitle.replace(/[^a-z0-9]/gi, '_').substring(0, 50)}_${quality}.${formatType}`
-            
-            // Cache the URL and get proxied path
-            const proxiedUrl = await cacheYouTubeDownloadUrl(
-              detailsObj.url,
-              filename,
-              quality,
-              formatType,
-              videoTitle,
-              originalVideoUrl
-            )
-            
-            console.info(`[YOUTUBE CACHE] ✓ Cached: ${quality} ${formatType}`)
-            
-            proxiedFormats[formatType][quality] = {
-              ...detailsObj,
-              url: proxiedUrl,
-              originalUrl: detailsObj.url,
-            }
-          } else {
-            proxiedFormats[formatType][quality] = detailsObj
-          }
-        }
-      }
-      
-      return {
-        ...responseData,
-        formats: proxiedFormats,
-      }
-    }
-    
-    console.warn('[YOUTUBE CACHE] No YouTube URLs found to cache')
-    return responseData
-    
-  } catch (error) {
-    console.error('[YOUTUBE CACHE] Error caching URLs:', error)
-    // Return original data if caching fails
-    return responseData
-  }
-}
-
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
   try {
@@ -143,44 +42,22 @@ export async function POST(request: NextRequest) {
     
     const validation = validateRequest(origin, referer, userAgent, request.headers)
     
-    // If bot detected via User-Agent or missing headers, BLOCK immediately
-    if (validation.isBot) {
-      console.warn(`[BOT DETECTOR] Bot detected via advanced checks from ${clientIP}: ${validation.reasons.join(', ')}`)
+    // AGGRESSIVE BOT BLOCKING: Block ALL bots completely (not just rate limit)
+    // This only affects direct API calls and bot scripts - NEVER affects real browser users
+    if (validation.isBot || validation.recommendedAction === 'block') {
+      console.warn(`[BOT BLOCKED] 🚫 Bot completely blocked from ${clientIP}: ${validation.reasons.join(', ')}`)
       return NextResponse.json(
         {
           status: 'error',
-          message: 'Bot detected. Access denied.',
+          message: 'Direct API access is not allowed. Please use our website at https://fsmvid.com',
         },
         { status: 403 }
       )
     }
     
-    if (!validation.valid) {
-      console.warn(`[REQUEST VALIDATOR] Suspicious request from ${clientIP}: ${validation.reasons.join(', ')}`)
-      
-      // If recommendedAction is 'block', reject immediately
-      if (validation.recommendedAction === 'block') {
-        return NextResponse.json(
-          {
-            status: 'error',
-            message: 'Invalid request. Please use the official website.',
-          },
-          { status: 403 }
-        )
-      }
-      
-      // If 'strict_limit', apply additional strict rate limit (50/hour instead of 200)
-      if (validation.recommendedAction === 'strict_limit') {
-        console.info(`[REQUEST VALIDATOR] Applying strict rate limit (50/hour) for direct API call from ${clientIP}`)
-        
-        // Apply strict rate limit for suspected bots
-        const strictLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY_STRICT)
-        if (!strictLimitResult.success) {
-          console.warn(`[RATE LIMIT] Blocked suspected bot ${clientIP} (exceeded 50/hour strict limit)`)
-          return strictLimitResult.response!
-        }
-      }
-    }
+    // If validation passes, allow the request
+    // Real users from browsers (mobile/desktop/tablet) will ALWAYS pass this check
+    // because browsers automatically send Origin, Referer, and proper User-Agent headers
     
     // Note: Client-side download limit (3 per platform) is only on homepage
     // But API rate limiting (200/hour) applies to ALL pages for security
@@ -547,17 +424,12 @@ export async function POST(request: NextRequest) {
       }
 
       // Prepare response data
-      let responseData = data.medias ? {
+      const responseData = data.medias ? {
         status: "success",
         ...data
       } : {
         status: "success",
         formats: data.formats
-      }
-      
-      // For YouTube: Cache download URLs and replace with proxied URLs
-      if (platform === 'youtube' || url.includes('youtube.com') || url.includes('youtu.be')) {
-        responseData = await cacheYouTubeUrls(responseData, processUrl, data.title || 'YouTube Video')
       }
       
       // Cache the successful response to avoid repeated API calls
