@@ -2,6 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
 import { RATE_LIMITS } from "@/lib/rate-limit"
 import { getCachedResponse, setCachedResponse } from "@/lib/api-cache"
+import { trackAndDetectBot, isSuspiciousPattern } from "@/lib/bot-detector"
+import { getClientIP } from "@/lib/rate-limit"
+import { validateRequest } from "@/lib/request-validator"
 
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
@@ -16,6 +19,55 @@ export async function POST(request: NextRequest) {
     if (!rateLimitResult.success) {
       console.info(`[RATE LIMIT] Blocked request for platform: ${platform}`)
       return rateLimitResult.response!
+    }
+    
+    // Smart bot detection: Track requests and auto-block suspicious IPs
+    const clientIP = getClientIP(request.headers)
+    const botCheck = trackAndDetectBot(clientIP)
+    
+    if (botCheck.isBot) {
+      console.warn(`[BOT DETECTOR] Blocked bot IP: ${clientIP} - ${botCheck.reason}`)
+      return NextResponse.json(
+        {
+          status: 'error',
+          message: 'Too many requests detected. Your IP has been temporarily blocked.',
+        },
+        { status: 429 }
+      )
+    }
+    
+    // Validate request origin/referer to block direct API calls
+    const userAgent = request.headers.get('user-agent')
+    const origin = request.headers.get('origin')
+    const referer = request.headers.get('referer')
+    
+    const validation = validateRequest(origin, referer, userAgent)
+    
+    if (!validation.valid) {
+      console.warn(`[REQUEST VALIDATOR] Suspicious request from ${clientIP}: ${validation.reasons.join(', ')}`)
+      
+      // If recommendedAction is 'block', reject immediately
+      if (validation.recommendedAction === 'block') {
+        return NextResponse.json(
+          {
+            status: 'error',
+            message: 'Invalid request. Please use the official website.',
+          },
+          { status: 403 }
+        )
+      }
+      
+      // If 'strict_limit', apply additional strict rate limit (50/hour instead of 200)
+      if (validation.recommendedAction === 'strict_limit') {
+        console.info(`[REQUEST VALIDATOR] Applying strict rate limit (50/hour) for direct API call from ${clientIP}`)
+        
+        // Apply strict rate limit for suspected bots
+        const strictLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY_STRICT)
+        if (!strictLimitResult.success) {
+          console.warn(`[RATE LIMIT] Blocked suspected bot ${clientIP} (exceeded 50/hour strict limit)`)
+          return strictLimitResult.response!
+        }
+      }
     }
     
     // Note: Client-side download limit (3 per platform) is only on homepage

@@ -110,10 +110,14 @@ export function getClientIP(headers: Headers): string {
  * Different rate limit tiers for different endpoints
  */
 export const RATE_LIMITS = {
-  // Expensive endpoints - generous limits (caching helps reduce actual API calls)
+  // Expensive endpoints - generous limits for legitimate browsers (caching helps reduce actual API calls)
   DOWNLOAD: { interval: 3600, limit: 200 },       // 200 downloads per hour (generous with caching)
   VIDEO_INFO: { interval: 3600, limit: 200 },     // 200 info requests per hour
   PROXY: { interval: 3600, limit: 200 },          // 200 proxy requests per hour
+  
+  // Strict limits for suspected bots/direct API calls
+  PROXY_STRICT: { interval: 3600, limit: 50 },    // 50 proxy requests per hour for bots
+  DOWNLOAD_STRICT: { interval: 3600, limit: 50 }, // 50 downloads per hour for bots
   
   // Less expensive endpoints - relaxed limits
   GENERAL: { interval: 3600, limit: 300 },        // 300 requests per hour

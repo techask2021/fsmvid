@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, getClientIP, RateLimitConfig } from './rate-limit'
+import { isBlacklisted } from './ip-blacklist'
 
 /**
  * Middleware wrapper for rate limiting API routes
@@ -25,6 +26,23 @@ export async function withRateLimit(
   headers?: Record<string, string>
 }> {
   const ip = getClientIP(request.headers)
+  
+  // Check IP blacklist FIRST (before rate limiting)
+  if (isBlacklisted(ip)) {
+    return {
+      success: false,
+      response: NextResponse.json(
+        {
+          status: 'error',
+          message: 'Access denied. Your IP has been blocked due to suspicious activity.',
+        },
+        {
+          status: 403,
+        }
+      ),
+    }
+  }
+  
   const result = await rateLimit(ip, config)
 
   // Prepare rate limit headers (helps clients understand their quota)
