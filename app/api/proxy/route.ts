@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Note: Client-side download limit (3 per platform) is only on homepage
     // But API rate limiting (200/hour) applies to ALL pages for security
     
-    console.info(`[PROXY] Request for ${platform} - Homepage: ${isHomepage}`)
+    console.info(`[PROXY] Request for ${platform} - Homepage: ${isHomepage === true ? 'true' : 'false'}`)
 
     if (!url || !platform) {
       return NextResponse.json({ status: "error", message: "URL and platform are required" }, { status: 400 })

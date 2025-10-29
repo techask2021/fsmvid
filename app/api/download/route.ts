@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     // and detectPlatform(directMediaUrl) would likely fail or be incorrect.
     const platformToUse = originalPlatform || detectPlatform(url) || ''; // Fallback if not provided, though it should be
     
-    console.info(`[DOWNLOAD] Starting download - Platform: ${platformToUse}, Filename: ${filename}`)
+    console.info(`[DOWNLOAD] Starting download - Platform: ${platformToUse}, Homepage: ${isHomepage === true ? 'true' : 'false'}, Filename: ${filename}`)
     const isTikTok = platformToUse === 'tiktok' || url.includes('tiktok.com') || url.includes('tiktokcdn.com');
     const isDailymotion = platformToUse === 'dailymotion';
     const isWeibo = platformToUse === 'weibo' || url.includes('weibo.com') || url.includes('weibocdn.com') || url.includes('miaopai.com');

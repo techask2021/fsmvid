@@ -28,7 +28,7 @@ export default function UniversalDownloader() {
   
   // Download limit tracking (only on homepage)
   const pathname = usePathname()
-  const isHomepage = pathname === '/'
+  const isHomepage = !!(pathname === '/')
   const { limitState, checkLimit, handleBypass, handleProceed } = useDownloadLimit()
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [showHint, setShowHint] = useState(false)
