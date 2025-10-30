@@ -255,6 +255,7 @@ const nextConfig = {
                 https://*.google-analytics.com 
                 https://*.googletagmanager.com 
                 https://*.cloudflareinsights.com 
+                https://challenges.cloudflare.com 
                 http://gc.kis.v2.scr.kaspersky-labs.com 
                 ws://gc.kis.v2.scr.kaspersky-labs.com 
                 https://pagead2.googlesyndication.com 
@@ -272,7 +273,7 @@ const nextConfig = {
               font-src 'self' https://fonts.gstatic.com https://www.gstatic.com;
               img-src 'self' data: https: blob: https://truthsocial.com https://*.truthsocial.com;
               connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://truthsocial.com https://*.truthsocial.com https://ephemeral-proxies.p.rapidapi.com;
-              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net https://truthsocial.com;
+              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net https://truthsocial.com https://challenges.cloudflare.com;
               media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob: https://truthsocial.com https://*.truthsocial.com;
               object-src 'none';
               worker-src 'self' blob:;
