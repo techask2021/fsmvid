@@ -103,23 +103,69 @@ const PortableTextComponents = {
         )}
       </div>
     ),
-    table: ({ value }: any) => (
-      <div className="my-8 overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {value.rows?.map((row: any, rowIndex: number) => (
-              <tr key={rowIndex}>
-                {row.cells?.map((cell: any, cellIndex: number) => (
-                  <td key={cellIndex} className="px-4 py-2 text-sm">
-                    {cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ),
+    table: ({ value }: any) => {
+      const rows = value?.rows ?? []
+      if (!rows.length) {
+        return null
+      }
+
+      const getCells = (row: any) => (Array.isArray(row) ? row : row?.cells) ?? []
+      const headerCells = getCells(rows[0])
+      const dataRows = rows.slice(1)
+
+      return (
+        <div className="my-10 overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden rounded-xl border border-primary/30 bg-primary/5 shadow-lg">
+              <table className="min-w-full text-sm md:text-base">
+                {headerCells.length > 0 && (
+                  <thead className="bg-primary/10">
+                    <tr>
+                      {headerCells.map((cell: any, cellIndex: number) => (
+                        <th
+                          key={cellIndex}
+                          className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-xs md:text-sm text-primary"
+                          scope="col"
+                        >
+                          {cell}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody className="divide-y divide-primary/10">
+                  {dataRows.map((row: any, rowIndex: number) => {
+                    const cells = getCells(row)
+                    return (
+                      <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-background/95' : 'bg-primary/5'}>
+                        {cells.map((cell: any, cellIndex: number) =>
+                          cellIndex === 0 ? (
+                            <th
+                              key={cellIndex}
+                              scope="row"
+                              className="px-4 py-3 text-left font-semibold text-foreground"
+                            >
+                              {cell}
+                            </th>
+                          ) : (
+                            <td
+                              key={cellIndex}
+                              className="px-4 py-3 text-left text-muted-foreground"
+                            >
+                              {cell}
+                            </td>
+                          )
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )
+    },
   },
   block: {
     h1: ({ children }: any) => <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>,
