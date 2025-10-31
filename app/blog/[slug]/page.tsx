@@ -27,9 +27,9 @@ const RelatedPostsLoading = () => <div className="mt-8 pt-6 border-t">
 </div>;
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // Revalidate this page every 60 seconds (ISR)
@@ -37,7 +37,8 @@ export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const post = await getPostBySlug(params.slug).catch(() => null)
+    const { slug } = await params
+    const post = await getPostBySlug(slug).catch(() => null)
     
     if (!post) {
       return {
@@ -102,6 +103,23 @@ const PortableTextComponents = {
         )}
       </div>
     ),
+    table: ({ value }: any) => (
+      <div className="my-8 overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {value.rows?.map((row: any, rowIndex: number) => (
+              <tr key={rowIndex}>
+                {row.cells?.map((cell: any, cellIndex: number) => (
+                  <td key={cellIndex} className="px-4 py-2 text-sm">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ),
   },
   block: {
     h1: ({ children }: any) => <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>,
@@ -143,10 +161,28 @@ const PortableTextComponents = {
   },
   marks: {
     link: ({ children, value }: any) => {
-      const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
+      // Sanity uses "href" for some link types and "url" for others
+      const href = value?.href || value?.url || '#'
+      const isExternal = href.startsWith('http://') || href.startsWith('https://')
+      const rel = isExternal ? 'noreferrer noopener' : undefined
+      
+      // Use regular <a> tag for external links, Next.js Link for internal links
+      if (isExternal) {
+        return (
+          <a 
+            href={href} 
+            rel={rel}
+            target="_blank"
+            className="text-primary underline hover:text-primary/80"
+          >
+            {children}
+          </a>
+        )
+      }
+      
       return (
         <Link 
-          href={value.href} 
+          href={href} 
           rel={rel} 
           className="text-primary underline hover:text-primary/80"
         >
@@ -249,14 +285,15 @@ const processTextForLinks = (children: React.ReactNode): React.ReactNode => {
 
 export default async function BlogPostPage({ params }: Props) {
   try {
-    const post = await getPostBySlug(params.slug).catch(() => null)
+    const { slug } = await params
+    const post = await getPostBySlug(slug).catch(() => null)
     
     if (!post) {
       notFound()
     }
     
     // Get previous and next posts for navigation
-    const { previous, next } = await getPostNavigation(params.slug);
+    const { previous, next } = await getPostNavigation(slug);
     
     return (
       <div className="min-h-screen bg-background">
@@ -399,7 +436,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Related Posts */}
               <Suspense fallback={<RelatedPostsLoading />}>
-                <RelatedPostsSection slug={params.slug} />
+                <RelatedPostsSection slug={slug} />
               </Suspense>
             </div>
 
@@ -407,7 +444,7 @@ export default async function BlogPostPage({ params }: Props) {
             <aside className="lg:col-span-4">
               <div className="lg:sticky lg:top-4 space-y-6">
                 <Suspense fallback={<SidebarLoading />}>
-                  <BlogSidebar slug={params.slug} />
+                  <BlogSidebar slug={slug} />
                 </Suspense>
               </div>
             </aside>

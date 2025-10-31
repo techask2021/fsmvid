@@ -6,8 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Toaster } from "@/components/ui/toaster"
-import { cookies } from 'next/headers'
-import TurnstileGate from '@/components/turnstile-gate'
+ 
 
 import Script from "next/script"
 import { cn } from "@/lib/utils"
@@ -159,13 +158,11 @@ const WebVitalsMonitoring = () => {
   )
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = await cookies()
-  const isHuman = process.env.NODE_ENV !== 'production' ? true : cookieStore.get('human')?.value === '1'
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -196,13 +193,11 @@ export default async function RootLayout({
         {/* Galaksion domain verification */}
         <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
         
-        {isHuman && (
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
-            crossOrigin="anonymous"
-          />
-        )}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased",
@@ -222,8 +217,7 @@ export default async function RootLayout({
           </div>
           <Toaster />
           <Analytics />
-          {isHuman && <AdOptimizer />}
-          {!isHuman && <TurnstileGate />}
+          <AdOptimizer />
         </ThemeProvider>
         <WebVitalsMonitoring />
       </body>

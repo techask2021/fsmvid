@@ -43,10 +43,6 @@ export default function AdSenseBanner() {
           return
         }
 
-        // Skip if page hasn't enabled ads (no script present when not human)
-        const hasAdsScript = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')
-        if (!hasAdsScript) return
-
         // Mark as initialized
         hasInitialized.current = true
 
