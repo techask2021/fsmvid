@@ -53,10 +53,11 @@ export const revalidate = 60;
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }) {
   // Convert to number after awaiting searchParams
-  const pageParam = searchParams?.page;
+  const params = await searchParams
+  const pageParam = params?.page;
   const currentPage = Number(pageParam) || 1;
   
   return (
