@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
-import { getUrlSlug, Platform } from "@/lib/platform-detector"
-import { getAllPosts } from "@/lib/blog-client"
+import { getUrlSlug, Platform } from "@/lib/download/platform-detector"
+import { getAllPosts } from "@/lib/blog/blog-client"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com"
@@ -19,7 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "linkedin",
     "imgur",
     "rumble",
-    // "truthsocial", // Temporarily hidden - working on production fix
     "9gag",
     "bitchute",
     "capcut",

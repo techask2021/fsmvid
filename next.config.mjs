@@ -3,16 +3,7 @@
 /**
  * @type {import('next').NextConfig}
  **/
-let userConfig = {}
-try {
-  userConfig = require("./sanity.config").default || {}
-} catch {}
-
 const nextConfig = {
-  eslint: {
-    // Set this to false to push to vercel
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     // Setting this to true to bypass TypeScript errors during build
     ignoreBuildErrors: true,
@@ -270,10 +261,10 @@ const nextConfig = {
                 https://*.doubleclick.net;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://googleads.g.doubleclick.net https://www.gstatic.com;
               font-src 'self' https://fonts.gstatic.com https://www.gstatic.com;
-              img-src 'self' data: https: blob: https://truthsocial.com https://*.truthsocial.com;
-              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://truthsocial.com https://*.truthsocial.com https://ephemeral-proxies.p.rapidapi.com;
-              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net https://truthsocial.com;
-              media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob: https://truthsocial.com https://*.truthsocial.com;
+              img-src 'self' data: https: blob:;
+              connect-src 'self' https: https://*.googlevideo.com https://*.youtube.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
+              frame-src 'self' https: https://www.google.com https://*.googlevideo.com https://*.youtube.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ad.doubleclick.net;
+              media-src 'self' https: https://*.googlevideo.com https://*.youtube.com blob:;
               object-src 'none';
               worker-src 'self' blob:;
               form-action 'self';
@@ -287,25 +278,6 @@ const nextConfig = {
       },
     ];
   },
-}
-
-if (userConfig) {
-  // ESM imports will have a "default" property
-  const config = userConfig.default || userConfig
-
-  for (const key in config) {
-    if (
-      typeof nextConfig[key] === 'object' &&
-      !Array.isArray(nextConfig[key])
-    ) {
-      nextConfig[key] = {
-        ...nextConfig[key],
-        ...config[key],
-      }
-    } else {
-      nextConfig[key] = config[key]
-    }
-  }
 }
 
 export default nextConfig;

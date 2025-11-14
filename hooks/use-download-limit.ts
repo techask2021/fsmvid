@@ -5,7 +5,7 @@ import {
   clearBypass,
   getDownloadStats,
   resetDownloadCounter 
-} from '@/lib/download-tracker'
+} from '@/lib/download/download-tracker'
 
 export interface DownloadLimitState {
   allowed: boolean
@@ -110,11 +110,9 @@ function getPlatformUrl(platform: string): string {
     soundcloud: '/soundcloud-mp3-saver',
     spotify: '/spotify-mp3-saver',
     mixcloud: '/mixcloud-mp3-saver',
-    vimeo: '/vimeo-video-extractor',
     rumble: '/rumble-video-grabber',
     bluesky: '/bluesky-video-saver',
     bsky: '/bluesky-video-saver',
-    truthsocial: '/truthsocial-video-saver',
     telegram: '/telegram-media-saver',
     imgur: '/imgur-media-saver',
     weibo: '/weibo-video-saver',

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit } from '@/lib/rate-limit-middleware';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/security/rate-limit-middleware';
+import { RATE_LIMITS } from '@/lib/security/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';

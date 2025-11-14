@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { detectPlatform } from "@/lib/platform-detector"
-import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
-import { RATE_LIMITS } from "@/lib/rate-limit"
+import { detectPlatform } from "@/lib/download/platform-detector"
+import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
+import { RATE_LIMITS } from "@/lib/security/rate-limit"
 
 export const runtime = "nodejs" // Use Node.js runtime for better compatibility with media CDNs
 export const maxDuration = 60 // Allow up to 60 seconds for large file downloads
@@ -151,7 +151,10 @@ export async function POST(request: NextRequest) {
         
         // Return the m3u8 file with proper headers
         const response = new NextResponse(content);
-        response.headers.set('Content-Disposition', `attachment; filename="${filename.replace(/\.(mp4|streaming)$/, '.m3u8')}"`);
+        // Use RFC 5987 encoding for filenames with special characters (non-ASCII)
+        const m3u8Filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
+        const encodedM3u8Filename = encodeURIComponent(m3u8Filename);
+        response.headers.set('Content-Disposition', `attachment; filename="${m3u8Filename.replace(/[^\x00-\x7F]/g, '_')}"; filename*=UTF-8''${encodedM3u8Filename}`);
         response.headers.set('Content-Type', 'application/vnd.apple.mpegurl');
         response.headers.set('Content-Length', `${content.length}`);
         

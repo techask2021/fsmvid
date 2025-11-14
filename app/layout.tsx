@@ -2,16 +2,16 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import { Toaster } from "@/components/ui/toaster"
- 
+import { ThemeProvider } from "@/components/layout/theme-provider"
+import Header from "@/components/layout/header"
+import Footer from "@/components/layout/footer"
+import { Toaster } from "@/components/ui/toaster" 
+
 
 import Script from "next/script"
-import { cn } from "@/lib/utils"
-import { Analytics } from "@/components/analytics"
-import AdOptimizer from "@/components/ad-optimizer"
+import { cn } from "@/lib/utils/utils"
+import { Analytics } from "@/components/shared/analytics"
+import AdOptimizer from "@/components/ads/ad-optimizer"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -206,7 +206,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           
           <div className="relative flex min-h-screen flex-col overflow-x-hidden break-words">
-            <div>
+            <div suppressHydrationWarning>
               <Header />
             </div>
             <div className="flex-1 break-words pt-20" style={{ containIntrinsicSize: '1px 5000px' }}> {/* Added pt-20 */}
@@ -225,4 +225,3 @@ export default function RootLayout({
   )
 }
 
-import './globals.css'

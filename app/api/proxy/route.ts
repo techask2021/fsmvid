@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { withRateLimit, addRateLimitHeaders } from "@/lib/rate-limit-middleware"
-import { RATE_LIMITS } from "@/lib/rate-limit"
-import { getCachedResponse, setCachedResponse } from "@/lib/api-cache"
-import { trackAndDetectBot, isSuspiciousPattern } from "@/lib/bot-detector"
-import { getClientIP } from "@/lib/rate-limit"
-import { validateRequest } from "@/lib/request-validator"
+import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
+import { RATE_LIMITS, getClientIP } from "@/lib/security/rate-limit"
+import { getCachedResponse, setCachedResponse } from "@/lib/api/api-cache"
+import { trackAndDetectBot, isSuspiciousPattern } from "@/lib/security/bot-detector"
+import { validateRequest } from "@/lib/security/request-validator"
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
   try {

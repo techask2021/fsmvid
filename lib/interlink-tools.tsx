@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Platform, getUrlSlug, getPlatformName } from './platform-detector';
+import { Platform, getUrlSlug, getPlatformName } from './download/platform-detector';
 import React, { ReactNode } from 'react';
 
 // Define the list of all available tools/platforms
@@ -17,7 +17,6 @@ const allPlatforms: Platform[] = [
   "linkedin",
   "imgur",
   "rumble",
-  // "truthsocial", // Temporarily hidden
   "9gag",
   "bitchute",
   "bsky",
