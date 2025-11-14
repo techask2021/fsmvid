@@ -3,6 +3,15 @@ import { type NextRequest, NextResponse } from "next/server"
 export const runtime = "edge"
 
 // Minimal proxy test - NO security, NO rate limiting, NO caching
+// Add GET handler for testing
+export async function GET() {
+  return NextResponse.json({
+    status: 'success',
+    message: 'Proxy test endpoint is working. Use POST with {"url": "..."} to test actual proxy functionality.',
+    method: 'GET'
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('[PROXY TEST] Starting minimal proxy test')
