@@ -30,17 +30,31 @@ const RAPID_FIRE_WINDOW = 10 * 1000 // 10 seconds
 /**
  * Track a request and check if it's bot behavior
  * Returns true if IP should be blocked
+ *
+ * TEMPORARY: Simplified for Cloudflare Workers (stateless environment)
  */
 export function trackAndDetectBot(ip: string): {
   isBot: boolean
   requestCount: number
   reason?: string
 } {
+  // TEMPORARY: Disable in-memory tracking for Cloudflare Workers
+  // Cloudflare Workers are stateless - Map data is reset between requests
+  // TODO: Move to Upstash Redis or Cloudflare KV for persistent tracking
+
+  console.info('[BOT DETECTOR] DISABLED for Cloudflare Workers - stateless environment')
+
+  return {
+    isBot: false,
+    requestCount: 0,
+  }
+
+  /* ORIGINAL CODE - Re-enable when using persistent storage
   const now = Date.now()
-  
+
   // Get or create tracker for this IP
   let tracker = requestTracking.get(ip)
-  
+
   if (!tracker) {
     tracker = {
       count: 0,
@@ -50,43 +64,43 @@ export function trackAndDetectBot(ip: string): {
     }
     requestTracking.set(ip, tracker)
   }
-  
+
   // Add current timestamp
   tracker.timestamps.push(now)
   tracker.lastRequest = now
   tracker.count++
-  
+
   // Remove timestamps older than TIME_WINDOW
   tracker.timestamps = tracker.timestamps.filter(
     timestamp => now - timestamp < TIME_WINDOW
   )
-  
+
   // Update count based on recent timestamps
   const recentCount = tracker.timestamps.length
-  
+
   // Bot detection: 50+ requests in 10 minutes
   // This allows real users to download multiple videos or retry failures
   if (recentCount >= BOT_THRESHOLD) {
     const reason = `Bot detected: ${recentCount} requests in 10 minutes (automated behavior)`
-    
+
     // Auto-blacklist this IP
     addToTempBlacklist(ip, reason)
-    
+
     console.warn(`[BOT DETECTOR] ${reason} - IP: ${ip}`)
-    
+
     return {
       isBot: true,
       requestCount: recentCount,
       reason,
     }
   }
-  
+
   // ADVANCED: Check for rapid-fire requests (12 requests in 10 seconds = bot)
   // Allows users to retry failed downloads (5-10 retries) but catches automation
   const rapidFireRequests = tracker.timestamps.filter(
     timestamp => now - timestamp < RAPID_FIRE_WINDOW
   )
-  
+
   if (rapidFireRequests.length >= RAPID_FIRE_THRESHOLD) {
     const reason = `Bot detected: ${rapidFireRequests.length} requests in 10 seconds (too fast - likely automated)`
     addToTempBlacklist(ip, reason)
@@ -97,7 +111,7 @@ export function trackAndDetectBot(ip: string): {
       reason,
     }
   }
-  
+
   // ADVANCED: Check for too-perfect timing (consistent intervals = bot)
   // Only check if we have enough data points and requests are very fast
   if (tracker.timestamps.length >= 10) {
@@ -105,13 +119,13 @@ export function trackAndDetectBot(ip: string): {
     for (let i = 1; i < tracker.timestamps.length; i++) {
       intervals.push(tracker.timestamps[i] - tracker.timestamps[i - 1])
     }
-    
+
     // Calculate average and variance
     const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
     const variance = intervals.reduce((sum, interval) => {
       return sum + Math.pow(interval - avg, 2)
     }, 0) / intervals.length
-    
+
     // If variance is VERY low (perfect timing) AND fast requests, likely a bot
     // Real humans have irregular timing, even when working through a list
     // Only flag if average is less than 3 seconds AND variance is very low
@@ -126,11 +140,12 @@ export function trackAndDetectBot(ip: string): {
       }
     }
   }
-  
+
   return {
     isBot: false,
     requestCount: recentCount,
   }
+  */
 }
 
 /**
