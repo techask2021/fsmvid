@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-nexport const runtime = "edge";
+export const runtime = "edge";
 import { Suspense, lazy, type SVGProps } from "react"
 import { notFound } from "next/navigation"
 import Image from "next/image"

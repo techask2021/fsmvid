@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-nexport const runtime = "edge";
+export const runtime = "edge";
 import { Suspense, lazy } from "react"
 import PlatformDownloader from "@/components/download/platform-downloader"
 import { type Platform } from "@/lib/download/platform-detector"

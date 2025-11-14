@@ -1,5 +1,5 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
-nexport const runtime = "edge"
+export const runtime = "edge"
 import { type NextRequest, NextResponse } from 'next/server';
 import { parseBody } from 'next-sanity/webhook';
 

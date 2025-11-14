@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
-nexport const runtime = "edge";
 import { getUrlSlug, Platform } from "@/lib/download/platform-detector"
+
+export const runtime = "edge";
 import { getAllPosts } from "@/lib/blog/blog-client"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

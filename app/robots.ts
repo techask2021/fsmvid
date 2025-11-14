@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-nexport const runtime = "edge";
+export const runtime = "edge";
 
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://fsmvid.com"
