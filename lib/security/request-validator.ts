@@ -16,9 +16,9 @@ function getAllowedOrigins(): string[] {
     'https://fsmvid.com',
     'https://www.fsmvid.com',
     'https://fsmvid.netlify.app',
+    'https://fsmvid.pages.dev',  // Cloudflare Pages
     'http://localhost:3000',  // Development
     'http://localhost:3001',  // Development
-    // Add your actual domain here!
   ]
 }
 
