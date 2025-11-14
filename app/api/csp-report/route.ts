@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server"
+nexport const runtime = "edge"
 
 /**
  * API endpoint that handles Content Security Policy violation reports

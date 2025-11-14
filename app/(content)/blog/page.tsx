@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+nexport const runtime = "edge";
 import { Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"

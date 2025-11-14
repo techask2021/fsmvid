@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+nexport const runtime = "edge"
 
 export async function GET() {
   return new NextResponse(

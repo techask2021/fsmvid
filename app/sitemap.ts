@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next"
+nexport const runtime = "edge";
 import { getUrlSlug, Platform } from "@/lib/download/platform-detector"
 import { getAllPosts } from "@/lib/blog/blog-client"
 

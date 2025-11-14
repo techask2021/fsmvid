@@ -3,7 +3,7 @@ import { detectPlatform } from "@/lib/download/platform-detector"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
 import { RATE_LIMITS } from "@/lib/security/rate-limit"
 
-export const runtime = "nodejs" // Use Node.js runtime for better compatibility with media CDNs
+export const runtime = "edge" // Use Edge runtime for Cloudflare Workers
 export const maxDuration = 60 // Allow up to 60 seconds for large file downloads
 
 export async function POST(request: NextRequest) {

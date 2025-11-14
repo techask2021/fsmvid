@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+nexport const runtime = "edge"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
 import { RATE_LIMITS, getClientIP } from "@/lib/security/rate-limit"
 import { getCachedResponse, setCachedResponse } from "@/lib/api/api-cache"
