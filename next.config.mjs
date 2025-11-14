@@ -8,6 +8,11 @@ const nextConfig = {
     // Setting this to true to bypass TypeScript errors during build
     ignoreBuildErrors: true,
   },
+  webpack: (config, { isServer }) => {
+    // Disable webpack cache for Cloudflare Pages deployment (file size limit)
+    config.cache = false;
+    return config;
+  },
   images: {
     unoptimized: false, // Enable Next.js image optimization
     remotePatterns: [

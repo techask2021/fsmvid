@@ -2,6 +2,7 @@
 # Exclude large cache files from deployment
 
 .next/cache/
+.next/cache/**/*
 node_modules/
 .git/
 .env
@@ -9,3 +10,7 @@ node_modules/
 .env.*.local
 *.log
 .DS_Store
+
+# Specifically exclude webpack cache from build output
+**/.next/cache/webpack/**
+**/cache/webpack/**
