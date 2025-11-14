@@ -1,0 +1,9 @@
+# Cloudflare Workers configuration for Next.js on Pages
+name = "fsmvid"
+compatibility_date = "2025-11-14"
+
+# Enable Node.js compatibility for built-in modules
+compatibility_flags = ["nodejs_compat"]
+
+# Pages-specific configuration
+pages_build_output_dir = ".vercel/output/static"
