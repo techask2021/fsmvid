@@ -20,9 +20,8 @@ const RelatedTools = lazy(() => import("@/components/platform/related-tools"))
 const ContentLoading = () => <div className="h-40 w-full bg-muted/30 animate-pulse rounded-lg mb-8"></div>
 const FAQLoading = () => <div className="h-80 w-full bg-muted/30 animate-pulse rounded-lg mb-16"></div>
 
-// Fix for 500 error: Only use one rendering strategy
-export const dynamic = 'auto';
-export const revalidate = 86400; // 24 hours in seconds
+// Static generation for Cloudflare Pages compatibility
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: "Tumblr Video Downloader | Download Tumblr Videos & GIFs",
