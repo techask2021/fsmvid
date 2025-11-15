@@ -936,7 +936,23 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                 <TabsContent value="link" className="space-y-4" data-test-id="direct-link-tab">
                   <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                     <Input
-                      value={downloadUrl || ""}
+                      value={
+                        downloadUrl
+                          ? (() => {
+                              const detectedPlatform = detectPlatform(url)
+                              const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+
+                              // Use proxy URL for Weibo to avoid 403 errors
+                              if (isWeibo && downloadUrl) {
+                                // Use environment base URL, fallback to current window location for local dev
+                                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                                  (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                                return `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                              }
+                              return downloadUrl
+                            })()
+                          : ""
+                      }
                       readOnly
                       className="flex-1 bg-black/20 dark:bg-white/10 border-white/30 text-white rounded-xl"
                       onClick={(e) => e.stopPropagation()}
@@ -947,7 +963,22 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        copyToClipboard(e)
+                        // Copy the proxy URL for Weibo
+                        const detectedPlatform = detectPlatform(url)
+                        const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+
+                        if (isWeibo && downloadUrl) {
+                          // Use environment base URL, fallback to current window location for local dev
+                          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                            (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                          const proxyUrl = `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                          navigator.clipboard.writeText(proxyUrl)
+                          setCopied(true)
+                          toast.success("Download link copied!")
+                          setTimeout(() => setCopied(false), 2000)
+                        } else {
+                          copyToClipboard(e)
+                        }
                       }}
                       disabled={!downloadUrl}
                       data-test-id="copy-link-button"
@@ -968,14 +999,14 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                         return (
                           <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
                             <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
-                              🐦 Weibo Direct CDN Link - How to Use
+                              🐦 Weibo Direct Link - Ready to Use!
                             </p>
                             <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
-                              <li><strong>Step 1:</strong> Click the copy button above to copy the video URL</li>
-                              <li><strong>Step 2:</strong> Open a NEW browser tab and paste the URL in the address bar</li>
-                              <li><strong>Step 3:</strong> Press Enter - the video will start downloading automatically</li>
-                              {sizeMB && <li>File size: {sizeMB}MB {isLargeFile && '(Large file)'}</li>}
-                              <li className="font-semibold text-blue-800 dark:text-blue-200">💡 Tip: This direct method works best for Weibo videos up to 1GB!</li>
+                              <li>This link works anywhere - paste in any browser or download manager</li>
+                              <li>Optimized for reliable Weibo video downloads</li>
+                              {sizeMB && <li>File size: {sizeMB}MB {isLargeFile && '(Large file - streaming supported)'}</li>}
+                              {isLargeFile && <li>For large files, this method provides the smoothest download experience</li>}
+                              <li className="font-semibold text-blue-800 dark:text-blue-200">✨ We care about you - supports files up to 1GB!</li>
                             </ul>
                           </div>
                         )
