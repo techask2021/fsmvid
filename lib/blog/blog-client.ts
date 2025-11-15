@@ -22,6 +22,18 @@ export const client = createClient({
   },
 });
 
+// Create a separate client without CDN for real-time data (e.g., homepage featured posts)
+export const realtimeClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false, // Bypass CDN to get fresh data
+  perspective: 'published',
+  stega: {
+    enabled: false,
+  },
+});
+
 // Helper function to generate full URL for a blog post
 function getPostUrl(slug: string): string {
   return `${baseUrl}/blog/${slug}`;
@@ -62,8 +74,9 @@ export interface Post {
 }
 
 // Function to get featured blog posts
+// Uses realtimeClient (no CDN) to ensure latest posts appear immediately on homepage
 export async function getFeaturedPosts(limit = 3) {
-  const posts = await client.fetch<Post[]>(`
+  const posts = await realtimeClient.fetch<Post[]>(`
     *[_type == "post"] | order(publishedAt desc)[0...${limit}] {
       _id,
       title,
@@ -75,12 +88,12 @@ export async function getFeaturedPosts(limit = 3) {
       "categories": categories[]->title
     }
   `);
-  
+
   // Automatically index featured posts
   if (posts.length > 0) {
     const urls = posts.map(post => getPostUrl(post.slug.current));
   }
-  
+
   return posts;
 }
 

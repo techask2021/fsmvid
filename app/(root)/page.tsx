@@ -38,8 +38,9 @@ export const metadata: Metadata = {
   },
 }
 
-// Revalidate this page every 60 seconds (ISR) to fetch latest blog posts
-export const revalidate = 60;
+// Revalidate this page every 10 seconds (ISR) to fetch latest blog posts
+// Combined with realtimeClient (no CDN), ensures homepage shows latest articles immediately
+export const revalidate = 10;
 
 const featuresForNewSection = [
   { icon: Zap, title: "Lightning Fast", description: "Download videos in seconds with our optimized processing system and global CDN network.", iconBg: "bg-gradient-to-br from-yellow-500 to-orange-500", hoverBg: "hover:bg-gradient-to-br hover:from-yellow-50 hover:to-orange-50", },
