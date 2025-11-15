@@ -13,7 +13,7 @@ pages_build_output_dir = ".vercel/output/static"
 [vars]
 NEXT_PUBLIC_BASE_URL = "https://fsmvid.pages.dev"
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY = "6Lek92krAAAAAPuv_9InDaS_pqYGwheDpNG5Yk-6"
-NEXT_PUBLIC_ZM_API_URL = "https://api.zm.io.vn/v1"
+NEXT_PUBLIC_ZM_API_URL = "https://api.zm.io.vn/v1/social/autolink"
 NEXT_PUBLIC_ZM_API_KEY = "RasJzPrMG"
 NEXT_PUBLIC_SANITY_PROJECT_ID = "fb7jparp"
 NEXT_PUBLIC_SANITY_DATASET = "production"
