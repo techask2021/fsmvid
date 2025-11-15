@@ -296,7 +296,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
 
       // All other platforms use ZM API proxy
-      const response = await fetch("/api/proxy-minimal", {
+      const response = await fetch("/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json", },
         body: JSON.stringify({

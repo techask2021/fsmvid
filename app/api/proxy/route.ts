@@ -2,16 +2,15 @@ import { type NextRequest, NextResponse } from "next/server"
 export const runtime = "edge"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
 import { RATE_LIMITS, getClientIP } from "@/lib/security/rate-limit"
-import { getCachedResponse, setCachedResponse } from "@/lib/api/api-cache"
-import { trackAndDetectBot, isSuspiciousPattern } from "@/lib/security/bot-detector"
 import { validateRequest } from "@/lib/security/request-validator"
+
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
   try {
     // Parse the request body
     const body = await request.json()
     const { url, platform, isHomepage } = body
-    
+
     // ALWAYS apply Redis rate limiting to protect API from bots
     // This applies to BOTH homepage and tool pages
     const rateLimitResult = await withRateLimit(request, RATE_LIMITS.PROXY)
@@ -19,29 +18,15 @@ export async function POST(request: NextRequest) {
       console.info(`[RATE LIMIT] Blocked request for platform: ${platform}`)
       return rateLimitResult.response!
     }
-    
-    // Smart bot detection: Auto-block at 50 requests in 10 minutes OR 12 requests in 10 seconds
-    const clientIP = getClientIP(request.headers)
-    const botCheck = trackAndDetectBot(clientIP)
-    
-    if (botCheck.isBot) {
-      console.warn(`[BOT DETECTOR] Blocked bot IP: ${clientIP} - ${botCheck.reason}`)
-      return NextResponse.json(
-        {
-          status: 'error',
-          message: 'Too many requests detected. Your IP has been temporarily blocked.',
-        },
-        { status: 429 }
-      )
-    }
-    
+
     // Advanced validation: Check origin, referer, User-Agent, and browser headers
+    const clientIP = getClientIP(request.headers)
     const userAgent = request.headers.get('user-agent')
     const origin = request.headers.get('origin')
     const referer = request.headers.get('referer')
-    
+
     const validation = validateRequest(origin, referer, userAgent, request.headers)
-    
+
     // AGGRESSIVE BOT BLOCKING: Block ALL bots completely (not just rate limit)
     // This only affects direct API calls and bot scripts - NEVER affects real browser users
     if (validation.isBot || validation.recommendedAction === 'block') {
@@ -54,14 +39,14 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     // If validation passes, allow the request
     // Real users from browsers (mobile/desktop/tablet) will ALWAYS pass this check
     // because browsers automatically send Origin, Referer, and proper User-Agent headers
-    
+
     // Note: Client-side download limit (3 per platform) is only on homepage
     // But API rate limiting (200/hour) applies to ALL pages for security
-    
+
     console.info(`[PROXY] Request for ${platform} - Homepage: ${isHomepage === true ? 'true' : 'false'}`)
 
     if (!url || !platform) {
@@ -139,12 +124,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check cache first to avoid unnecessary API calls
-    const cachedData = getCachedResponse(processUrl)
-    if (cachedData) {
-      console.info(`[CACHE] Returning cached data for ${platform}`)
-      return NextResponse.json(cachedData, { status: 200 })
-    }
+    // Note: Caching disabled for Cloudflare Workers (stateless environment)
+    // TODO: Implement caching using Cloudflare KV or Upstash Redis if needed
 
     // Get the new ZM API credentials from environment variables
     const apiKey = process.env.NEXT_PUBLIC_ZM_API_KEY
@@ -431,13 +412,13 @@ export async function POST(request: NextRequest) {
         status: "success",
         formats: data.formats
       }
-      
-      // Cache the successful response to avoid repeated API calls
-      setCachedResponse(processUrl, responseData)
-      
+
+      // Note: Response caching disabled for Cloudflare Workers (stateless environment)
+      // TODO: Implement caching using Cloudflare KV or Upstash Redis if needed
+
       // Return the formatted API response
       const finalResponse = NextResponse.json(responseData)
-      
+
       // Add rate limit headers (applied to all requests)
       return addRateLimitHeaders(finalResponse, rateLimitResult.headers || {})
   } catch (error) {
