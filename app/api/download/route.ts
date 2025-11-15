@@ -137,10 +137,30 @@ export async function POST(request: NextRequest) {
 
     if (!fileResponse.ok) {
       console.error(`Download failed: ${fileResponse.status} ${fileResponse.statusText}`);
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: `Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`,
         url: url
       }, { status: fileResponse.status });
+    }
+
+    // Check file size - if it's large (>=25MB), suggest using Direct Link instead
+    const contentLength = fileResponse.headers.get('Content-Length')
+    if (contentLength) {
+      const sizeInBytes = parseInt(contentLength)
+      const sizeMB = Math.round(sizeInBytes / 1024 / 1024)
+
+      // 25MB threshold (25 * 1024 * 1024 = 26214400 bytes)
+      if (sizeInBytes >= 26214400) {
+        console.info(`[DOWNLOAD] Large file detected (${sizeMB}MB) for ${platformToUse} - suggesting Direct Link`)
+
+        return NextResponse.json({
+          message: `Large file detected (${sizeMB}MB). Please use the Direct Link for best download experience.`,
+          isLargeFile: true,
+          fileSize: sizeInBytes,
+          sizeMB: sizeMB,
+          downloadUrl: url
+        }, { status: 413 }) // 413 Payload Too Large
+      }
     }
 
     // For m3u8 files, we need special handling

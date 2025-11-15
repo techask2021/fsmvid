@@ -129,7 +129,10 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
   const [showPlayer, setShowPlayer] = useState(false)
   const [videoTitle, setVideoTitle] = useState("")
   const [thumbnail, setThumbnail] = useState("")
-  
+  const [fileSize, setFileSize] = useState<number | null>(null) // File size in bytes
+  const [isLargeFile, setIsLargeFile] = useState(false) // Track if file is large (>25MB)
+  const [activeTab, setActiveTab] = useState<"download" | "link">("download") // Track active tab
+
   // Download limit tracking (only on homepage/universal downloader)
   const pathname = usePathname()
   // isHomepage should ONLY depend on pathname, not platform prop
@@ -421,7 +424,45 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       const defaultQuality = qualitiesWithAudio.length > 0 ? qualitiesWithAudio[0] : qualities[0];
       setSelectedQuality(defaultQuality);
       const defaultOption = options.find((option) => option.format === formats[0] && option.quality === defaultQuality);
-      if (defaultOption) setDownloadUrl(defaultOption.url)
+      if (defaultOption) {
+        setDownloadUrl(defaultOption.url)
+
+        // Extract file size from the size string (e.g., "65.3 MB" -> 68484672 bytes)
+        if (defaultOption.size && defaultOption.size !== "Unknown") {
+          const sizeStr = defaultOption.size.toString().toLowerCase()
+          let sizeInBytes = 0
+
+          console.log(`[FILE SIZE DEBUG] Original size string: "${defaultOption.size}"`)
+
+          if (sizeStr.includes('gb')) {
+            sizeInBytes = parseFloat(sizeStr) * 1024 * 1024 * 1024
+          } else if (sizeStr.includes('mb')) {
+            sizeInBytes = parseFloat(sizeStr) * 1024 * 1024
+          } else if (sizeStr.includes('kb')) {
+            sizeInBytes = parseFloat(sizeStr) * 1024
+          } else if (!isNaN(parseInt(sizeStr))) {
+            // If it's just a number, assume it's bytes
+            sizeInBytes = parseInt(sizeStr)
+          }
+
+          console.log(`[FILE SIZE DEBUG] Parsed to ${sizeInBytes} bytes (${Math.round(sizeInBytes / 1024 / 1024)}MB)`)
+
+          setFileSize(sizeInBytes)
+
+          // Mark as large file if >= 25MB (25 * 1024 * 1024 = 26214400 bytes)
+          const isLarge = sizeInBytes >= 26214400
+          setIsLargeFile(isLarge)
+
+          console.log(`[FILE SIZE DEBUG] Is large file (>=25MB)? ${isLarge}`)
+
+          if (isLarge) {
+            const sizeMB = Math.round(sizeInBytes / 1024 / 1024)
+            console.info(`[LARGE FILE] Detected ${sizeMB}MB file for ${detectedPlatform || platform}`)
+          }
+        } else {
+          console.log(`[FILE SIZE DEBUG] No size available or size is "Unknown"`)
+        }
+      }
       setVideoTitle(data.title || `${platform} Video`);
       if (data.thumbnail) setThumbnail(data.thumbnail);
     } catch (err) {
@@ -452,18 +493,18 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       // Prepare variables outside try-catch for use in error handling
       const detectedPlatform = detectPlatform(url);
       const platformName = platform === 'universal' ? (detectedPlatform || 'download') : platform;
-      
+
       // Sanitize video title for use in filename
       const sanitizedTitle = videoTitle
         .replace(/[<>:"/\\|?*\x00-\x1F]/g, '') // Remove invalid filename characters
         .replace(/\s+/g, '_') // Replace spaces with underscores
         .trim()
         .substring(0, 100); // Limit length to 100 characters
-      
+
       // Create filename with title or fallback to platform_timestamp
       const baseFilename = sanitizedTitle || `${platformName}_${Date.now()}`;
       let filename = `${baseFilename}.${selectedFormat?.toLowerCase() || 'mp4'}`;
-      
+
       try {
         setDownloadLoading(true)
         toast.info("Starting download...", { duration: 3000 })
@@ -580,6 +621,29 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         
         // Standard download for other platforms
         const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform, isHomepage }), })
+
+        // Check if it's a large file (413 status)
+        if (response.status === 413) {
+          const data = await response.json()
+          const sizeMB = data.sizeMB || Math.round((data.fileSize || 0) / 1024 / 1024)
+
+          // Update file size state
+          if (data.fileSize) {
+            setFileSize(data.fileSize)
+            setIsLargeFile(true)
+          }
+
+          // Switch to Direct Link tab
+          setActiveTab("link")
+          setDownloadLoading(false)
+
+          // Show friendly message
+          toast.info(`Large file detected (${sizeMB}MB). Switched to Direct Link tab for smooth downloads.`, {
+            duration: 5000
+          })
+          return
+        }
+
         if (!response.ok) throw new Error('Download failed')
         const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
         const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
@@ -732,7 +796,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
           {downloadOptions.length > 0 && (
             <div className="space-y-4 mt-6 p-6 bg-black/10 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10">
-              <Tabs defaultValue="download" className="w-full">
+              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "download" | "link")} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
                   <TabsTrigger value="download" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Download Options</TabsTrigger>
                   <TabsTrigger value="link" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Direct Link</TabsTrigger>
@@ -834,9 +898,21 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                     </div>
                   )}
 
-                  <Button 
-                    onClick={handleDownload} 
-                    disabled={!downloadUrl || downloadLoading} 
+                  {/* Info message for large files - auto-switch to Direct Link */}
+                  {isLargeFile && fileSize && (
+                    <div className="p-3 bg-blue-50 dark:bg-blue-950/50 rounded-md border border-blue-200 dark:border-blue-800 mb-3">
+                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-1">
+                        💡 Large File Detected ({Math.round(fileSize / 1024 / 1024)}MB)
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Clicking "Download Now" will switch you to the <strong>"Direct Link"</strong> tab for the best download experience with large files.
+                      </p>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleDownload}
+                    disabled={!downloadUrl || downloadLoading}
                     className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-400 hover:via-blue-400 hover:to-indigo-400 text-white h-14 px-10 rounded-2xl shadow-xl font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group"
                     size="lg"
                   >
@@ -859,39 +935,116 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                 </TabsContent>
                 <TabsContent value="link" className="space-y-4" data-test-id="direct-link-tab">
                   <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
-                    <Input 
-                      value={downloadUrl || ""} 
-                      readOnly 
-                      className="flex-1 bg-black/20 dark:bg-white/10 border-white/30 text-white rounded-xl" 
+                    <Input
+                      value={
+                        downloadUrl
+                          ? (() => {
+                              const detectedPlatform = detectPlatform(url)
+                              const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+
+                              // Use proxy URL for Weibo to avoid 403 errors
+                              if (isWeibo && downloadUrl) {
+                                // Use environment base URL, fallback to current window location for local dev
+                                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                                  (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                                return `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                              }
+                              return downloadUrl
+                            })()
+                          : ""
+                      }
+                      readOnly
+                      className="flex-1 bg-black/20 dark:bg-white/10 border-white/30 text-white rounded-xl"
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
+                    <Button
+                      variant="outline"
+                      size="icon"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        copyToClipboard(e);
-                      }} 
+                        // Copy the proxy URL for Weibo
+                        const detectedPlatform = detectPlatform(url)
+                        const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+
+                        if (isWeibo && downloadUrl) {
+                          // Use environment base URL, fallback to current window location for local dev
+                          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                            (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                          const proxyUrl = `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                          navigator.clipboard.writeText(proxyUrl)
+                          setCopied(true)
+                          toast.success("Download link copied!")
+                          setTimeout(() => setCopied(false), 2000)
+                        } else {
+                          copyToClipboard(e)
+                        }
+                      }}
                       disabled={!downloadUrl}
                       data-test-id="copy-link-button"
-                      className="border-white/30 text-white hover:bg-white/10 hover:text-white"
+                      className="border-cyan-400/50 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-100 hover:border-cyan-300 transition-colors"
                     >
                       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     </Button>
                   </div>
                   <div className="space-y-3">
-                    <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
-                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
-                        💡 How to use this direct link:
-                      </p>
-                      <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
-                        <li>Copy the link using the button above</li>
-                        <li>Paste it into your browser address bar or any download manager</li>
-                        <li>The video will start downloading directly</li>
-                      </ul>
-                    </div>
-                    <p className="text-sm text-gray-300 dark:text-gray-400"> 
+                    {/* Show different messages based on platform and file size */}
+                    {(() => {
+                      const detectedPlatform = detectPlatform(url)
+                      const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+                      const sizeMB = fileSize ? Math.round(fileSize / 1024 / 1024) : null
+
+                      // Weibo-specific message
+                      if (isWeibo) {
+                        return (
+                          <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
+                            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                              🐦 Weibo Direct Link - Ready to Use!
+                            </p>
+                            <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
+                              <li>This link works anywhere - paste in any browser or download manager</li>
+                              <li>Optimized for reliable Weibo video downloads</li>
+                              {sizeMB && <li>File size: {sizeMB}MB {isLargeFile && '(Large file - streaming supported)'}</li>}
+                              {isLargeFile && <li>For large files, this method provides the smoothest download experience</li>}
+                              <li className="font-semibold text-blue-800 dark:text-blue-200">✨ We care about you - supports files up to 1GB!</li>
+                            </ul>
+                          </div>
+                        )
+                      }
+
+                      // Large file warning for all platforms
+                      if (isLargeFile && sizeMB) {
+                        return (
+                          <div className="p-3 bg-yellow-50 dark:bg-yellow-950/50 rounded-md border border-yellow-200 dark:border-yellow-800">
+                            <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2">
+                              ⚠️ Large File Detected ({sizeMB}MB)
+                            </p>
+                            <ul className="text-sm text-yellow-600 dark:text-yellow-300 space-y-1 list-disc ml-5">
+                              <li>We recommend using this direct link for files over 25MB</li>
+                              <li>Copy and paste into your browser or use a download manager (IDM, DownThemAll)</li>
+                              <li>The "Download Now" button may timeout for very large files</li>
+                              <li className="font-semibold text-yellow-800 dark:text-yellow-200">✨ We care about you - supports files up to 1GB!</li>
+                            </ul>
+                          </div>
+                        )
+                      }
+
+                      // Default message for normal files
+                      return (
+                        <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
+                          <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                            💡 How to use this direct link:
+                          </p>
+                          <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
+                            <li>Copy the link using the button above</li>
+                            <li>Paste it into your browser address bar or any download manager</li>
+                            <li>The video will start downloading directly</li>
+                            {sizeMB && <li>File size: {sizeMB}MB</li>}
+                          </ul>
+                        </div>
+                      )
+                    })()}
+                    <p className="text-sm text-gray-300 dark:text-gray-400">
                       We care about providing you with the best experience. This direct link gives you full control over your download. For better stability with large files, consider using a download manager like IDM or DownThemAll.
                     </p>
                   </div>
