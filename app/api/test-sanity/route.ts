@@ -19,7 +19,6 @@ export async function GET() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer skkbAFgqJczQIfoityhM5uM9uxQiRRqioA8Sozkm964xnffWcGiLhOHnOI2xaQWeCIRNw295OdOrqn5FwdcyGvVew3OOinZQRNZwVLtI3sMp8x9n9AQsTI1DLk41SAhXzUh91FPQjAb6Hm4jSdC0IxhGeUsl9lxYXy8hXzhNXrWT94K2Dzls',
       },
     })
 

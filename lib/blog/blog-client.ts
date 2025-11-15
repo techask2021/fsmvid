@@ -8,15 +8,14 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 const projectId = 'fb7jparp';
 const dataset = 'production';
 const apiVersion = '2021-10-21'; // Use stable API version (YYYY-MM-DD format without 'v')
-const token = 'skkbAFgqJczQIfoityhM5uM9uxQiRRqioA8Sozkm964xnffWcGiLhOHnOI2xaQWeCIRNw295OdOrqn5FwdcyGvVew3OOinZQRNZwVLtI3sMp8x9n9AQsTI1DLk41SAhXzUh91FPQjAb6Hm4jSdC0IxhGeUsl9lxYXy8hXzhNXrWT94K2Dzls';
 
 // Create client with minimal config for Cloudflare Workers compatibility
+// Note: No token needed for public datasets with published documents
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  token,
-  useCdn: false, // Disable CDN when using token for authenticated requests
+  useCdn: true, // Use CDN for public data
   perspective: 'published',
   stega: {
     enabled: false,
