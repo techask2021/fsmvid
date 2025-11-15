@@ -64,7 +64,11 @@ async function proxyWeiboVideo(request: NextRequest, videoUrl: string) {
   })
 
   if (!response.ok) {
+    // Try to get response body for more details
+    const errorText = await response.text().catch(() => 'Unable to read error body')
     console.error(`[WEIBO PROXY] Failed: ${response.status} ${response.statusText}`)
+    console.error(`[WEIBO PROXY] Error details: ${errorText.substring(0, 200)}`)
+    console.error(`[WEIBO PROXY] Request URL: ${videoUrl}`)
     return new Response(`Failed to fetch video: ${response.status}`, { status: response.status })
   }
 
