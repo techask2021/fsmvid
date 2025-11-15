@@ -9,15 +9,16 @@ const projectId = 'fb7jparp';
 const dataset = 'production';
 const apiVersion = '2025-04-14';
 
+// Create client with minimal config for Cloudflare Workers compatibility
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true, // Use CDN for better Edge Runtime compatibility
-  token: undefined, // Remove token for public data (fixes CORS issue)
-  perspective: 'published', // Only fetch published documents
-  stega: false, // Disable for Edge Runtime compatibility
-  ignoreBrowserTokenWarning: true, // Suppress token warnings in browser
+  useCdn: true,
+  perspective: 'published',
+  stega: {
+    enabled: false,
+  },
 });
 
 // Helper function to generate full URL for a blog post

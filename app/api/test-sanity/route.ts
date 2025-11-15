@@ -1,44 +1,51 @@
 import { NextResponse } from 'next/server'
 export const runtime = 'edge'
-import { client } from '@/lib/blog/blog-client'
 
 export async function GET() {
   try {
-    console.log('[SANITY TEST] Testing Sanity connection...')
+    console.log('[SANITY TEST] Testing Sanity connection with direct HTTP API...')
 
-    // Test environment variables
-    const envCheck = {
-      hasProjectId: !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-      hasDataset: !!process.env.NEXT_PUBLIC_SANITY_DATASET,
-      hasApiVersion: !!process.env.NEXT_PUBLIC_SANITY_API_VERSION,
-      hasToken: !!process.env.SANITY_API_TOKEN,
-      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-      dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-      apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+    const projectId = 'fb7jparp'
+    const dataset = 'production'
+    const apiVersion = '2025-04-14'
+
+    // Test with direct HTTP fetch to Sanity CDN
+    const query = encodeURIComponent('*[_type == "post"] | order(publishedAt desc)[0...3]')
+    const url = `https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}?query=${query}`
+
+    console.log('[SANITY TEST] Fetching from URL:', url)
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    console.log('[SANITY TEST] Response status:', response.status)
+    console.log('[SANITY TEST] Response headers:', Object.fromEntries(response.headers.entries()))
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('[SANITY TEST] Error response:', errorText)
+      return NextResponse.json({
+        status: 'error',
+        message: `Sanity API returned ${response.status}`,
+        responseStatus: response.status,
+        responseBody: errorText,
+        testedUrl: url,
+      }, { status: 500 })
     }
 
-    console.log('[SANITY TEST] Environment check:', envCheck)
-
-    // Test simple query
-    const count = await client.fetch<number>('count(*[_type == "post"])')
-    console.log('[SANITY TEST] Post count:', count)
-
-    // Test fetching one post
-    const posts = await client.fetch(`
-      *[_type == "post"] | order(publishedAt desc)[0...1] {
-        _id,
-        title,
-        slug
-      }
-    `)
-    console.log('[SANITY TEST] Sample posts:', posts)
+    const data = await response.json()
+    console.log('[SANITY TEST] Success! Data:', data)
 
     return NextResponse.json({
       status: 'success',
-      message: 'Sanity connection working',
-      envCheck,
-      postCount: count,
-      samplePosts: posts,
+      message: 'Sanity connection working with direct HTTP API',
+      postCount: data.result?.length || 0,
+      samplePosts: data.result,
+      testedUrl: url,
     })
   } catch (error) {
     console.error('[SANITY TEST] Error:', error)
