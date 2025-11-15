@@ -258,6 +258,19 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
     const finalUrlToProcess = extractedUrl;
 
     try {
+      // Reset all download-related state when processing a new URL
+      // This prevents showing old platform messages/data when switching platforms
+      setDownloadOptions([])
+      setSelectedFormat(null)
+      setSelectedQuality(null)
+      setDownloadUrl(null)
+      setVideoTitle("")
+      setThumbnail("")
+      setFileSize(null)
+      setIsLargeFile(false)
+      setActiveTab("download") // Reset to download tab
+      setCopied(false)
+
       const detectedPlatform = detectPlatform(finalUrlToProcess)
       console.log(`🔍 Detected platform: ${detectedPlatform} for URL: ${finalUrlToProcess}`)
 
