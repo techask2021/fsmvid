@@ -5,7 +5,7 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 
 // Hardcode Sanity credentials to ensure they work on Cloudflare Edge Runtime
-const projectId = 'fb7jparp';
+const projectId = 'fb7lparp'; // IMPORTANT: L not J!
 const dataset = 'production';
 const apiVersion = '2021-10-21'; // Use stable API version (YYYY-MM-DD format without 'v')
 

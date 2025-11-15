@@ -5,7 +5,7 @@ export async function GET() {
   try {
     console.log('[SANITY TEST] Testing Sanity connection with direct HTTP API...')
 
-    const projectId = 'fb7jparp'
+    const projectId = 'fb7lparp' // IMPORTANT: L not J!
     const dataset = 'production'
     const apiVersion = 'v2021-10-21' // Use stable API version (date doesn't matter for public data)
 
