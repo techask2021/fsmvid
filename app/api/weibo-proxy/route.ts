@@ -110,7 +110,6 @@ async function proxyWeiboVideo(request: NextRequest, videoUrl: string) {
   }
 
   // Stream the full video (no buffering - just pipe through)
-  console.info(`[DOWNLOAD SUCCESS] Weibo video streaming started successfully`)
   return new Response(response.body, {
     status: 200,
     headers: responseHeaders,

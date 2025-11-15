@@ -952,12 +952,13 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         // Copy the proxy URL for Weibo
                         const detectedPlatform = detectPlatform(url)
                         const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+                        const platformName = platform === 'universal' ? (detectedPlatform || 'universal') : platform
 
                         if (isWeibo && downloadUrl) {
                           // Use environment base URL, fallback to current window location for local dev
@@ -968,8 +969,22 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                           setCopied(true)
                           toast.success("Download link copied!")
                           setTimeout(() => setCopied(false), 2000)
+
+                          // Track successful link copy
+                          fetch('/api/track-copy', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
+                          }).catch(() => {}) // Silent fail - don't block user
                         } else {
                           copyToClipboard(e)
+
+                          // Track successful link copy
+                          fetch('/api/track-copy', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
+                          }).catch(() => {}) // Silent fail - don't block user
                         }
                       }}
                       disabled={!downloadUrl}
