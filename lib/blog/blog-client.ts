@@ -7,7 +7,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder-project-id',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-04-14', // Fixed: Use valid API version date (not future date)
+  apiVersion: '2025-04-14', // API version matching when dataset was created
   useCdn: true, // Use CDN for better Edge Runtime compatibility
   token: undefined, // Remove token for public data (fixes CORS issue)
   perspective: 'published', // Only fetch published documents
