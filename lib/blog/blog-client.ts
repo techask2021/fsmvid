@@ -8,9 +8,10 @@ export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder-project-id',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2025-04-14',
-  useCdn: false, // Disable CDN to always get fresh content
+  useCdn: true, // Use CDN for better Edge Runtime compatibility
   token: process.env.SANITY_API_TOKEN, // Optional: for draft content
   perspective: 'published', // Only fetch published documents
+  stega: false, // Disable for Edge Runtime compatibility
 });
 
 // Helper function to generate full URL for a blog post
