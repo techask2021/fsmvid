@@ -3,6 +3,7 @@ export const runtime = "edge"
 import { withRateLimit, addRateLimitHeaders } from "@/lib/security/rate-limit-middleware"
 import { RATE_LIMITS, getClientIP } from "@/lib/security/rate-limit"
 import { validateRequest } from "@/lib/security/request-validator"
+import { getCachedResponse, setCachedResponse } from "@/lib/api/redis-cache"
 
 // This is a proxy function to handle the API request
 export async function POST(request: NextRequest) {
@@ -124,8 +125,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Note: Caching disabled for Cloudflare Workers (stateless environment)
-    // TODO: Implement caching using Cloudflare KV or Upstash Redis if needed
+    // Check Upstash Redis cache first to avoid unnecessary API calls
+    const cachedData = await getCachedResponse(processUrl)
+    if (cachedData) {
+      console.info(`[CACHE] Returning cached data for ${platform}`)
+      return NextResponse.json(cachedData, { status: 200 })
+    }
 
     // Get the new ZM API credentials from environment variables
     const apiKey = process.env.NEXT_PUBLIC_ZM_API_KEY
@@ -413,8 +418,8 @@ export async function POST(request: NextRequest) {
         formats: data.formats
       }
 
-      // Note: Response caching disabled for Cloudflare Workers (stateless environment)
-      // TODO: Implement caching using Cloudflare KV or Upstash Redis if needed
+      // Cache the successful response in Upstash Redis (1 hour TTL)
+      await setCachedResponse(processUrl, responseData, 3600)
 
       // Return the formatted API response
       const finalResponse = NextResponse.json(responseData)

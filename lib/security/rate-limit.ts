@@ -29,7 +29,6 @@ export async function rateLimit(
   identifier: string,
   config: RateLimitConfig = { interval: 3600, limit: 20 }
 ): Promise<RateLimitResult> {
-  // TEMPORARILY DISABLED for Cloudflare Workers debugging
   // Skip rate limiting if Redis is not configured
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
     console.warn('[Rate Limit] Upstash Redis not configured - rate limiting disabled')
@@ -41,16 +40,6 @@ export async function rateLimit(
     }
   }
 
-  // TEMPORARY: Always allow requests while debugging Cloudflare Workers issues
-  console.info('[Rate Limit] DISABLED for debugging - allowing all requests')
-  return {
-    success: true,
-    limit: config.limit,
-    remaining: config.limit,
-    reset: Date.now() + config.interval * 1000,
-  }
-
-  /* TEMPORARILY COMMENTED OUT - Re-enable after fixing Workers issues
   try {
     const key = `rate_limit:${identifier}`
     const now = Date.now()
@@ -85,7 +74,6 @@ export async function rateLimit(
       reset: Date.now() + config.interval * 1000,
     }
   }
-  */
 }
 
 /**
