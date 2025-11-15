@@ -432,8 +432,6 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           const sizeStr = defaultOption.size.toString().toLowerCase()
           let sizeInBytes = 0
 
-          console.log(`[FILE SIZE DEBUG] Original size string: "${defaultOption.size}"`)
-
           if (sizeStr.includes('gb')) {
             sizeInBytes = parseFloat(sizeStr) * 1024 * 1024 * 1024
           } else if (sizeStr.includes('mb')) {
@@ -445,22 +443,16 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             sizeInBytes = parseInt(sizeStr)
           }
 
-          console.log(`[FILE SIZE DEBUG] Parsed to ${sizeInBytes} bytes (${Math.round(sizeInBytes / 1024 / 1024)}MB)`)
-
           setFileSize(sizeInBytes)
 
           // Mark as large file if >= 25MB (25 * 1024 * 1024 = 26214400 bytes)
           const isLarge = sizeInBytes >= 26214400
           setIsLargeFile(isLarge)
 
-          console.log(`[FILE SIZE DEBUG] Is large file (>=25MB)? ${isLarge}`)
-
           if (isLarge) {
             const sizeMB = Math.round(sizeInBytes / 1024 / 1024)
-            console.info(`[LARGE FILE] Detected ${sizeMB}MB file for ${detectedPlatform || platform}`)
+            console.info(`[LARGE FILE] ${detectedPlatform || platform} - ${sizeMB}MB`)
           }
-        } else {
-          console.log(`[FILE SIZE DEBUG] No size available or size is "Unknown"`)
         }
       }
       setVideoTitle(data.title || `${platform} Video`);
