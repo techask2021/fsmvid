@@ -7,7 +7,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 // Hardcode Sanity credentials to ensure they work on Cloudflare Edge Runtime
 const projectId = 'fb7jparp';
 const dataset = 'production';
-const apiVersion = '2025-04-14';
+const apiVersion = '2021-10-21'; // Use stable API version (YYYY-MM-DD format without 'v')
 
 // Create client with minimal config for Cloudflare Workers compatibility
 export const client = createClient({

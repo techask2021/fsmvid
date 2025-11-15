@@ -7,11 +7,11 @@ export async function GET() {
 
     const projectId = 'fb7jparp'
     const dataset = 'production'
-    const apiVersion = '2025-04-14'
+    const apiVersion = 'v2021-10-21' // Use stable API version (date doesn't matter for public data)
 
     // Test with direct HTTP fetch to Sanity CDN
     const query = encodeURIComponent('*[_type == "post"] | order(publishedAt desc)[0...3]')
-    const url = `https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}?query=${query}`
+    const url = `https://${projectId}.apicdn.sanity.io/${apiVersion}/data/query/${dataset}?query=${query}`
 
     console.log('[SANITY TEST] Fetching from URL:', url)
 
