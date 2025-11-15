@@ -9,9 +9,10 @@ export const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2025-04-14',
   useCdn: true, // Use CDN for better Edge Runtime compatibility
-  token: process.env.SANITY_API_TOKEN, // Optional: for draft content
+  token: undefined, // Remove token for public data (fixes CORS issue)
   perspective: 'published', // Only fetch published documents
   stega: false, // Disable for Edge Runtime compatibility
+  ignoreBrowserTokenWarning: true, // Suppress token warnings in browser
 });
 
 // Helper function to generate full URL for a blog post
