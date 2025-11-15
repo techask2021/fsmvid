@@ -4,10 +4,15 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fsmvid.com';
 
+// Hardcode Sanity credentials to ensure they work on Cloudflare Edge Runtime
+const projectId = 'fb7jparp';
+const dataset = 'production';
+const apiVersion = '2025-04-14';
+
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder-project-id',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2025-04-14', // API version matching when dataset was created
+  projectId,
+  dataset,
+  apiVersion,
   useCdn: true, // Use CDN for better Edge Runtime compatibility
   token: undefined, // Remove token for public data (fixes CORS issue)
   perspective: 'published', // Only fetch published documents
