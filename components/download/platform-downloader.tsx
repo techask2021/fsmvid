@@ -534,10 +534,14 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           toast.info("This is a streaming format (m3u8).", { duration: 6000 });
           if (!confirm("This is a streaming format. Download m3u8 file? (Cancel to copy link)")) { setDownloadLoading(false); copyToClipboard(); return; }
         }
-        // FEATURE: Universal streaming proxy for better mobile UX and CORS bypass
-        // Phase 1: Enable for 5 platforms (TikTok, Instagram, Weibo, Xiaohongshu, Bilibili)
-        const STREAMING_PROXY_PLATFORMS = ['tiktok', 'instagram', 'weibo', 'xiaohongshu', 'redbook', 'bilibili'];
-        const shouldUseStreamingProxy = STREAMING_PROXY_PLATFORMS.includes(detectedPlatform || platform);
+        // FEATURE: Universal streaming proxy for ALL platforms
+        // Enables one-click downloads on mobile, bypasses CORS, and handles unlimited file sizes
+        // Only skip for special cases with custom handling (m3u8 HLS streams, Mixcloud parallel download)
+        const isM3u8Stream = (downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') &&
+                             (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
+                              (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
+        const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
+        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud; // Use streaming for ALL platforms except these special cases
 
         if (shouldUseStreamingProxy) {
           try {
@@ -572,9 +576,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           }
         }
 
-        // Use CLIENT-SIDE parallel download for Mixcloud (bypasses Netlify size limits!)
-        const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
-        
+        // Use CLIENT-SIDE parallel download for Mixcloud (special case - they have chunked downloads)
         if (isMixcloud) {
           try {
             toast.info("Downloading with parallel chunks in browser (faster!)...", { duration: 4000 });
@@ -665,28 +667,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         // Standard download for other platforms
         const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform, isHomepage }), })
 
-        // Check if it's a large file (413 status)
-        if (response.status === 413) {
-          const data = await response.json()
-          const sizeMB = data.sizeMB || Math.round((data.fileSize || 0) / 1024 / 1024)
-
-          // Update file size state
-          if (data.fileSize) {
-            setFileSize(data.fileSize)
-            setIsLargeFile(true)
-          }
-
-          // Switch to Direct Link tab
-          setActiveTab("link")
-          setDownloadLoading(false)
-
-          // Show friendly message
-          toast.info(`Large file detected (${sizeMB}MB). Switched to Direct Link tab for smooth downloads.`, {
-            duration: 5000
-          })
-          return
-        }
-
+        // Note: Streaming proxy now handles all file sizes, so no 413 checks needed
         if (!response.ok) throw new Error('Download failed')
         const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob);
         const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
@@ -941,17 +922,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                     </div>
                   )}
 
-                  {/* Info message for large files - auto-switch to Direct Link */}
-                  {isLargeFile && fileSize && (
-                    <div className="p-3 bg-blue-50 dark:bg-blue-950/50 rounded-md border border-blue-200 dark:border-blue-800 mb-3">
-                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                        💡 Large File Detected ({Math.round(fileSize / 1024 / 1024)}MB)
-                      </p>
-                      <p className="text-xs text-blue-600 dark:text-blue-300">
-                        Clicking "Download Now" will switch you to the <strong>"Direct Link"</strong> tab for the best download experience with large files.
-                      </p>
-                    </div>
-                  )}
+                  {/* Large file warnings removed - streaming proxy handles all file sizes now */}
 
                   <Button
                     onClick={handleDownload}
@@ -1062,30 +1033,14 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                             <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
                               <li>This link works anywhere - paste in any browser or download manager</li>
                               <li>Optimized for reliable Weibo video downloads</li>
-                              {sizeMB && <li>File size: {sizeMB}MB {isLargeFile && '(Large file - streaming supported)'}</li>}
-                              {isLargeFile && <li>For large files, this method provides the smoothest download experience</li>}
-                              <li className="font-semibold text-blue-800 dark:text-blue-200">✨ We care about you - supports files up to 1GB!</li>
+                              {sizeMB && <li>File size: {sizeMB}MB</li>}
+                              <li className="font-semibold text-blue-800 dark:text-blue-200">✨ Supports unlimited file sizes with streaming!</li>
                             </ul>
                           </div>
                         )
                       }
 
-                      // Large file warning for all platforms
-                      if (isLargeFile && sizeMB) {
-                        return (
-                          <div className="p-3 bg-yellow-50 dark:bg-yellow-950/50 rounded-md border border-yellow-200 dark:border-yellow-800">
-                            <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2">
-                              ⚠️ Large File Detected ({sizeMB}MB)
-                            </p>
-                            <ul className="text-sm text-yellow-600 dark:text-yellow-300 space-y-1 list-disc ml-5">
-                              <li>We recommend using this direct link for files over 25MB</li>
-                              <li>Copy and paste into your browser or use a download manager (IDM, DownThemAll)</li>
-                              <li>The "Download Now" button may timeout for very large files</li>
-                              <li className="font-semibold text-yellow-800 dark:text-yellow-200">✨ We care about you - supports files up to 1GB!</li>
-                            </ul>
-                          </div>
-                        )
-                      }
+                      // No large file warnings needed - streaming proxy handles everything!
 
                       // Default message for normal files
                       return (

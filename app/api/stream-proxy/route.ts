@@ -108,6 +108,207 @@ function getPlatformHeaders(platform: string, url: string): HeadersInit {
         'Accept': 'video/mp4,video/*;q=0.9,*/*;q=0.8',
       }
 
+    case 'dailymotion':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.dailymotion.com/',
+        'Origin': 'https://www.dailymotion.com',
+      }
+
+    case 'bsky':
+    case 'bluesky':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://bsky.app/',
+        'Origin': 'https://bsky.app',
+      }
+
+    case 'reddit':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.reddit.com/',
+        'Origin': 'https://www.reddit.com',
+      }
+
+    case 'douyin':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.douyin.com/',
+        'Origin': 'https://www.douyin.com',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      }
+
+    case 'kuaishou':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.kuaishou.com/',
+        'Origin': 'https://www.kuaishou.com',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      }
+
+    case 'pinterest':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.pinterest.com/',
+        'Origin': 'https://www.pinterest.com',
+      }
+
+    case 'linkedin':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.linkedin.com/',
+        'Origin': 'https://www.linkedin.com',
+      }
+
+    case 'snapchat':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.snapchat.com/',
+        'Origin': 'https://www.snapchat.com',
+      }
+
+    case 'threads':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.threads.net/',
+        'Origin': 'https://www.threads.net',
+      }
+
+    case 'tumblr':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.tumblr.com/',
+        'Origin': 'https://www.tumblr.com',
+      }
+
+    case 'telegram':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://telegram.org/',
+        'Origin': 'https://telegram.org',
+      }
+
+    case 'mixcloud':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.mixcloud.com/',
+        'Origin': 'https://www.mixcloud.com',
+        'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+      }
+
+    case 'soundcloud':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://soundcloud.com/',
+        'Origin': 'https://soundcloud.com',
+        'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+        'Sec-Fetch-Dest': 'audio',
+        'Sec-Fetch-Mode': 'no-cors',
+        'Sec-Fetch-Site': 'cross-site',
+      }
+
+    case 'spotify':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://open.spotify.com/',
+        'Origin': 'https://open.spotify.com',
+        'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+      }
+
+    case 'rumble':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://rumble.com/',
+        'Origin': 'https://rumble.com',
+      }
+
+    case 'bitchute':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.bitchute.com/',
+        'Origin': 'https://www.bitchute.com',
+      }
+
+    case 'imgur':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://imgur.com/',
+        'Origin': 'https://imgur.com',
+      }
+
+    case '9gag':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://9gag.com/',
+        'Origin': 'https://9gag.com',
+      }
+
+    case 'ifunny':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://ifunny.co/',
+        'Origin': 'https://ifunny.co',
+      }
+
+    case 'ted':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.ted.com/',
+        'Origin': 'https://www.ted.com',
+      }
+
+    case 'espn':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.espn.com/',
+        'Origin': 'https://www.espn.com',
+      }
+
+    case 'imdb':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.imdb.com/',
+        'Origin': 'https://www.imdb.com',
+      }
+
+    case 'capcut':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.capcut.com/',
+        'Origin': 'https://www.capcut.com',
+      }
+
+    case 'febspot':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://febspot.com/',
+        'Origin': 'https://febspot.com',
+      }
+
+    case 'deezer':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://www.deezer.com/',
+        'Origin': 'https://www.deezer.com',
+        'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+      }
+
+    case 'zingmp3':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://zingmp3.vn/',
+        'Origin': 'https://zingmp3.vn',
+        'Accept-Language': 'vi,en;q=0.9',
+      }
+
+    case 'castbox':
+      return {
+        ...baseHeaders,
+        'Referer': 'https://castbox.fm/',
+        'Origin': 'https://castbox.fm',
+        'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+      }
+
     default:
       return baseHeaders
   }
