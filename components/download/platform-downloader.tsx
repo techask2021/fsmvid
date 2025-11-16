@@ -554,33 +554,14 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             // Use streaming proxy for one-click downloads
             const streamProxyUrl = `/api/stream-proxy?url=${encodeURIComponent(downloadUrl)}&platform=${detectedPlatform || platform}&format=${selectedFormat?.toLowerCase() || 'mp4'}&filename=${encodeURIComponent(filename)}`;
 
-            // YouTube and large files: fetch as blob via proxy to ensure download works
-            if (isYouTube || (fileSize && fileSize > 50 * 1024 * 1024)) {
-              toast.info("Downloading via secure proxy...", { duration: 3000 });
-
-              const response = await fetch(streamProxyUrl);
-              if (!response.ok) {
-                throw new Error(`Download failed: ${response.status}`);
-              }
-
-              const blob = await response.blob();
-              const blobUrl = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = blobUrl;
-              link.download = filename;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(blobUrl);
-            } else {
-              // Small files from other platforms: direct link
-              const link = document.createElement('a');
-              link.href = streamProxyUrl;
-              link.download = filename;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }
+            // Direct link download for all platforms (including YouTube)
+            const link = document.createElement('a');
+            link.href = streamProxyUrl;
+            link.download = filename;
+            link.target = '_blank'; // Open in new tab as fallback
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
             toast.success("Download started!");
             setDownloadLoading(false);
