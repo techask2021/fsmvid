@@ -541,8 +541,8 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                              (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
                               (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
-        const isYouTube = platform === 'youtube' || (platform === 'universal' && detectedPlatform === 'youtube');
-        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud && !isYouTube; // YouTube uses direct download (URLs expire quickly)
+        // YouTube MUST use streaming proxy - direct download causes ECONNRESET errors
+        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud; // Use streaming for all platforms including YouTube
 
         if (shouldUseStreamingProxy) {
           try {
