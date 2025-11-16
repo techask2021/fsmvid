@@ -551,13 +551,34 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             // Use streaming proxy for one-click downloads
             const streamProxyUrl = `/api/stream-proxy?url=${encodeURIComponent(downloadUrl)}&platform=${detectedPlatform || platform}&format=${selectedFormat?.toLowerCase() || 'mp4'}&filename=${encodeURIComponent(filename)}`;
 
-            // Create download link and trigger
-            const link = document.createElement('a');
-            link.href = streamProxyUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // For YouTube and platforms with signed URLs, we need to fetch via proxy first
+            // Then create a blob to avoid browser making direct requests with wrong headers
+            const isYouTubeOrSigned = (detectedPlatform || platform) === 'youtube' || downloadUrl.includes('googlevideo.com');
+
+            if (isYouTubeOrSigned && fileSize && fileSize < 100 * 1024 * 1024) {
+              // For YouTube videos <100MB, fetch as blob to ensure headers work
+              toast.info("Downloading via secure proxy...", { duration: 3000 });
+              const response = await fetch(streamProxyUrl);
+              if (!response.ok) throw new Error('Download failed');
+
+              const blob = await response.blob();
+              const blobUrl = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(blobUrl);
+            } else {
+              // For other platforms or large YouTube files, direct link works
+              const link = document.createElement('a');
+              link.href = streamProxyUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
 
             toast.success("Download started!");
             setDownloadLoading(false);
