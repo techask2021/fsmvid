@@ -541,8 +541,61 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                              (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
                               (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
-        // YouTube MUST use streaming proxy - direct download causes ECONNRESET errors
-        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud; // Use streaming for all platforms including YouTube
+        const isYouTube = (detectedPlatform || platform) === 'youtube' || downloadUrl.includes('googlevideo.com');
+
+        // YouTube needs special client-side handling due to signed URL restrictions
+        // Other platforms use streaming proxy
+        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud && !isYouTube;
+
+        // YouTube special handling - fetch directly from client to preserve signed URL
+        if (isYouTube) {
+          try {
+            toast.info("Downloading YouTube video...", { duration: 3000 });
+
+            // Fetch directly from googlevideo.com (signed URLs work from browser)
+            const response = await fetch(downloadUrl, {
+              mode: 'cors',
+              credentials: 'omit',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error(`YouTube download failed: ${response.status}`);
+            }
+
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+
+            toast.success("YouTube download complete!");
+            setDownloadLoading(false);
+
+            // Track successful download
+            fetch('/api/track-copy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ platform: 'youtube', fileSize, url: downloadUrl })
+            }).catch(() => {});
+
+            return;
+          } catch (youtubeError) {
+            console.error('YouTube client-side download failed:', youtubeError);
+            toast.error("YouTube download blocked. Opening direct link...");
+            // Fallback: Open in new tab for manual save
+            window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+            toast.info("Right-click the video and select 'Save video as...' to download", { duration: 10000 });
+            setDownloadLoading(false);
+            return;
+          }
+        }
 
         if (shouldUseStreamingProxy) {
           try {
@@ -551,34 +604,13 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             // Use streaming proxy for one-click downloads
             const streamProxyUrl = `/api/stream-proxy?url=${encodeURIComponent(downloadUrl)}&platform=${detectedPlatform || platform}&format=${selectedFormat?.toLowerCase() || 'mp4'}&filename=${encodeURIComponent(filename)}`;
 
-            // For YouTube and platforms with signed URLs, we need to fetch via proxy first
-            // Then create a blob to avoid browser making direct requests with wrong headers
-            const isYouTubeOrSigned = (detectedPlatform || platform) === 'youtube' || downloadUrl.includes('googlevideo.com');
-
-            if (isYouTubeOrSigned && fileSize && fileSize < 100 * 1024 * 1024) {
-              // For YouTube videos <100MB, fetch as blob to ensure headers work
-              toast.info("Downloading via secure proxy...", { duration: 3000 });
-              const response = await fetch(streamProxyUrl);
-              if (!response.ok) throw new Error('Download failed');
-
-              const blob = await response.blob();
-              const blobUrl = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = blobUrl;
-              link.download = filename;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(blobUrl);
-            } else {
-              // For other platforms or large YouTube files, direct link works
-              const link = document.createElement('a');
-              link.href = streamProxyUrl;
-              link.download = filename;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }
+            // Fetch via streaming proxy
+            const link = document.createElement('a');
+            link.href = streamProxyUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
             toast.success("Download started!");
             setDownloadLoading(false);
