@@ -81,13 +81,9 @@ function getPlatformHeaders(platform: string, url: string): HeadersInit {
       }
 
     case 'youtube':
-      // YouTube's googlevideo.com requires minimal headers
-      // Any extra headers (Origin, Referer, etc.) cause 403 errors
-      return {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': '*/*',
-        // No Origin, no Referer, no Accept-Encoding - keep it minimal!
-      }
+      // YouTube's googlevideo.com signed URLs work best with NO custom headers
+      // Let the fetch API use default headers only
+      return {}
 
     case 'facebook':
       return {
