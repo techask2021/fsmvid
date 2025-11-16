@@ -187,7 +187,12 @@ export async function GET(request: NextRequest) {
     // Prepare response headers
     const responseHeaders = new Headers()
     responseHeaders.set('Content-Type', contentType)
-    responseHeaders.set('Content-Disposition', `attachment; filename="${downloadFilename}"`)
+
+    // Use RFC 5987 encoding for filenames with non-ASCII characters
+    // Replace non-ASCII with underscore for the basic filename, and encode properly for filename*
+    const asciiFilename = downloadFilename.replace(/[^\x00-\x7F]/g, '_')
+    const encodedFilename = encodeURIComponent(downloadFilename)
+    responseHeaders.set('Content-Disposition', `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodedFilename}`)
 
     // Copy important headers from source
     const contentLength = response.headers.get('Content-Length')
