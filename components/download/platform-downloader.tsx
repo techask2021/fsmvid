@@ -534,6 +534,44 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           toast.info("This is a streaming format (m3u8).", { duration: 6000 });
           if (!confirm("This is a streaming format. Download m3u8 file? (Cancel to copy link)")) { setDownloadLoading(false); copyToClipboard(); return; }
         }
+        // FEATURE: Universal streaming proxy for better mobile UX and CORS bypass
+        // Phase 1: Enable for 5 platforms (TikTok, Instagram, Weibo, Xiaohongshu, Bilibili)
+        const STREAMING_PROXY_PLATFORMS = ['tiktok', 'instagram', 'weibo', 'xiaohongshu', 'redbook', 'bilibili'];
+        const shouldUseStreamingProxy = STREAMING_PROXY_PLATFORMS.includes(detectedPlatform || platform);
+
+        if (shouldUseStreamingProxy) {
+          try {
+            toast.info("Preparing download...", { duration: 2000 });
+
+            // Use streaming proxy for one-click downloads
+            const streamProxyUrl = `/api/stream-proxy?url=${encodeURIComponent(downloadUrl)}&platform=${detectedPlatform || platform}&format=${selectedFormat?.toLowerCase() || 'mp4'}&filename=${encodeURIComponent(filename)}`;
+
+            // Create download link and trigger
+            const link = document.createElement('a');
+            link.href = streamProxyUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toast.success("Download started!");
+            setDownloadLoading(false);
+
+            // Track successful download initiation
+            fetch('/api/track-copy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ platform: detectedPlatform || platform, fileSize, url: downloadUrl })
+            }).catch(() => {});
+
+            return; // Exit early, don't use old download method
+          } catch (streamError) {
+            console.error('Streaming proxy failed, falling back to standard download:', streamError);
+            toast.error("Streaming download failed. Trying standard method...");
+            // Fall through to standard download
+          }
+        }
+
         // Use CLIENT-SIDE parallel download for Mixcloud (bypasses Netlify size limits!)
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
         

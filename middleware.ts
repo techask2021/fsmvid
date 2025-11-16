@@ -34,6 +34,7 @@ const IMPORTANT_PATHS = [
   '/api/proxy',
   '/api/download',
   '/api/weibo-proxy',
+  '/api/stream-proxy',
 ]
 
 // Pages that should be logged (user navigation)
