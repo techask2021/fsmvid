@@ -536,12 +536,13 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         }
         // FEATURE: Universal streaming proxy for ALL platforms
         // Enables one-click downloads on mobile, bypasses CORS, and handles unlimited file sizes
-        // Only skip for special cases with custom handling (m3u8 HLS streams, Mixcloud parallel download)
+        // Only skip for special cases with custom handling
         const isM3u8Stream = (downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') &&
                              (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
                               (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
-        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud; // Use streaming for ALL platforms except these special cases
+        const isYouTube = platform === 'youtube' || (platform === 'universal' && detectedPlatform === 'youtube');
+        const shouldUseStreamingProxy = !isM3u8Stream && !isMixcloud && !isYouTube; // YouTube uses direct download (URLs expire quickly)
 
         if (shouldUseStreamingProxy) {
           try {
