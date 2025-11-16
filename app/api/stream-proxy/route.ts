@@ -81,14 +81,15 @@ function getPlatformHeaders(platform: string, url: string): HeadersInit {
       }
 
     case 'youtube':
+      // YouTube requires specific headers to avoid 403
+      // Remove Origin and Referer as they can cause blocks
       return {
-        ...baseHeaders,
-        'Referer': 'https://www.youtube.com/',
-        'Origin': 'https://www.youtube.com',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-        'Range': 'bytes=0-', // Important for YouTube
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'identity',
+        'Range': 'bytes=0-',
+        // Don't send Origin/Referer for YouTube - causes 403
       }
 
     case 'facebook':
