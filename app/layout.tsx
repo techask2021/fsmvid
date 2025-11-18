@@ -20,10 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: {
-    default: "FSMVID | Free Social Media Video Downloader",
-    template: "%s | FSMVID",
-  },
+  title: "FSMVID | Free Social Media Video Downloader",
   description: "Free online video downloader and converter tool that works. Download videos from 30+ platforms including YouTube, TikTok, Facebook, Instagram, Twitter with no software installation. Web-based video download utility with 4K quality, multiple formats (MP4, MKV, WebM, MP3), and built-in format conversion. No registration required—completely free video download software.",
   generator: 'v0.dev',
   icons: {
