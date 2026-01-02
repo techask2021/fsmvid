@@ -1,5 +1,5 @@
 "use client"
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 import { NextStudio } from "next-sanity/studio"
 import config from "@/cms/sanity/config"
