@@ -78,9 +78,9 @@ export async function downloadVideo(videoUrl: string, filename: string, platform
         const errorMessage = data.message || 'No downloadable media found for this URL.';
         throw new Error(errorMessage);
       }
-      
+
       const downloadUrl = getBestQualityUrl(data, platform); // Pass platform
-      
+
       if (!downloadUrl) {
         // This error is now more specific, as data.error should have been caught above
         throw new Error('Could not extract a valid download URL from the API response.');
@@ -134,7 +134,7 @@ export async function downloadVideo(videoUrl: string, filename: string, platform
   }
 }
 
-function getBestQualityUrl(apiResponse: any, platform?: string): string | null { // Add platform parameter
+export function getBestQualityUrl(apiResponse: any, platform?: string): string | null { // Add platform parameter
   try {
     console.log(`getBestQualityUrl called for platform: ${platform}, data:`, JSON.stringify(apiResponse, null, 2).substring(0, 1000));
 
