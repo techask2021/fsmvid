@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { BulkProgress } from "@/components/download/bulk-progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -20,7 +20,8 @@ interface JobRecord {
     completed_files: number;
 }
 
-export default function DashboardPage() {
+// Separate component to handle search params
+function DashboardContent() {
     const searchParams = useSearchParams();
     const initialJobId = searchParams.get("jobId");
 
@@ -176,5 +177,17 @@ export default function DashboardPage() {
                 </TabsContent>
             </Tabs>
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">
+                Loading Dashboard...
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
     );
 }
