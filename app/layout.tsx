@@ -5,7 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
-import { Toaster } from "@/components/ui/toaster" 
+import { Toaster } from "@/components/ui/toaster"
 
 
 import Script from "next/script"
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils/utils"
 import { Analytics } from "@/components/shared/analytics"
 import AdOptimizer from "@/components/ads/ad-optimizer"
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: 'swap', // Ensure text remains visible during font loading
   preload: true,
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 const WebVitalsMonitoring = () => {
   // Only enable in production
   const isProduction = process.env.NODE_ENV === 'production';
-  
+
   if (!isProduction) {
     return null;
   }
@@ -155,6 +155,8 @@ const WebVitalsMonitoring = () => {
   )
 };
 
+import { AuthProvider } from "@/components/auth/auth-provider"
+
 export default function RootLayout({
   children,
 }: {
@@ -169,11 +171,11 @@ export default function RootLayout({
         <link rel="preload" href="/icons/tiktok.svg" as="image" type="image/svg+xml" />
         <link rel="preload" href="/icons/facebook.svg" as="image" type="image/svg+xml" />
         <link rel="preload" href="/icons/instagram.svg" as="image" type="image/svg+xml" />
-        
+
         {/* Preconnect to any external domains used for assets */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* Preconnect to Google Ads domains for faster ad loading */}
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://adservice.google.com" />
@@ -182,14 +184,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.gstatic.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://adservice.google.com" />
-        
+
         {/* Meta tags for Core Web Vitals optimization */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#2563EB" />
-        
+
         {/* Galaksion domain verification */}
         <meta name="galaksion-domain-verification" content="13c97584dfc6c84fac030fea976dd4b59475a706434204afb9743b820c2fb221" />
-        
+
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2918771713238080"
@@ -201,20 +203,21 @@ export default function RootLayout({
         inter.className
       )} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          
-          <div className="relative flex min-h-screen flex-col overflow-x-hidden break-words">
-            <div suppressHydrationWarning>
-              <Header />
+          <AuthProvider>
+            <div className="relative flex min-h-screen flex-col overflow-x-hidden break-words">
+              <div suppressHydrationWarning>
+                <Header />
+              </div>
+              <div className="flex-1 break-words pt-20" style={{ containIntrinsicSize: '1px 5000px' }}> {/* Added pt-20 */}
+                {children}
+              </div>
+
+              <Footer />
             </div>
-            <div className="flex-1 break-words pt-20" style={{ containIntrinsicSize: '1px 5000px' }}> {/* Added pt-20 */}
-              {children}
-            </div>
-            
-            <Footer />
-          </div>
-          <Toaster />
-          <Analytics />
-          <AdOptimizer />
+            <Toaster />
+            <Analytics />
+            <AdOptimizer />
+          </AuthProvider>
         </ThemeProvider>
         <WebVitalsMonitoring />
       </body>
