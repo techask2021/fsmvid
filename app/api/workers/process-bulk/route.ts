@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+export const maxDuration = 300;
 import { supabaseAdmin } from "@/lib/api/supabase";
 import { fetchVideoMetadata } from "@/lib/download/bulk-helper";
 import archiver from "archiver";
