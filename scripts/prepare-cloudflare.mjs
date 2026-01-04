@@ -26,15 +26,25 @@ export async function POST(request: NextRequest) {
 
 function prepare() {
     try {
-        const fullPath = path.resolve(process.cwd(), routeFile);
-
-        if (fs.existsSync(fullPath)) {
+        // --- 1. Stub the worker route ---
+        const workerPath = path.resolve(process.cwd(), routeFile);
+        if (fs.existsSync(workerPath)) {
             console.log(`[Cloudflare Prepare] Stubbing worker route: ${routeFile}`);
-            fs.writeFileSync(fullPath, stubContent);
+            fs.writeFileSync(workerPath, stubContent);
             console.log('[Cloudflare Prepare] Successfully replaced with Edge-compatible stub.');
-        } else {
-            console.warn(`[Cloudflare Prepare] Warning: Could not find ${routeFile}`);
         }
+
+        // --- 2. Flip Sanity Studio to Edge ---
+        const studioFile = 'app/(system)/studio/[[...index]]/page.tsx';
+        const studioPath = path.resolve(process.cwd(), studioFile);
+        if (fs.existsSync(studioPath)) {
+            console.log(`[Cloudflare Prepare] Switching Sanity Studio to Edge: ${studioFile}`);
+            let content = fs.readFileSync(studioPath, 'utf8');
+            content = content.replace('runtime = "nodejs"', 'runtime = "edge"');
+            fs.writeFileSync(studioPath, content);
+            console.log('[Cloudflare Prepare] Sanity Studio flipped to Edge.');
+        }
+
     } catch (error) {
         console.error('[Cloudflare Prepare] Error during preparation:', error);
         process.exit(1);
