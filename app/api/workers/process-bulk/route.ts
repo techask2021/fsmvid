@@ -1,5 +1,5 @@
-
 import { NextRequest, NextResponse } from "next/server";
+export const runtime = 'edge';
 import { supabaseAdmin } from "@/lib/api/supabase";
 import { fetchVideoMetadata } from "@/lib/download/bulk-helper";
 import archiver from "archiver";
@@ -9,8 +9,6 @@ import { r2Client, R2_BUCKET, isR2Configured } from "@/lib/api/r2";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
-export const runtime = 'nodejs';
-export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
     let jobId: string | null = null;
