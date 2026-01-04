@@ -1,287 +1,403 @@
-import { Metadata } from "next"
-import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Mail, Clock, MapPin, Megaphone, PenTool, TrendingUp, Sparkles, MessageCircle, Headphones, Globe, CheckCircle, Shield } from "lucide-react"
-import ContactForm from "./contact-form"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Contact Us | FSMVID | Free Social Media Video Downloader",
-  description: "Get in touch with the FSMVID team. We're here to help with any questions, suggestions, or concerns you may have. Explore guest post and advertising opportunities.",
-}
+import Link from "next/link"
+import Image from "next/image"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import {
+  Mail,
+  Clock,
+  MessageCircle,
+  Globe,
+  Send,
+  ArrowRight,
+  CheckCircle,
+  Shield,
+  Megaphone,
+  TrendingUp,
+  Target,
+  BarChart3
+} from "lucide-react"
+import HeroSectionStyles from "@/components/content/hero-section-styles"
+import { useState, useRef } from "react"
+import { useToast } from "@/hooks/use-toast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { RecaptchaButton } from "@/components/forms/recaptcha"
 
 export default function ContactPage() {
+  const { toast } = useToast()
+  const formRef = useRef<HTMLFormElement>(null)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  })
+
+  const handleFormAction = async (formData: FormData) => {
+    try {
+      const recaptchaToken = formData.get("g-recaptcha-response")
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: formData.get('email'),
+          subject: formData.get('subject'),
+          message: formData.get('message'),
+          recaptchaToken
+        })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent!",
+          description: data.message || "We'll get back to you within 24 hours."
+        })
+        setFormData({ name: "", email: "", subject: "", message: "" })
+        formRef.current?.reset()
+      } else {
+        throw new Error(data.error || 'Failed to send message')
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 py-16 md:py-20 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-300 rounded-full blur-3xl"></div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Hero Section - Match Privacy Policy Style */}
+      <section className="relative min-h-[50vh] overflow-hidden flex flex-col items-center justify-center pt-32 pb-20 px-4 mb-8 group">
+        <HeroSectionStyles />
+
+        {/* Background Image with Dark Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/pages.png"
+            alt="Contact Hero Background"
+            fill
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
+            priority
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-slate-950/60 transition-all duration-700 group-hover:bg-slate-950/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-transparent opacity-50" />
         </div>
-        
-        <div className="container max-w-6xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-8">
-            <Badge className="mb-4 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-2 text-sm font-semibold hover:bg-white/30 transition-all">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Let's Connect
-            </Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-              Get In Touch With Us
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+
+        {/* Atmospheric Orbs */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full -translate-y-1/2" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full translate-y-1/2" />
+
+        <div className="container relative z-10 max-w-6xl mx-auto flex flex-col items-center text-center">
+          <Badge className="mb-8 bg-blue-600 text-white border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <MessageCircle className="w-3.5 h-3.5 mr-2" />
+            Let's Connect
+          </Badge>
+
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter italic leading-tight mb-8 uppercase text-white drop-shadow-2xl">
+            Get In Touch <span className="text-blue-400">With Us</span>
+          </h1>
+
+          <div className="max-w-3xl space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            <p className="text-lg md:text-xl text-slate-200 font-medium leading-relaxed drop-shadow-md">
               Have questions? Want to partner with us? We'd love to hear from you.
               <br />
-              <span className="text-lg">Our team typically responds within 24 hours.</span>
+              <span className="text-base text-blue-200 italic">Our team typically responds within 24 hours.</span>
             </p>
-          </div>
-
-          {/* Quick Contact Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {[
-              { icon: Headphones, label: "24/7 Support", value: "Always Here" },
-              { icon: Clock, label: "Response Time", value: "< 24 Hours" },
-              { icon: MessageCircle, label: "Happy Clients", value: "50K+" },
-              { icon: Globe, label: "Global Reach", value: "150+ Countries" }
-            ].map((stat, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/20 transition-all">
-                <stat.icon className="w-8 h-8 text-cyan-300 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-xs text-blue-200">{stat.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      
-      {/* Business Opportunities Section */}
-      <section className="bg-gray-50 dark:bg-slate-900 py-16">
-        <div className="container max-w-6xl mx-auto px-4">
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border-2 border-blue-200 dark:border-blue-700 shadow-2xl">
-          <CardContent className="p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-blue-900">
-                🚀 Partner With Us
+      {/* Stats Cards */}
+      <section className="container max-w-6xl mx-auto px-4 -mt-16 mb-16 relative z-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: Clock, title: "Always Here", subtitle: "24/7 Support", color: "text-blue-500" },
+            { icon: Clock, title: "< 24 Hours", subtitle: "Response Time", color: "text-green-500" },
+            { icon: MessageCircle, title: "50K+", subtitle: "Happy Clients", color: "text-purple-500" },
+            { icon: Globe, title: "150+", subtitle: "Countries", color: "text-orange-500" }
+          ].map((stat, i) => (
+            <Card key={i} className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl p-6 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex flex-col items-center gap-3">
+                <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl">
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <div>
+                  <p className="text-xl font-black text-slate-900 dark:text-white">{stat.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{stat.subtitle}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Partner With Us Section */}
+      <section className="container max-w-6xl mx-auto px-4 mb-16">
+        <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden">
+          <CardContent className="p-8 md:p-12">
+            <div className="text-center mb-10">
+              <Badge className="mb-4 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 border-none px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
+                <Megaphone className="w-3.5 h-3.5 mr-2" />
+                Partner With Us
+              </Badge>
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                Reach thousands of engaged users interested in social media tools and video content!
               </h2>
-              <p className="text-lg text-gray-700">
-                Reach thousands of engaged users interested in social media tools and video content
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              {/* Guest Post */}
-              <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <PenTool className="w-7 h-7 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-center mb-3">Guest Posts</h3>
-                <p className="text-gray-600 text-center mb-4">
-                  Share your expertise with our audience. Monthly or yearly packages available.
-                </p>
-                <ul className="text-sm text-gray-600 space-y-2">
-                  <li>✓ High-quality backlinks</li>
-                  <li>✓ Targeted audience</li>
-                  <li>✓ SEO-friendly content</li>
-                  <li>✓ Long-term visibility</li>
-                </ul>
-              </div>
-
-              {/* Ad Placement */}
-              <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Megaphone className="w-7 h-7 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-bold text-center mb-3">Ad Placement</h3>
-                <p className="text-gray-600 text-center mb-4">
-                  Premium advertising spots to showcase your products or services.
-                </p>
-                <ul className="text-sm text-gray-600 space-y-2">
-                  <li>✓ Banner ads</li>
-                  <li>✓ Sponsored content</li>
-                  <li>✓ Custom placements</li>
-                  <li>✓ Flexible terms</li>
-                </ul>
-              </div>
-
-              {/* Benefits */}
-              <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="w-7 h-7 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold text-center mb-3">Why Choose Us?</h3>
-                <p className="text-gray-600 text-center mb-4">
-                  Get maximum exposure and ROI with our growing platform.
-                </p>
-                <ul className="text-sm text-gray-600 space-y-2">
-                  <li>✓ Active user base</li>
-                  <li>✓ Niche audience</li>
-                  <li>✓ Competitive rates</li>
-                  <li>✓ Detailed analytics</li>
-                </ul>
-              </div>
             </div>
 
-            <div className="text-center mt-8">
-              <p className="text-lg font-semibold text-gray-800 mb-2">
-                Interested in growing your brand with us?
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  icon: Megaphone,
+                  title: "Guest Posts",
+                  description: "Share your expertise with our audience. Monthly or yearly packages available.",
+                  features: ["High-quality backlinks", "Targeted audience", "SEO-friendly content", "Long-term visibility"],
+                  color: "blue"
+                },
+                {
+                  icon: Target,
+                  title: "Ad Placement",
+                  description: "Premium advertising spots to showcase your products or services.",
+                  features: ["Banner ads", "Sponsored content", "Custom placements", "Flexible terms"],
+                  color: "purple"
+                },
+                {
+                  icon: TrendingUp,
+                  title: "Why Choose Us?",
+                  description: "Get maximum exposure and ROI with our growing platform.",
+                  features: ["Active user base", "Niche audience", "Competitive rates", "Detailed analytics"],
+                  color: "green"
+                }
+              ].map((option, i) => (
+                <Card key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:shadow-lg transition-all">
+                  <div className={`bg-${option.color}-100 dark:bg-${option.color}-900/30 w-12 h-12 rounded-xl flex items-center justify-center mb-4`}>
+                    <option.icon className={`w-6 h-6 text-${option.color}-600 dark:text-${option.color}-400`} />
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">{option.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{option.description}</p>
+                  <ul className="space-y-2">
+                    {option.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              ))}
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                <strong>Interested in growing your brand with us?</strong>
               </p>
-              <p className="text-gray-600">
+              <p className="text-xs text-slate-500 dark:text-slate-500">
                 Fill out the form below and select "Guest Post Inquiry" or "Ad Placement" as your subject
               </p>
             </div>
           </CardContent>
         </Card>
-        </div>
       </section>
-      
+
       {/* Main Contact Section */}
-      <section className="bg-white dark:bg-slate-950 py-16">
-        <div className="container max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column - Contact Information */}
-        <div>
-          <Badge className="mb-6 bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 px-4 py-2">
-            <Sparkles className="w-4 h-4 mr-2" />
-            Quick Contact Info
-          </Badge>
-          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Let's Start a Conversation</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-            Whether you have a question, need support, or want to explore partnership opportunities, 
-            we're here to help! Fill out the form and our team will respond within 24 hours.
-          </p>
-
-          <div className="space-y-4 mb-8">
-            <Card className="border-l-4 border-l-blue-600 hover:shadow-lg transition-all">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                    <Mail className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Email Us</h3>
-                    <a href="mailto:support@fsmvid.com" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                      support@fsmvid.com
-                    </a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-green-600 hover:shadow-lg transition-all">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
-                    <Clock className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Response Time</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Within 24 hours • Mon-Fri: 9AM - 5PM EST</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-purple-600 hover:shadow-lg transition-all">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-                    <MapPin className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Global Service</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Available worldwide in 150+ countries</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-700 border-orange-200 dark:border-orange-700">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-orange-600 dark:text-orange-400 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Copyright Claims</h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
-                    For copyright concerns or infringement notices, please visit our dedicated 
-                    <Link href="/copyright-claims" className="text-orange-600 dark:text-orange-400 hover:underline font-semibold mx-1">
-                      Copyright Claims page
-                    </Link>
-                    or email us directly.
-                  </p>
-                  <a href="mailto:support@fsmvid.com" 
-                     className="inline-flex items-center text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-semibold text-sm">
-                    support@fsmvid.com →
-                  </a>
-                </div>
+      <section className="container max-w-6xl mx-auto px-4 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden">
+            <CardContent className="p-8 md:p-10">
+              <div className="mb-8">
+                <Badge className="mb-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-none px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
+                  <Send className="w-3.5 h-3.5 mr-2" />
+                  Quick Contact Info
+                </Badge>
+                <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                  Let's Start a Conversation
+                </h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Whether you have a question, need support, or want to explore partnership opportunities, we're here to help! Fill out the form and our team will respond within 24 hours.
+                </p>
               </div>
+
+              <form ref={formRef} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                    Your Name
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    defaultValue={formData.name}
+                    className="h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:border-blue-500"
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    defaultValue={formData.email}
+                    className="h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:border-blue-500"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="subject" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                    Subject
+                  </Label>
+                  <input type="hidden" name="subject" value={formData.subject} />
+                  <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
+                    <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                      <SelectValue placeholder="Select a subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="guest-post">🎯 Guest Post Inquiry</SelectItem>
+                      <SelectItem value="ad-placement">📢 Ad Placement</SelectItem>
+                      <SelectItem value="business-partnership">🤝 Business Partnership</SelectItem>
+                      <SelectItem value="general">💬 General Inquiry</SelectItem>
+                      <SelectItem value="technical">🔧 Technical Support</SelectItem>
+                      <SelectItem value="feedback">💭 Feedback</SelectItem>
+                      <SelectItem value="copyright">⚖️ Copyright Issue</SelectItem>
+                      <SelectItem value="other">📝 Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                    Message
+                  </Label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    defaultValue={formData.message}
+                    className="min-h-[150px] rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:border-blue-500"
+                    placeholder="Tell us more about your inquiry..."
+                    required
+                  />
+                </div>
+
+                <RecaptchaButton formAction={handleFormAction} formRef={formRef} />
+
+                <p className="text-xs text-center text-slate-500 dark:text-slate-400">
+                  By submitting this form, you agree to our{" "}
+                  <Link href="/privacy-policy" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </Link>{" "}
+                  and consent to us processing your information.
+                </p>
+              </form>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Right Column - Contact Form */}
-        <div>
-          <Badge className="mb-6 bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 px-4 py-2">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Send Us a Message
-          </Badge>
-          <ContactForm />
-          <p className="text-sm text-center mt-4 text-gray-500 dark:text-gray-400">
-            By submitting this form, you agree to our <Link href="/privacy-policy" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Privacy Policy</Link>
-            {" "}and consent to us processing your information.
-          </p>
-        </div>
-      </div>
+          {/* Contact Info Cards */}
+          <div className="space-y-6">
+            {[
+              {
+                icon: Mail,
+                title: "Email Us",
+                value: "support@fsmvid.com",
+                description: "Send us an email anytime",
+                color: "blue"
+              },
+              {
+                icon: Clock,
+                title: "Response Time",
+                value: "Within 24 hours • Mon-Fri, 8AM - 5PM EST",
+                description: "We aim to respond quickly",
+                color: "green"
+              },
+              {
+                icon: Globe,
+                title: "Global Service",
+                value: "Available in 150+ countries",
+                description: "Serving users worldwide",
+                color: "purple"
+              }
+            ].map((info, i) => (
+              <Card key={i} className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl p-6 hover:shadow-2xl transition-all">
+                <div className="flex items-start gap-4">
+                  <div className={`bg-${info.color}-100 dark:bg-${info.color}-900/30 p-3 rounded-xl shrink-0`}>
+                    <info.icon className={`w-6 h-6 text-${info.color}-600 dark:text-${info.color}-400`} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{info.title}</p>
+                    <p className="text-lg font-black text-slate-900 dark:text-white mb-1">{info.value}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{info.description}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+
+            {/* Copyright Claims Card */}
+            <Card className="border-none shadow-xl bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-6 border-l-4 border-orange-500">
+              <div className="flex items-start gap-4">
+                <div className="bg-orange-100 dark:bg-orange-900/40 p-3 rounded-xl shrink-0">
+                  <Shield className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 mb-1">
+                    Copyright Claims
+                  </p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">
+                    For copyright concerns or infringement notices, please visit our dedicated{" "}
+                    <Link href="/copyright-claims" className="text-orange-600 dark:text-orange-400 font-bold hover:underline">
+                      Copyright Claims page
+                    </Link>{" "}
+                    or email us directly.
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                    Email: <span className="font-bold">support@fsmvid.com</span>
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 py-12">
-        <div className="container max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Why Our Clients Trust Us
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Join thousands of satisfied users worldwide
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Shield,
-                title: "Secure & Private",
-                description: "Your data is safe with us. We never share your information.",
-                color: "from-green-500 to-emerald-600"
-              },
-              {
-                icon: Headphones,
-                title: "Dedicated Support",
-                description: "Our team is always ready to help you succeed.",
-                color: "from-blue-500 to-cyan-600"
-              },
-              {
-                icon: TrendingUp,
-                title: "Proven Results",
-                description: "50,000+ happy clients and growing every day.",
-                color: "from-purple-500 to-pink-600"
-              }
-            ].map((item, index) => (
-              <Card key={index} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0">
-                <CardContent className="p-6">
-                  <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                    <item.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">{item.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">{item.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      {/* FAQ CTA */}
+      <section className="bg-slate-900 py-16 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
+            Need Quick <span className="text-blue-400">Information?</span>
+          </h2>
+          <p className="text-slate-400 mb-8">
+            Visit our FAQ page for instant answers to common questions.
+          </p>
+          <Button asChild className="h-14 px-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase text-sm tracking-wider shadow-xl transition-all active:scale-95">
+            <Link href="/faq" className="flex items-center gap-3">
+              Visit FAQ <ArrowRight className="w-5 h-5" />
+            </Link>
+          </Button>
         </div>
       </section>
     </div>
   )
-} 
+}

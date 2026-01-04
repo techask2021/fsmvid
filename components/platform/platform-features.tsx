@@ -45,41 +45,37 @@ export default function PlatformFeatures() {
   ]
 
   return (
-    <section className="py-16 bg-white dark:bg-gray-900">
-      <div className="container px-6 mx-auto">
-        <div className="text-center mb-12">
-          <Badge className="mb-4 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-500/20 px-4 py-2 text-sm font-medium">
-            Why Choose Us
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Why Choose Our Downloader?</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Our tool is packed with features to make your life easier.
-          </p>
-        </div>
+    <div className="w-screen bg-white relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+          <div className="text-center mb-20 space-y-4">
+            <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+              Why Choose Us
+            </Badge>
+            <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">Why Choose Our <span className="text-blue-600">Downloader?</span></h2>
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto font-medium italic border-t border-slate-100 pt-6 mt-4 leading-relaxed">
+              Our tool is packed with features to make your life easier.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {features.map((feature, index) => (
-            <Card
-              key={index}
-              className="border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800 group cursor-pointer"
-            >
-              <CardContent className="p-6 text-center">
-                {/* Professional Lucide Icon */}
-                <div
-                  className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl ${feature.color} text-white shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <feature.icon className="w-6 h-6" />
-                </div>
-
-                {/* Feature Text */}
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                  {feature.text}
-                </h3>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+              <Card
+                key={index}
+                className="border border-slate-100 shadow-xl shadow-slate-200/20 bg-white rounded-2xl overflow-hidden group hover:translate-y-[-5px] transition-all duration-500"
+              >
+                <CardContent className="p-6 text-center space-y-4">
+                  <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600/10 shadow-md group-hover:scale-110 transition-transform duration-500 group-hover:rotate-6">
+                    <feature.icon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-sm font-black italic uppercase tracking-tight text-slate-900">{feature.text}</h3>
+                  <p className="text-slate-500 text-[10px] font-medium leading-relaxed italic">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

@@ -7,36 +7,43 @@ import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Setting
 import { InterlinkText } from "@/lib/interlink-tools";
 import Link from 'next/link';
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -44,48 +51,57 @@ export const DouyinSEOContent = () => {
   const platform = "douyin";
 
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Douyin Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    Douyin Video Download Without Watermark
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Douyin Video Download Without Watermark</h1>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    Finding the perfect Douyin video only to discover it comes with an annoying watermark can be frustrating. 
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    Whether you're collecting content for personal use or creating compilations, removing those watermarks makes all the difference. 
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    I will show you exactly how to download Douyin videos without watermarks using our <Link href="/" className="text-blue-500">FSMVid downloader</Link> and other reliable methods.
-                </p>
-            </SectionCard>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Finding the perfect Douyin video only to discover it comes with an annoying watermark can be frustrating.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Whether you&apos;re collecting content for personal use or creating compilations, removing those watermarks makes all the difference.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    I will show you exactly how to download Douyin videos without watermarks using our <Link href="/" className="text-blue-500">FSMVid downloader</Link> and other reliable methods.
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="What is Douyin, and Why Download Videos Without Watermarks?" 
                 icon={Star} 
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     Douyin, the Chinese version of <Link href="/tiktok-video-saver" className="text-blue-500">TikTok</Link>, is a hub for creative content.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     It's filled with viral dances and educational videos you'll want to save.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     But the platform adds watermarks to protect creators' work.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     Our free Douyin Video Downloader removes these watermarks, letting you save clean videos to any device.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     Here's why you'll want watermark-free videos:
                 </p>
                 {renderStyledList([
@@ -99,8 +115,8 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="How to Download Douyin Videos Without Watermark With FSMVid Downloader?" 
                 icon={Zap} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <h3 className="text-2xl font-bold mt-6 mb-3 text-black dark:text-white">Step 1: Find Your Desired Video</h3>
                 <p className="text-lg mb-6">Open the <a href="https://www.douyin.com/" target="_blank" rel="nofollow" className="text-blue-500">Douyin app</a> and find a video to save. The app's algorithm makes discovering content easy.</p>
@@ -121,11 +137,11 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Advanced Features and Quality Options" 
                 icon={Award} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Video Quality Selection</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">FSMVID supports downloading Douyin videos in high-quality Full HD, 1080p, and many tools now offer even higher resolutions when available.</p>
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">FSMVID supports downloading Douyin videos in high-quality Full HD, 1080p, and many tools now offer even higher resolutions when available.</p>
                 {renderStyledList([
                     "<strong>HD Download:</strong> Standard high-definition quality suitable for most viewing purposes and social media sharing.",
                     "<strong>Full HD (1080p):</strong> Premium quality that maintains the original video's clarity and detail.",
@@ -137,13 +153,13 @@ export const DouyinSEOContent = () => {
                     "<strong>MP3 Extraction:</strong> Our tool allows you to extract audio from Douyin videos, creating music files or sound clips."
                 ])}
                 <SubSectionTitle>Mobile vs Desktop Downloading</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-4"><strong>Mobile Advantages</strong></p>
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4"><strong>Mobile Advantages</strong></p>
                 {renderStyledList([
                     "<strong>Convenience:</strong> Download videos directly on your phone while browsing Douyin.",
                     "<strong>Instant Sharing:</strong> Immediately share downloaded content through messaging apps or social media.",
                     "<strong>Storage Flexibility:</strong> Save videos to your phone's gallery or cloud storage services."
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 mb-4"><strong>Desktop Benefits</strong></p>
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4"><strong>Desktop Benefits</strong></p>
                 {renderStyledList([
                     "<strong>Better Organization:</strong> Organize downloaded videos into folders and collections more easily.",
                     "<strong>Higher Processing Power:</strong> Handle larger files and higher quality downloads without performance issues."
@@ -153,8 +169,8 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Troubleshooting Common Issues" 
                 icon={AlertTriangle} 
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Download Failures</SubSectionTitle>
                 {renderStyledList([
@@ -178,8 +194,8 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Tips for Optimal Douyin Video Downloads" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-teal-500 to-cyan-600"
-                cardBgClass="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Best Practices</SubSectionTitle>
                 {renderStyledList([
@@ -199,16 +215,16 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Alternative Methods and Advanced Techniques" 
                 icon={Settings} 
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Browser Extensions:</strong> Some users prefer browser extensions that add download buttons directly to Douyin pages. However, be cautious when installing extensions and only use those from reputable developers.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Mobile Apps:</strong> While web-based tools work well, some dedicated mobile apps offer additional features like batch downloading and automatic quality selection.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>API-Based Solutions:</strong> Tech-savvy users might explore API-based solutions for bulk downloading or automated content collection, though these require more technical knowledge.
                 </p>
             </SectionCard>
@@ -216,10 +232,10 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Future of Douyin Video Downloading" 
                 icon={TrendingUp} 
-                iconBgGradient="from-lime-500 to-green-600"
-                cardBgClass="bg-gradient-to-br from-lime-50 to-green-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     The landscape of video downloading continues to evolve with new technologies and changing platform policies. Staying informed about updates ensures you always have access to the best downloading methods.
                 </p>
                 {renderStyledList([
@@ -232,15 +248,16 @@ export const DouyinSEOContent = () => {
             <SectionCard 
                 title="Summary" 
                 icon={Star} 
-                iconBgGradient="from-sky-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     Downloading Douyin videos without watermarks opens up endless possibilities for content creation, personal collections, and educational use. With tools like <Link href="/" className="text-blue-500">FSMVid</Link> leading the way, the process has never been easier or more reliable. Remember to respect copyright laws and creator rights while enjoying your favorite Douyin content in pristine quality.
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React from 'react';
 import Link from 'next/link';
@@ -6,54 +6,61 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen } from "lucide-react";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
-const renderStyledList = (items: string[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span>
-        </li>
-      ))}
+const renderStyledList = (items: (string | React.ReactNode)[]) => (
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
 export function ToolSeoContent({ platformName }: { platformName: string }) {
   const whatIsFsmvidIntro = (
-    <>
-      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+    <div className="space-y-4 border-l-2 border-blue-600/10 pl-6">
+      <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
         FSMVID is a powerful and user-friendly online tool that allows you to download videos, images, and short
         clips from {platformName}. With support for over 20 platforms including YouTube, TikTok,
         Instagram, Facebook, Twitter, and many more, FSMVID has become the go-to solution for content creators,
         marketers, and everyday users.
       </p>
-      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
         Our platform is completely free to use, requires no registration, and processes downloads quickly and
         securely. Whether you're looking to save a funny TikTok video, download a YouTube tutorial, or backup
         your Instagram posts, FSMVID makes it simple and efficient.
       </p>
-    </>
+    </div>
   );
 
   const whatIsFsmvidFeatures = [
@@ -64,7 +71,7 @@ export function ToolSeoContent({ platformName }: { platformName: string }) {
   ];
 
   const whyUseIntro = (
-    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+    <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
       Social media platforms are designed for online viewing, but there are many legitimate reasons why you
       might want to download content from {platformName}. Our website usage rating shows these are the top reasons people download social media videos:
     </p>
@@ -77,103 +84,114 @@ export function ToolSeoContent({ platformName }: { platformName: string }) {
     { title: "Educational purposes", desc: `Downloading lectures or tutorials from ${platformName} for your studies` },
     { title: "Content creation", desc: `Saving inspiration for your own videos from ${platformName} (just remember to respect copyright!)` },
   ];
-  
+
   const howFsmvidWorksIntro = (
-    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+    <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
       Using the FSMVID social media video downloader app couldn't be simpler. Seriously, if you can copy and paste, you can use this tool to download social media videos. Here's the process:
     </p>
   );
 
   const howFsmvidWorksSteps = [
-    { step: "1", title: "URL Analysis", desc: `Our system analyzes the ${platformName} URL to identify the content.`, color: "from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700" },
-    { step: "2", title: "Content Extraction", desc: "We securely connect to extract the video or image data.", color: "from-green-500 to-green-600 dark:from-green-600 dark:to-green-700" },
-    { step: "3", title: "Quality Processing", desc: "We process the content to provide multiple quality and format options.", color: "from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700" },
-    { step: "4", title: "Secure Download", desc: "We provide secure download links that expire for privacy protection.", color: "from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700" },
+    { step: "1", title: "URL Analysis", desc: `Our system analyzes the ${platformName} URL to identify the content.`, color: "bg-blue-600/10 text-blue-600" },
+    { step: "2", title: "Content Extraction", desc: "We securely connect to extract the video or image data.", color: "bg-emerald-600/10 text-emerald-600" },
+    { step: "3", title: "Quality Processing", desc: "We process the content to provide multiple quality and format options.", color: "bg-purple-600/10 text-purple-600" },
+    { step: "4", title: "Secure Download", desc: "We provide secure download links that expire for privacy protection.", color: "bg-orange-600/10 text-orange-600" },
   ];
 
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
-          <SectionCard 
-            icon={Info}
-            iconBgGradient="from-green-500 to-emerald-600"
-            cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
-          >
-            <div className="text-center">
-              <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                About FSMVID
-              </Badge>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Free {platformName} Video Downloader</h1>
-              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                Spotted an awesome video on {platformName} you need to save? Whether it's a hilarious TikTok, an informative YouTube tutorial, or a Facebook memory – we all need to download videos sometimes.
-              </p>
-              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                That's where FSMVID comes in – your new best friend for all things social media video downloading.
-              </p>
-            </div>
-          </SectionCard>
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+          <div className="text-center mb-16 space-y-4">
+            <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+              Deep Dive
+            </Badge>
+            <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+              {platformName} <span className="text-blue-600">Video Seeker</span>
+            </h2>
+          </div>
 
-          <SectionCard 
-            title={`What is FSMVID's ${platformName} Downloader?`} 
-            icon={Star} 
-            iconBgGradient="from-blue-500 to-indigo-600"
-            cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
-          >
-            {whatIsFsmvidIntro}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mt-6">
-              {whatIsFsmvidFeatures.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400 shrink-0" />
-                  <span className="font-medium text-gray-800 dark:text-gray-200">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
+          <div className="space-y-12 max-w-4xl mx-auto">
+            <SectionCard
+              icon={Info}
+              iconBgGradient="from-blue-600/10 to-blue-600/10"
+              cardBgClass="bg-white"
+            >
+              <div className="text-center">
+                <Badge className="mb-4 bg-blue-600/10 text-blue-600 border-none px-4 py-1 text-[8px] font-black uppercase tracking-widest">
+                  Platform Node
+                </Badge>
+                <h2 className="text-2xl md:text-4xl font-black tracking-tighter italic uppercase text-slate-900 mb-6 px-10 leading-tight">Free {platformName} Video Downloader</h2>
+                <p className="text-sm md:text-base text-slate-500 font-medium italic mb-4 leading-relaxed">
+                  Spotted an awesome video on {platformName} you need to save? Whether it's a hilarious TikTok, an informative YouTube tutorial, or a Facebook memory – we all need to download videos sometimes.
+                </p>
+                <p className="text-sm md:text-base text-slate-500 font-medium italic mb-4 leading-relaxed">
+                  That's where FSMVID comes in – your new best friend for all things social media video downloading.
+                </p>
+              </div>
+            </SectionCard>
 
-          <SectionCard 
-            title={`Why Use a ${platformName} Video Downloader?`} 
-            icon={Award} 
-            iconBgGradient="from-green-500 to-emerald-600"
-            cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
-          >
-            {whyUseIntro}
-            <div className="space-y-3">
-              {whyUseReasons.map((item, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mt-1.5 shrink-0"></div>
-                  <div>
-                    <strong className="text-gray-800 dark:text-gray-100">{item.title}:</strong>
-                    <span className="ml-1">{item.desc}</span>
+            <SectionCard
+              title={`System Overview`}
+              icon={Star}
+              iconBgGradient="from-blue-600/10 to-blue-600/10"
+              cardBgClass="bg-white"
+            >
+              {whatIsFsmvidIntro}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                {whatIsFsmvidFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span className="font-black italic uppercase tracking-tight text-slate-900 text-[10px]">{feature}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
+                ))}
+              </div>
+            </SectionCard>
 
-          <SectionCard 
-            title={`How to Download from ${platformName}`} 
-            icon={Zap} 
-            iconBgGradient="from-purple-500 to-pink-600"
-            cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
-          >
-            {howFsmvidWorksIntro}
-            <div className="space-y-5 mt-4">
-              {howFsmvidWorksSteps.map((item) => (
-                <div key={item.step} className="flex items-start space-x-4">
-                  <div className={`flex items-center justify-center w-8 h-8 bg-gradient-to-br ${item.color} text-white rounded-lg font-bold shadow-sm shrink-0`}>
-                    {item.step}
+            <SectionCard
+              title={`Why Process ${platformName}?`}
+              icon={Award}
+              iconBgGradient="from-blue-600/10 to-blue-600/10"
+              cardBgClass="bg-white"
+            >
+              {whyUseIntro}
+              <div className="space-y-4">
+                {whyUseReasons.map((item, index) => (
+                  <div key={index} className="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 group/item hover:bg-white hover:shadow-lg transition-all">
+                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 shrink-0 group-hover/item:scale-150 transition-transform"></div>
+                    <div>
+                      <strong className="text-slate-900 font-black italic uppercase tracking-tight text-xs block mb-1">{item.title}</strong>
+                      <span className="text-slate-500 text-[11px] font-medium italic">{item.desc}</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">{item.title}</h4>
-                    <p>{item.desc}</p>
+                ))}
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              title={`Processing Pipeline`}
+              icon={Zap}
+              iconBgGradient="from-blue-600/10 to-blue-600/10"
+              cardBgClass="bg-white"
+            >
+              {howFsmvidWorksIntro}
+              <div className="space-y-6 mt-4">
+                {howFsmvidWorksSteps.map((item) => (
+                  <div key={item.step} className="flex items-start gap-6 group/step">
+                    <div className={`flex items-center justify-center w-10 h-10 ${item.color} rounded-xl font-black italic shadow-sm shrink-0 group-hover/step:scale-110 transition-transform`}>
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-black italic uppercase tracking-tighter text-slate-900 mb-1 text-sm">{item.title}</h4>
+                      <p className="text-slate-500 font-medium italic text-xs leading-relaxed">{item.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

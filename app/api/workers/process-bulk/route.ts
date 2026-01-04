@@ -2,191 +2,169 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/api/supabase";
 import { fetchVideoMetadata } from "@/lib/download/bulk-helper";
-import archiver from 'archiver';
-import { Readable } from 'stream';
+import archiver from "archiver";
+import { PassThrough, Readable } from "stream";
+import { Upload } from "@aws-sdk/lib-storage";
+import { r2Client, R2_BUCKET, isR2Configured } from "@/lib/api/r2";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 
-// IMPORTANT: This forces Vercel to use Node.js runtime (no 60s timeout)
 export const runtime = 'nodejs';
-export const maxDuration = 300; // 5 minutes (max for Vercel Hobby plan)
+export const maxDuration = 300;
 
-/**
- * Background Worker for Bulk Downloads
- * - Triggered by Upstash QStash
- * - Runs on Vercel Node.js runtime
- * - Streams large videos directly to storage (Zero Bandwidth technique)
- */
 export async function POST(request: NextRequest) {
+    let jobId: string | null = null;
+
     try {
-        // 1. Security Check (Upstash)
-        const authHeader = request.headers.get('authorization');
-        const secret = process.env.WORKER_SECRET || 'default-secret';
-
-        // Simple bearer token check
-        if (!authHeader || !authHeader.includes(secret)) {
-            // In production, we'd verify the JWT signature from QStash, 
-            // but for now a shared secret is okay for MVP
-            // return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const { jobId } = await request.json();
+        const body = await request.json();
+        jobId = body.jobId;
 
         if (!jobId) {
             return NextResponse.json({ error: "Job ID required" }, { status: 400 });
         }
 
-        // 2. Get Job Details from Supabase
-        const { data: job, error: jobError } = await supabaseAdmin
-            .from('bulk_download_jobs')
-            .select('*')
-            .eq('id', jobId)
-            .single();
+        console.log(`🚀 Worker [${jobId}]: Igniting 'Store' Engine (Max Speed)...`);
 
-        if (jobError || !job) {
-            return NextResponse.json({ error: "Job not found" }, { status: 404 });
-        }
+        const response = NextResponse.json({ success: true, message: "Engine ignited" });
 
-        // 3. Mark as Processing
-        await supabaseAdmin
-            .from('bulk_download_jobs')
-            .update({
-                status: 'processing',
-                processing_started_at: new Date().toISOString()
-            })
-            .eq('id', jobId);
-
-        // 4. Start ZIP Creation (Streaming)
-        // We create a PassThrough stream to pipe zip data to Supabase
-        const archive = archiver('zip', { zlib: { level: 6 } });
-
-        // Since Supabase storage via SDK doesn't support streaming uploads perfectly 
-        // in Node environment without buffers sometimes, we'll collect chunks for the ZIP file itself.
-        // Ideally we'd stream the output too, but for MVP let's buffer the ZIP parts 
-        // (Note: The videos themselves are streamed INTO the zip, so memory usage is low per video)
-        const chunks: Buffer[] = [];
-        archive.on('data', (chunk) => chunks.push(chunk));
-
-        const totalUrls = job.urls.length;
-        let completed = 0;
-        let failed = 0;
-        const failedUrls: string[] = [];
-
-        // 5. Process Each Video
-        for (let i = 0; i < totalUrls; i++) {
-            const url = job.urls[i];
-
+        (async () => {
             try {
-                // A. Get Metadata & Direct Download URL
-                const data = await fetchVideoMetadata(url, job.platform);
+                const { data: job, error: jobError } = await supabaseAdmin
+                    .from('bulk_download_jobs')
+                    .select('*')
+                    .eq('id', jobId)
+                    .single();
 
-                if (!data.success || !data.url) {
-                    throw new Error(data.error || "Failed to get video URL");
+                if (jobError || !job) throw new Error("Job not found");
+                if (!isR2Configured) throw new Error("R2 not configured.");
+
+                await supabaseAdmin.from('bulk_download_jobs').update({
+                    status: 'processing',
+                    processing_started_at: new Date().toISOString(),
+                    progress: 5
+                }).eq('id', jobId);
+
+                // --- ZIP SETUP (STORE MODE = 0) ---
+                // We use level 0 because videos are already compressed. This is 10x faster.
+                const archive = archiver('zip', { store: true });
+                const zipStream = new PassThrough({ highWaterMark: 1024 * 1024 * 10 }); // 10MB fast pipe
+                archive.pipe(zipStream);
+
+                const zipKey = `bulks/${jobId}/FSMVID_Batch.zip`;
+
+                const upload = new Upload({
+                    client: r2Client,
+                    params: {
+                        Bucket: R2_BUCKET,
+                        Key: zipKey,
+                        Body: zipStream,
+                        ContentType: 'application/zip'
+                    },
+                    queueSize: 1,
+                    partSize: 10 * 1024 * 1024, // 10MB chunks for R2 speed
+                });
+
+                const uploadPromise = upload.done();
+
+                const totalUrls = job.urls.length;
+                let completed = 0;
+                let failed = 0;
+                const processedFiles: any[] = [];
+
+                // SPEED BOOST: Pre-fetch all metadata in parallel
+                console.log("🔍 Pre-fetching metadata for all links...");
+                await supabaseAdmin.from('bulk_download_jobs').update({ error_message: "🔍 Analyzing all links..." }).eq('id', jobId);
+
+                const metaTasks = job.urls.map((url: string) =>
+                    fetchVideoMetadata(url, job.platform, job.quality_preference, job.format_preference)
+                );
+                const allMetadata = await Promise.all(metaTasks);
+
+                for (let i = 0; i < totalUrls; i++) {
+                    const data = allMetadata[i];
+                    const url = job.urls[i];
+
+                    try {
+                        if (!data.success || !data.url) throw new Error("Link fetch failed");
+
+                        await supabaseAdmin.from('bulk_download_jobs').update({
+                            error_message: `⬇️ Adding to ZIP: ${data.filename.substring(0, 20)}...`,
+                            progress: Math.round(((i / totalUrls) * 85) + 10)
+                        }).eq('id', jobId);
+
+                        console.log(`   ⬇️ Processing: ${data.filename}`);
+                        const videoRes = await fetch(data.url);
+                        if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
+
+                        const nodeStream = Readable.fromWeb(videoRes.body as any);
+
+                        // We await the STREAM END, which is the fastest way to pipe
+                        await new Promise<void>((resolve, reject) => {
+                            archive.append(nodeStream, { name: data.filename });
+                            nodeStream.on('end', resolve);
+                            nodeStream.on('error', reject);
+                        });
+
+                        processedFiles.push({
+                            original_url: url,
+                            download_url: data.url,
+                            filename: data.filename,
+                            title: data.metadata?.title || 'Video'
+                        });
+
+                        completed++;
+
+                        await supabaseAdmin.from('bulk_download_jobs').update({
+                            completed_files: completed,
+                            processed_urls: [...processedFiles]
+                        }).eq('id', jobId);
+
+                    } catch (err: any) {
+                        console.error(`   ❌ Failed:`, err.message);
+                        failed++;
+                        await supabaseAdmin.from('bulk_download_jobs').update({ failed_files: failed }).eq('id', jobId);
+                    }
                 }
 
-                // B. STREAM Video (Zero Bandwidth Technique)
-                // We fetch the video stream and pipe it directly into the archive
-                // Vercel just passes the bytes, it doesn't load whole file into memory
-                const videoResponse = await fetch(data.url);
+                console.log("🗜️ Finalizing ZIP (Instantly in 'Store' mode)...");
+                await archive.finalize();
 
-                if (!videoResponse.ok) {
-                    throw new Error(`Failed to download video stream: ${videoResponse.status}`);
-                }
+                console.log("☁️ Closing R2 Upload...");
+                await supabaseAdmin.from('bulk_download_jobs').update({ error_message: "☁️ Uploading final package..." }).eq('id', jobId);
+                await uploadPromise;
 
-                if (!videoResponse.body) {
-                    throw new Error("Empty response body");
-                }
+                const signedUrl = await getSignedUrl(r2Client, new GetObjectCommand({
+                    Bucket: R2_BUCKET,
+                    Key: zipKey
+                }), { expiresIn: 86400 });
 
-                // Convert web stream to node stream for archiver
-                // @ts-ignore - Readable.fromWeb is available in Node 18+
-                const nodeStream = Readable.fromWeb(videoResponse.body);
+                await supabaseAdmin.from('bulk_download_jobs').update({
+                    status: 'completed',
+                    progress: 100,
+                    completed_files: completed,
+                    failed_files: failed,
+                    zip_download_url: signedUrl,
+                    zip_expires_at: new Date(Date.now() + 86400 * 1000).toISOString(),
+                    processing_completed_at: new Date().toISOString(),
+                    error_message: null
+                }).eq('id', jobId);
 
-                // Add to ZIP
-                archive.append(nodeStream, { name: data.filename });
+                console.log(`✅ Bulk Process Complete [${jobId}]`);
 
-                completed++;
-
-                // Update Progress (every 1 video or 20%)
-                if (i % Math.ceil(totalUrls / 5) === 0 || i === totalUrls - 1) {
-                    const progress = Math.round(((i + 1) / totalUrls) * 100);
+            } catch (bgError: any) {
+                console.error(`🚨 Fatal:`, bgError.message);
+                if (jobId) {
                     await supabaseAdmin.from('bulk_download_jobs').update({
-                        progress,
-                        current_file: i + 1,
-                        completed_files: completed
+                        status: 'failed',
+                        error_message: bgError.message
                     }).eq('id', jobId);
                 }
-
-            } catch (err: any) {
-                console.error(`Failed to process ${url}:`, err);
-                failed++;
-                failedUrls.push(url);
             }
-        }
+        })();
 
-        // 6. Finalize ZIP
-        await archive.finalize();
-        const zipBuffer = Buffer.concat(chunks);
-
-        // 7. Upload ZIP to Supabase Storage
-        const zipFilename = `bulk_${jobId}_${Date.now()}.zip`;
-        const storagePath = `${job.user_id}/${zipFilename}`; // Organize by user
-
-        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-            .from('downloads')
-            .upload(storagePath, zipBuffer, {
-                contentType: 'application/zip',
-                upsert: true
-            });
-
-        if (uploadError) {
-            throw new Error(`Upload failed: ${uploadError.message}`);
-        }
-
-        // 8. Generate Signed URL (valid for 24 hours)
-        const { data: signedUrlData, error: signError } = await supabaseAdmin.storage
-            .from('downloads')
-            .createSignedUrl(storagePath, 60 * 60 * 24); // 24 hours
-
-        if (signError || !signedUrlData?.signedUrl) {
-            throw new Error("Failed to generate download link");
-        }
-
-        // 9. Complete Job
-        await supabaseAdmin
-            .from('bulk_download_jobs')
-            .update({
-                status: 'completed',
-                progress: 100,
-                completed_files: completed,
-                failed_files: failed,
-                failed_urls: failedUrls,
-                zip_storage_path: storagePath,
-                zip_download_url: signedUrlData.signedUrl,
-                zip_size_bytes: zipBuffer.length,
-                zip_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                processing_completed_at: new Date().toISOString()
-            })
-            .eq('id', jobId);
-
-        // TODO: Send Email Notification (Phase 2)
-
-        return NextResponse.json({ success: true, jobId });
+        return response;
 
     } catch (error: any) {
-        console.error("Worker error:", error);
-
-        // Mark as failed if we have a job ID
-        try {
-            const { jobId } = await request.json(); // Re-parse body if safe
-            if (jobId) {
-                await supabaseAdmin
-                    .from('bulk_download_jobs')
-                    .update({
-                        status: 'failed',
-                        error_message: error.message
-                    })
-                    .eq('id', jobId);
-            }
-        } catch (e) { }
-
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

@@ -23,73 +23,69 @@ export default function PlatformHowTo({ platform, title, steps }: PlatformHowToP
     { icon: Save, color: "bg-red-600", name: "download" },
   ]
 
-  // Dynamic grid classes based on number of steps
+  // Different accents and icons for steps
+  const accents = [
+    { text: "text-blue-600", bg: "bg-blue-600/10" },
+    { text: "text-emerald-600", bg: "bg-emerald-600/10" },
+    { text: "text-purple-600", bg: "bg-purple-600/10" },
+    { text: "text-orange-600", bg: "bg-orange-600/10" },
+    { text: "text-pink-600", bg: "bg-pink-600/10" },
+  ]
+
   const getGridClass = (stepCount: number) => {
     switch (stepCount) {
-      case 1:
-        return "grid-cols-1 max-w-sm"
-      case 2:
-        return "grid-cols-1 md:grid-cols-2 max-w-2xl"
-      case 3:
-        return "grid-cols-1 md:grid-cols-3 max-w-4xl"
-      case 4:
-        return "grid-cols-1 md:grid-cols-4 max-w-5xl"
-      case 5:
-      default:
-        return "grid-cols-1 md:grid-cols-5 max-w-6xl"
+      case 1: return "grid-cols-1 max-w-sm"
+      case 2: return "grid-cols-1 md:grid-cols-2 max-w-2xl"
+      case 3: return "grid-cols-1 md:grid-cols-3 max-w-4xl"
+      case 4: return "grid-cols-1 md:grid-cols-4 max-w-5xl"
+      default: return "grid-cols-1 md:grid-cols-5 max-w-6xl"
     }
   }
 
   return (
-    <div className="w-screen bg-gray-50 dark:bg-gray-900 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-      <section className="py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-4 py-2 text-sm font-medium">
+          <div className="text-center mb-16 space-y-4">
+            <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
               Step by Step Guide
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">{title}</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+              {title}
+            </h2>
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto font-medium italic pt-4 mt-2 leading-relaxed">
               Follow our simple guide to download {platform.toLowerCase()} videos quickly and easily
             </p>
           </div>
 
-          <div className={`grid gap-6 mx-auto ${getGridClass(steps.length)}`}>
+          <div className={`grid gap-8 mx-auto ${getGridClass(steps.length)}`}>
             {steps.map((step, index) => {
-              const config = stepConfig[index] || stepConfig[0]
-              const StepIcon = config.icon
+              const accent = accents[index % accents.length]
+              const Icon = stepConfig[index % stepConfig.length].icon
               return (
                 <Card
                   key={index}
-                  className="border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800 group cursor-pointer"
+                  className="border border-slate-100 shadow-lg shadow-slate-200/40 bg-white rounded-[1.5rem] overflow-hidden h-full group hover:translate-y-[-5px] transition-all duration-500"
                   onMouseEnter={() => setActiveStep(index)}
                   onMouseLeave={() => setActiveStep(null)}
                 >
-                  <CardContent className="p-6 text-center relative">
-                    {/* Step Number Badge */}
-                    <div className="absolute top-4 right-4">
-                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-blue-600 text-white text-xs font-bold">
-                        {index + 1}
-                      </span>
+                  <CardContent className="p-5 flex flex-col items-center h-full text-center space-y-4">
+                    <div className="w-full flex justify-between items-center border-b border-slate-100 pb-3">
+                      <span className="text-[7px] font-black uppercase tracking-[0.4em] text-slate-400">Step 0{index + 1}</span>
+                      <div className={`w-10 h-10 rounded-xl ${accent.bg} flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}>
+                        <Icon className={`w-5 h-5 ${accent.text}`} />
+                      </div>
                     </div>
 
-                    {/* Icon - Different color for each step */}
-                    <div
-                      className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl ${config.color} text-white shadow-lg mb-4 transition-all duration-300 ${
-                        activeStep === index ? "scale-110 shadow-xl" : "group-hover:scale-105"
-                      }`}
-                    >
-                      <StepIcon className="w-6 h-6" />
+                    <div className="space-y-3 w-full">
+                      <p className="text-slate-500 font-medium leading-relaxed italic text-xs border-l-2 border-blue-600/10 pl-4 text-left">
+                        {step}
+                      </p>
                     </div>
 
-                    {/* Step Text */}
-                    <p
-                      className={`text-gray-700 dark:text-gray-300 text-sm leading-relaxed transition-colors duration-300 ${
-                        activeStep === index ? "text-gray-900 dark:text-white font-medium" : ""
-                      }`}
-                    >
-                      {step}
-                    </p>
+                    <div className="pt-6 w-full mt-auto">
+                      <div className={`h-1.5 w-16 bg-slate-50 mx-auto rounded-full group-hover:w-24 group-hover:${accent.bg} transition-all duration-700`} />
+                    </div>
                   </CardContent>
                 </Card>
               )

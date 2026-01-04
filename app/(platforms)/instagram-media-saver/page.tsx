@@ -52,7 +52,7 @@ export default function InstagramPage() {
       >
         <PlatformDownloader platform="instagram" />
       </ToolsHero>
-      <div className="container mx-auto px-4">
+      <div>
         <Suspense fallback={<ContentLoading />}>
           <PlatformHowTo
             platform="instagram"
@@ -70,8 +70,8 @@ export default function InstagramPage() {
         </Suspense>
 
 
-        
-    
+
+
 
 
 
@@ -80,7 +80,7 @@ export default function InstagramPage() {
           <InstagramSEOContent />
         </Suspense>
 
-        
+
 
         <Suspense fallback={<FAQLoading />}>
           <InstagramFAQSection />
@@ -103,7 +103,7 @@ export default function InstagramPage() {
             }),
           }}
         />
-        
+
         {/* Related Tools Section */}
         <Suspense fallback={<ContentLoading />}>
           <RelatedTools currentPlatform={platform} />
@@ -140,7 +140,7 @@ function InstagramFAQSection() {
         },
         {
           question: "Is it legal to download Instagram content?",
-          answer: 
+          answer:
             "Downloading Instagram content for personal use is generally acceptable. However, you should respect copyright laws and not redistribute content without permission from the original creator.",
         },
       ]}

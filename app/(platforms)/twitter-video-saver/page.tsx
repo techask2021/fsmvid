@@ -52,7 +52,7 @@ export default function TwitterPage() {
       >
         <PlatformDownloader platform="twitter" />
       </ToolsHero>
-      <div className="container mx-auto px-4">
+      <div>
         <Suspense fallback={<ContentLoading />}>
           <PlatformHowTo
             platform="twitter"
@@ -75,7 +75,7 @@ export default function TwitterPage() {
           <TwitterSEOContent />
         </Suspense>
 
-       
+
 
         <Suspense fallback={<FAQLoading />}>
           <TwitterFAQSection />
@@ -98,7 +98,7 @@ export default function TwitterPage() {
             }),
           }}
         />
-        
+
         {/* Related Tools Section */}
         <Suspense fallback={<ContentLoading />}>
           <RelatedTools currentPlatform={platform} />

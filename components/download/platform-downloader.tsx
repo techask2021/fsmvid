@@ -204,10 +204,10 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
     }
 
     // Enhanced URL extraction - handles text before URL (including Chinese characters in brackets)
-    let extractedUrl = currentInput; 
+    let extractedUrl = currentInput;
     const httpIndex = currentInput.toLowerCase().indexOf('http://');
     const httpsIndex = currentInput.toLowerCase().indexOf('https://');
-    
+
     let startIndex = -1;
     if (httpsIndex !== -1) {
       startIndex = httpsIndex;
@@ -218,7 +218,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
     if (startIndex !== -1) {
       // Extract URL starting from http(s)://
       let potentialUrl = currentInput.substring(startIndex);
-      
+
       // Stop at whitespace, newline, or common text delimiters
       const stopPatterns = [
         /\s/,           // Whitespace
@@ -227,7 +227,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         /[\[\]]/,       // Square brackets
         /[<>]/,         // Angle brackets
       ];
-      
+
       let earliestStop = potentialUrl.length;
       stopPatterns.forEach(pattern => {
         const match = potentialUrl.search(pattern);
@@ -235,20 +235,20 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           earliestStop = match;
         }
       });
-      
+
       if (earliestStop < potentialUrl.length) {
         potentialUrl = potentialUrl.substring(0, earliestStop);
       }
-      
+
       // Clean up any trailing characters that aren't part of URLs
       potentialUrl = potentialUrl.replace(/[，。！？；：、,\s]+$/, '').trim();
-      
+
       extractedUrl = potentialUrl;
-      setUrl(extractedUrl); 
+      setUrl(extractedUrl);
     }
-    
+
     try {
-      new URL(extractedUrl); 
+      new URL(extractedUrl);
     } catch {
       setError("Could not find a valid URL in the pasted text. Please ensure it starts with http:// or https://.");
       setLoading(false);
@@ -274,32 +274,17 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       const detectedPlatform = detectPlatform(finalUrlToProcess)
       console.log(`🔍 Detected platform: ${detectedPlatform} for URL: ${finalUrlToProcess}`)
 
-      // Check download limit (only on homepage/universal downloader)
-      if (isHomepage && detectedPlatform) {
-        const limitStatus = checkLimit(detectedPlatform, isHomepage)
+      /* Removed download limits for homepage */
+      if (detectedPlatform) {
         setCurrentPlatform(detectedPlatform)
-        
-        // Get platform URL for modal - use correct route mapping
         const detectedPlatformUrl = getPlatformPageUrl(detectedPlatform)
         setPlatformUrl(detectedPlatformUrl)
-        
-        // If limit exceeded, show modal and BLOCK download
-        if (!limitStatus.allowed) {
-          setShowLimitModal(true)
-          setLoading(false)
-          return // STOP - don't proceed with download
-        }
-        
-        // Show hint if on second download (1 remaining)
-        if (limitStatus.shouldShowHint && limitStatus.remainingDownloads > 0) {
-          setShowHint(true)
-        }
       }
 
       if (platform !== "universal" && detectedPlatform !== platform) {
         if (platform === 'pinterest' && (url.includes('pin.it') || url.includes('pinterest.com') || url.includes('pinterest.'))) {
           // Allow Pinterest
-        } 
+        }
         else if (platform === 'dailymotion' && (url.includes('dai.ly') || url.includes('dailymotion.com'))) {
           // Allow Dailymotion
         }
@@ -326,7 +311,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
 
       if (!response.ok) {
         const errorMessage = data.message || (data.details ? JSON.stringify(data.details) : "Unknown error");
-        
+
         // YouTube 403 Fallback - Open video player in new tab
         if (response.status === 403 && (detectedPlatform === 'youtube' || platform === 'youtube')) {
           // Open YouTube watch page, not the direct video URL
@@ -338,7 +323,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           setLoading(false)
           return
         }
-        
+
         if (response.status === 429) {
           // Rate limit - show friendly message
           setError("Our service is experiencing high traffic right now. Please wait a moment and try again, or visit our dedicated platform page for better service.");
@@ -372,7 +357,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             options.push({ url: details.url, format, quality, size: details.size, hasAudio: false })
           })
         })
-      } 
+      }
       else if (data.medias) {
         const uniqueKeys = new Set();
         data.medias.forEach((media) => {
@@ -391,11 +376,11 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
               else if (quality.includes('watermark')) { quality = quality.includes('hd') ? 'HD with Watermark' : 'SD with Watermark'; media.noWatermark = false; }
               if (format.toLowerCase() === 'mp3' || format.toLowerCase() === 'm4a') { quality = 'Audio'; media.noWatermark = undefined; }
             } else if (platform === 'dailymotion' && media.resolution && media.resolution.includes('x')) { quality = `${media.resolution.split('x')[1]}p`; }
-            
+
             let key = `${format} (${quality})`;
             let counter = 1;
             if ((platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && (media.extension === 'm3u8' || media.url.includes('.m3u8'))) key = `streaming (${quality})`;
-            while(uniqueKeys.has(key)) { counter++; key = `${format} (${quality} ${counter})`; }
+            while (uniqueKeys.has(key)) { counter++; key = `${format} (${quality} ${counter})`; }
             uniqueKeys.add(key);
             options.push({ url: media.url, format: (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && (media.extension === 'm3u8' || media.url.includes('.m3u8')) ? 'streaming' : format, quality: key.replace(`${key.split(' (')[0]} (`, '').replace(')', ''), size: media.size || "Unknown", hasAudio: Boolean(hasAudio), noWatermark: media.noWatermark === true });
           }
@@ -513,7 +498,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
       try {
         setDownloadLoading(true)
         toast.info("Starting download...", { duration: 3000 })
-        
+
         // We're working on improving YouTube direct downloads
         // For now, users can use the direct download link from the "Direct Link" tab
         // Store the video URL in session storage for reference
@@ -528,7 +513,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           const link = document.createElement('a'); link.href = blobUrl; link.download = `${sanitizedTitle || `${platform === 'universal' ? detectedPlatform : platform}_stream_${Date.now()}`}.m3u8`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
           toast.success("Download successful! Use VLC Media Player to open.");
           setDownloadLoading(false); return;
-        } 
+        }
         else if (downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') {
           filename = filename.replace(/\.(mp4|streaming)$/, '.m3u8');
           toast.info("This is a streaming format (m3u8).", { duration: 6000 });
@@ -538,8 +523,8 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         // Enables one-click downloads on mobile, bypasses CORS, and handles unlimited file sizes
         // Only skip for special cases with custom handling
         const isM3u8Stream = (downloadUrl.includes('.m3u8') || selectedFormat?.toLowerCase() === 'streaming') &&
-                             (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
-                              (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
+          (platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' ||
+            (platform === 'universal' && (detectedPlatform === 'reddit' || detectedPlatform === 'dailymotion' || detectedPlatform === 'bsky')));
         const isMixcloud = platform === 'mixcloud' || (platform === 'universal' && detectedPlatform === 'mixcloud');
 
         // Use streaming proxy for all platforms (including YouTube)
@@ -571,7 +556,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ platform: detectedPlatform || platform, fileSize, url: downloadUrl })
-            }).catch(() => {});
+            }).catch(() => { });
 
             return; // Exit early, don't use old download method
           } catch (streamError) {
@@ -585,32 +570,32 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         if (isMixcloud) {
           try {
             toast.info("Downloading with parallel chunks in browser (faster!)...", { duration: 4000 });
-            
+
             // Step 1: Get file size
-            const headResponse = await fetch(downloadUrl, { 
+            const headResponse = await fetch(downloadUrl, {
               method: 'HEAD',
               mode: 'cors',
               credentials: 'omit'
             });
-            
+
             const contentLength = headResponse.headers.get('Content-Length');
             if (!contentLength) {
               throw new Error('Cannot determine file size');
             }
-            
+
             const fileSize = parseInt(contentLength, 10);
             const numChunks = 4;
             const chunkSize = Math.floor(fileSize / numChunks);
-            
+
             toast.info(`Downloading ${Math.round(fileSize / 1024 / 1024)}MB in 4 parallel chunks...`, { duration: 3000 });
-            
+
             // Step 2: Download all chunks in parallel (IN BROWSER, not server!)
             const chunkPromises = [];
-            
+
             for (let i = 0; i < numChunks; i++) {
               const startByte = i * chunkSize;
               const endByte = i === numChunks - 1 ? fileSize - 1 : startByte + chunkSize - 1;
-              
+
               const chunkPromise = fetch(downloadUrl, {
                 headers: {
                   'Range': `bytes=${startByte}-${endByte}`,
@@ -627,26 +612,26 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
                   data: new Uint8Array(arrayBuffer)
                 };
               });
-              
+
               chunkPromises.push(chunkPromise);
             }
-            
+
             // Step 3: Wait for all chunks
             const chunks = await Promise.all(chunkPromises);
             chunks.sort((a, b) => a.index - b.index);
-            
+
             toast.info("Combining chunks...", { duration: 2000 });
-            
+
             // Step 4: Combine chunks
             const totalLength = chunks.reduce((sum, chunk) => sum + chunk.data.length, 0);
             const combinedBuffer = new Uint8Array(totalLength);
-            
+
             let offset = 0;
             for (const chunk of chunks) {
               combinedBuffer.set(chunk.data, offset);
               offset += chunk.data.length;
             }
-            
+
             // Step 5: Create blob and download
             const blob = new Blob([combinedBuffer], { type: 'audio/mp4' });
             const blobUrl = URL.createObjectURL(blob);
@@ -657,18 +642,18 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(blobUrl);
-            
+
             toast.success(`Download complete! (${Math.round(totalLength / 1024 / 1024)}MB)`);
             setDownloadLoading(false);
             return;
-            
+
           } catch (mixcloudError) {
             console.error('Client-side parallel download failed:', mixcloudError);
             toast.error("Parallel download failed. Using standard method...");
             // Fall through to standard download
           }
         }
-        
+
         // Standard download for other platforms
         const response = await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ url: downloadUrl, filename, platform, isHomepage }), })
 
@@ -678,8 +663,8 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         const link = document.createElement('a'); link.href = blobUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blobUrl);
         toast.success("Download successful!");
       } catch (error) {
-        console.error('Download error:', error); 
-        
+        console.error('Download error:', error);
+
         // YouTube 403 Fallback - Open direct video link in new tab when download fails
         if (detectedPlatform === 'youtube' || platform === 'youtube') {
           // Open the direct video URL (googlevideo.com) so user can save it
@@ -688,7 +673,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           setDownloadLoading(false)
           return
         }
-        
+
         toast.error("Download failed. Trying alternative method...");
         // Try direct download without opening new tab
         try {
@@ -741,25 +726,25 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
   }
 
   const allFormats = [...new Set(downloadOptions.map((option) => option.format))]
-  
+
   // Sort formats: video formats first, then audio formats
   const availableFormats = allFormats.sort((a, b) => {
     const videoFormats = ['mp4', 'webm', 'mkv', 'avi', 'mov', 'flv', 'wmv', '3gp']
     const audioFormats = ['mp3', 'm4a', 'aac', 'wav', 'flac', 'ogg']
-    
+
     const aIsVideo = videoFormats.includes(a.toLowerCase())
     const bIsVideo = videoFormats.includes(b.toLowerCase())
     const aIsAudio = audioFormats.includes(a.toLowerCase())
     const bIsAudio = audioFormats.includes(b.toLowerCase())
-    
+
     // Video formats come first
     if (aIsVideo && !bIsVideo) return -1
     if (!aIsVideo && bIsVideo) return 1
-    
+
     // Audio formats come second
     if (aIsAudio && !bIsAudio && !aIsVideo && !bIsVideo) return -1
     if (!aIsAudio && bIsAudio && !aIsVideo && !bIsVideo) return 1
-    
+
     // Within same category, sort alphabetically
     return a.toLowerCase().localeCompare(b.toLowerCase())
   })
@@ -776,7 +761,7 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           onDismiss={() => setShowHint(false)}
         />
       )}
- 
+
       <form onSubmit={handleSubmit} translate="no" className="space-y-4">
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-500">
           <div className="flex flex-col lg:flex-row gap-6">
@@ -787,17 +772,17 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
               <Input
                 id="url" type="text" placeholder={getPlaceholder(platform)} value={url}
                 onChange={(e) => setUrl(e.target.value)} required
-                className="bg-white/20 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-14 text-base rounded-2xl placeholder:text-blue-200 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full" 
+                className="bg-white/20 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-14 text-base rounded-2xl placeholder:text-blue-200 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full"
                 disabled={loading} translate="no"
               />
             </div>
             <div className="flex items-end">
               <Button
                 type="submit" size="lg"
-                className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-400 hover:via-blue-400 hover:to-indigo-400 text-white h-14 px-10 rounded-2xl shadow-xl font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group w-full lg:w-auto" 
+                className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-400 hover:via-blue-400 hover:to-indigo-400 text-white h-14 px-10 rounded-2xl shadow-xl font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group w-full lg:w-auto"
                 disabled={loading}
               >
-                {loading ? ( <Loader2 className="h-5 w-5 animate-spin" /> ) : (
+                {loading ? (<Loader2 className="h-5 w-5 animate-spin" />) : (
                   <>
                     <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                     Process
@@ -809,268 +794,268 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
         </div>
 
         {error && (
-            <Alert variant="destructive" className="bg-red-900/30 border-red-500/50 text-red-100">
-              <AlertCircle className="h-4 w-4 text-red-200" />
-              <AlertTitle className="text-red-200 font-semibold">Unable to Process Video</AlertTitle>
-              <AlertDescription className="text-red-200/90">
-                <p>{error}</p>
-                <ul className="mt-2 text-sm list-disc pl-4 space-y-1 text-gray-200 dark:text-gray-300">
-                  <li>Make sure the URL is from a public video that can be accessed without login</li>
-                  <li>Try copying the URL directly from your browser's address bar</li>
-                  <li>Some videos may be protected by the platform and cannot be downloaded</li>
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
+          <Alert variant="destructive" className="bg-red-900/30 border-red-500/50 text-red-100">
+            <AlertCircle className="h-4 w-4 text-red-200" />
+            <AlertTitle className="text-red-200 font-semibold">Unable to Process Video</AlertTitle>
+            <AlertDescription className="text-red-200/90">
+              <p>{error}</p>
+              <ul className="mt-2 text-sm list-disc pl-4 space-y-1 text-gray-200 dark:text-gray-300">
+                <li>Make sure the URL is from a public video that can be accessed without login</li>
+                <li>Try copying the URL directly from your browser's address bar</li>
+                <li>Some videos may be protected by the platform and cannot be downloaded</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
 
-          {downloadOptions.length > 0 && (
-            <div className="space-y-4 mt-6 p-6 bg-black/10 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10">
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "download" | "link")} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
-                  <TabsTrigger value="download" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Download Options</TabsTrigger>
-                  <TabsTrigger value="link" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Direct Link</TabsTrigger>
-                </TabsList>
+        {downloadOptions.length > 0 && (
+          <div className="space-y-4 mt-6 p-6 bg-black/10 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "download" | "link")} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
+                <TabsTrigger value="download" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Download Options</TabsTrigger>
+                <TabsTrigger value="link" className="data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm text-blue-200 hover:text-white rounded-lg transition-all duration-200 py-1.5 text-sm">Direct Link</TabsTrigger>
+              </TabsList>
 
-                <TabsContent value="download" className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="format" translate="no" className="block text-sm font-medium mb-1 text-left text-white/90">Format</Label>
-                      <Select value={selectedFormat || ""} onValueChange={handleFormatChange}>
-                        <SelectTrigger id="format" className="bg-black/20 dark:bg-white/10 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-12 text-base rounded-xl placeholder:text-white/70 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full [&>span]:text-white [&>span[data-placeholder]]:text-white/70">
-                          <SelectValue placeholder="Select format" className="font-medium text-white" style={{ color: 'white' }}>
-                            {selectedFormat ? (
-                              <span className="text-white" style={{ color: 'white' }}>{selectedFormat.toUpperCase()}</span>
-                            ) : (
-                              <span className="text-white/70" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Select format</span>
-                            )}
-                          </SelectValue> 
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-600 text-white shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-slate-300 px-2 py-1.5 text-sm font-medium">Available Formats</SelectLabel>
-                            {availableFormats.map((format) => (
-                              <SelectItem 
-                                key={format} 
-                                value={format}
+              <TabsContent value="download" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="format" translate="no" className="block text-sm font-medium mb-1 text-left text-white/90">Format</Label>
+                    <Select value={selectedFormat || ""} onValueChange={handleFormatChange}>
+                      <SelectTrigger id="format" className="bg-black/20 dark:bg-white/10 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-12 text-base rounded-xl placeholder:text-white/70 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full [&>span]:text-white [&>span[data-placeholder]]:text-white/70">
+                        <SelectValue placeholder="Select format" className="font-medium text-white" style={{ color: 'white' }}>
+                          {selectedFormat ? (
+                            <span className="text-white" style={{ color: 'white' }}>{selectedFormat.toUpperCase()}</span>
+                          ) : (
+                            <span className="text-white/70" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Select format</span>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-600 text-white shadow-xl">
+                        <SelectGroup>
+                          <SelectLabel className="text-slate-300 px-2 py-1.5 text-sm font-medium">Available Formats</SelectLabel>
+                          {availableFormats.map((format) => (
+                            <SelectItem
+                              key={format}
+                              value={format}
+                              className="text-white hover:bg-slate-700/80 hover:text-white focus:bg-slate-700/80 focus:text-white data-[state=checked]:bg-slate-700/90 data-[state=checked]:text-white cursor-pointer"
+                            >
+                              {format.toUpperCase()}
+                              {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && format === 'streaming' && ' (m3u8 format)'}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="quality" translate="no" className="block text-sm font-medium mb-1 text-left text-white/90">Quality</Label>
+                    <Select value={selectedQuality || ""} onValueChange={handleQualityChange}>
+                      <SelectTrigger id="quality" className="bg-black/20 dark:bg-white/10 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-12 text-base rounded-xl placeholder:text-white/70 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full [&>span]:text-white [&>span[data-placeholder]]:text-white/70">
+                        <SelectValue placeholder="Select quality" className="font-medium text-white" style={{ color: 'white' }}>
+                          {selectedQuality ? (
+                            <span className="text-white" style={{ color: 'white' }}>
+                              {selectedQuality}
+                              {selectedFormat && selectedQuality && (
+                                <>
+                                  {(platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok'))
+                                    ? (selectedFormat.toLowerCase() === 'mp3' || selectedFormat.toLowerCase() === 'm4a'
+                                      ? ""
+                                      : (downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === selectedQuality)?.noWatermark === false ? " • With Watermark" : " • No Watermark"))
+                                    : (platform === 'youtube' || (platform === 'universal' && detectPlatform(url) === 'youtube'))
+                                      ? (Boolean(downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === selectedQuality)?.hasAudio) ? " • With Audio" : " • No Audio")
+                                      : ""
+                                  }
+                                </>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-white/70" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Select quality</span>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-600 text-white shadow-xl">
+                        <SelectGroup>
+                          <SelectLabel className="text-slate-300 px-2 py-1.5 text-sm font-medium">Available Qualities</SelectLabel>
+                          {availableQualities.map((quality, index) => {
+                            const option = downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === quality);
+                            const sizeInfo = option?.size && option.size !== "Unknown" ? ` (${option.size})` : "";
+                            let extraInfo = "";
+                            if (platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok')) {
+                              if (option?.format.toLowerCase() === 'mp3' || option?.format.toLowerCase() === 'm4a') extraInfo = "";
+                              else extraInfo = option?.noWatermark === false ? " • With Watermark" : " • No Watermark";
+                            } else if (platform === 'youtube' || (platform === 'universal' && detectPlatform(url) === 'youtube')) {
+                              extraInfo = Boolean(option?.hasAudio) ? " • With Audio" : " • No Audio";
+                            }
+                            return (
+                              <SelectItem
+                                key={`${quality}-${index}`}
+                                value={quality}
                                 className="text-white hover:bg-slate-700/80 hover:text-white focus:bg-slate-700/80 focus:text-white data-[state=checked]:bg-slate-700/90 data-[state=checked]:text-white cursor-pointer"
                               >
-                                {format.toUpperCase()}
-                                {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit') && format === 'streaming' && ' (m3u8 format)'}
+                                {quality}{sizeInfo}{extraInfo}
                               </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="quality" translate="no" className="block text-sm font-medium mb-1 text-left text-white/90">Quality</Label>
-                      <Select value={selectedQuality || ""} onValueChange={handleQualityChange}>
-                        <SelectTrigger id="quality" className="bg-black/20 dark:bg-white/10 backdrop-blur-sm border-white/30 focus:border-cyan-300 h-12 text-base rounded-xl placeholder:text-white/70 focus:ring-4 focus:ring-cyan-300/20 text-white transition-all duration-300 w-full [&>span]:text-white [&>span[data-placeholder]]:text-white/70">
-                          <SelectValue placeholder="Select quality" className="font-medium text-white" style={{ color: 'white' }}>
-                            {selectedQuality ? (
-                                  <span className="text-white" style={{ color: 'white' }}>
-                                    {selectedQuality}
-                                    {selectedFormat && selectedQuality && (
-                                      <>
-                                        {(platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok'))
-                                          ? (selectedFormat.toLowerCase() === 'mp3' || selectedFormat.toLowerCase() === 'm4a'
-                                              ? "" 
-                                              : (downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === selectedQuality)?.noWatermark === false ? " • With Watermark" : " • No Watermark"))
-                                          : (platform === 'youtube' || (platform === 'universal' && detectPlatform(url) === 'youtube'))
-                                              ? (Boolean(downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === selectedQuality)?.hasAudio) ? " • With Audio" : " • No Audio")
-                                              : ""
-                                        }
-                                      </>
-                                    )}
-                                  </span>
-                                ) : (
-                                  <span className="text-white/70" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Select quality</span>
-                                )}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-600 text-white shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-slate-300 px-2 py-1.5 text-sm font-medium">Available Qualities</SelectLabel>
-                            {availableQualities.map((quality, index) => {
-                              const option = downloadOptions.find(opt => opt.format === selectedFormat && opt.quality === quality);
-                              const sizeInfo = option?.size && option.size !== "Unknown" ? ` (${option.size})` : "";
-                              let extraInfo = "";
-                              if (platform === 'tiktok' || (platform === 'universal' && detectPlatform(url) === 'tiktok')) {
-                                if (option?.format.toLowerCase() === 'mp3' || option?.format.toLowerCase() === 'm4a') extraInfo = "";
-                                else extraInfo = option?.noWatermark === false ? " • With Watermark" : " • No Watermark";
-                              } else if (platform === 'youtube' || (platform === 'universal' && detectPlatform(url) === 'youtube')) {
-                                extraInfo = Boolean(option?.hasAudio) ? " • With Audio" : " • No Audio";
-                              }
-                              return ( 
-                                <SelectItem 
-                                  key={`${quality}-${index}`} 
-                                  value={quality}
-                                  className="text-white hover:bg-slate-700/80 hover:text-white focus:bg-slate-700/80 focus:text-white data-[state=checked]:bg-slate-700/90 data-[state=checked]:text-white cursor-pointer"
-                                > 
-                                  {quality}{sizeInfo}{extraInfo} 
-                                </SelectItem> 
-                              );
-                            })}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectPlatform(url) === 'reddit' || detectPlatform(url) === 'dailymotion' || detectPlatform(url) === 'bsky'))) && selectedFormat === 'streaming' && (
-                    <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-md text-sm text-blue-700 dark:text-blue-300 mb-2">
-                      <div className="font-semibold mb-1">{platform === 'dailymotion' ? 'Dailymotion' : platform === 'bsky' ? 'Bluesky' : platform === 'reddit' ? 'Reddit' : (platform === 'universal' && detectPlatform(url) === 'dailymotion') ? 'Dailymotion' : (platform === 'universal' && detectPlatform(url) === 'bsky') ? 'Bluesky' : 'Reddit'} videos use HLS streaming format:</div>
-                      <ol className="list-decimal ml-5 mt-1">
-                        <li>Use "Download Now" to save the streaming file or "Copy Link" to get the URL</li>
-                        <li>For direct MP4 download, you can use an external tool like VLC Player or FFmpeg</li>
-                        <li>Streaming files (m3u8) need special players or converters to be viewed offline</li>
-                      </ol>
-                    </div>
-                  )}
+                </div>
+                {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectPlatform(url) === 'reddit' || detectPlatform(url) === 'dailymotion' || detectPlatform(url) === 'bsky'))) && selectedFormat === 'streaming' && (
+                  <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-md text-sm text-blue-700 dark:text-blue-300 mb-2">
+                    <div className="font-semibold mb-1">{platform === 'dailymotion' ? 'Dailymotion' : platform === 'bsky' ? 'Bluesky' : platform === 'reddit' ? 'Reddit' : (platform === 'universal' && detectPlatform(url) === 'dailymotion') ? 'Dailymotion' : (platform === 'universal' && detectPlatform(url) === 'bsky') ? 'Bluesky' : 'Reddit'} videos use HLS streaming format:</div>
+                    <ol className="list-decimal ml-5 mt-1">
+                      <li>Use "Download Now" to save the streaming file or "Copy Link" to get the URL</li>
+                      <li>For direct MP4 download, you can use an external tool like VLC Player or FFmpeg</li>
+                      <li>Streaming files (m3u8) need special players or converters to be viewed offline</li>
+                    </ol>
+                  </div>
+                )}
 
-                  {/* Large file warnings removed - streaming proxy handles all file sizes now */}
+                {/* Large file warnings removed - streaming proxy handles all file sizes now */}
 
-                  <Button
-                    onClick={handleDownload}
-                    disabled={!downloadUrl || downloadLoading}
-                    className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-400 hover:via-blue-400 hover:to-indigo-400 text-white h-14 px-10 rounded-2xl shadow-xl font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group"
-                    size="lg"
-                  >
-                    {downloadLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> 
-                        Downloading...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-5 h-5 mr-3 group-hover:animate-bounce" /> 
-                        {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectPlatform(url) === 'reddit' || detectPlatform(url) === 'dailymotion' || detectPlatform(url) === 'bsky'))) && (selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8'))
+                <Button
+                  onClick={handleDownload}
+                  disabled={!downloadUrl || downloadLoading}
+                  className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-400 hover:via-blue-400 hover:to-indigo-400 text-white h-14 px-10 rounded-2xl shadow-xl font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 group"
+                  size="lg"
+                >
+                  {downloadLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5 mr-3 group-hover:animate-bounce" />
+                      {(platform === 'dailymotion' || platform === 'bsky' || platform === 'reddit' || (platform === 'universal' && (detectPlatform(url) === 'reddit' || detectPlatform(url) === 'dailymotion' || detectPlatform(url) === 'bsky'))) && (selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8'))
+                        ? 'Download Streaming File (m3u8)'
+                        : selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8')
                           ? 'Download Streaming File (m3u8)'
-                          : selectedFormat?.toLowerCase() === 'streaming' || downloadUrl?.includes('.m3u8')
-                            ? 'Download Streaming File (m3u8)'
-                            : 'Download Now'}
-                      </>
-                    )}
-                  </Button>
-                </TabsContent>
-                <TabsContent value="link" className="space-y-4" data-test-id="direct-link-tab">
-                  <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
-                    <Input
-                      value={
-                        downloadUrl
-                          ? (() => {
-                              const detectedPlatform = detectPlatform(url)
-                              const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+                          : 'Download Now'}
+                    </>
+                  )}
+                </Button>
+              </TabsContent>
+              <TabsContent value="link" className="space-y-4" data-test-id="direct-link-tab">
+                <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                  <Input
+                    value={
+                      downloadUrl
+                        ? (() => {
+                          const detectedPlatform = detectPlatform(url)
+                          const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
 
-                              // Use proxy URL for Weibo to avoid 403 errors
-                              if (isWeibo && downloadUrl) {
-                                // Use environment base URL, fallback to current window location for local dev
-                                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
-                                  (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
-                                return `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
-                              }
-                              return downloadUrl
-                            })()
-                          : ""
-                      }
-                      readOnly
-                      className="flex-1 bg-black/20 dark:bg-white/10 border-white/30 text-white rounded-xl"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Copy the proxy URL for Weibo
-                        const detectedPlatform = detectPlatform(url)
-                        const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
-                        const platformName = platform === 'universal' ? (detectedPlatform || 'universal') : platform
-
-                        if (isWeibo && downloadUrl) {
-                          // Use environment base URL, fallback to current window location for local dev
-                          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
-                            (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
-                          const proxyUrl = `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
-                          navigator.clipboard.writeText(proxyUrl)
-                          setCopied(true)
-                          toast.success("Download link copied!")
-                          setTimeout(() => setCopied(false), 2000)
-
-                          // Track successful link copy
-                          fetch('/api/track-copy', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
-                          }).catch(() => {}) // Silent fail - don't block user
-                        } else {
-                          copyToClipboard(e)
-
-                          // Track successful link copy
-                          fetch('/api/track-copy', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
-                          }).catch(() => {}) // Silent fail - don't block user
-                        }
-                      }}
-                      disabled={!downloadUrl}
-                      data-test-id="copy-link-button"
-                      className="border-cyan-400/50 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-100 hover:border-cyan-300 transition-colors"
-                    >
-                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  <div className="space-y-3">
-                    {/* Show different messages based on platform and file size */}
-                    {(() => {
+                          // Use proxy URL for Weibo to avoid 403 errors
+                          if (isWeibo && downloadUrl) {
+                            // Use environment base URL, fallback to current window location for local dev
+                            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                              (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                            return `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                          }
+                          return downloadUrl
+                        })()
+                        : ""
+                    }
+                    readOnly
+                    className="flex-1 bg-black/20 dark:bg-white/10 border-white/30 text-white rounded-xl"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Copy the proxy URL for Weibo
                       const detectedPlatform = detectPlatform(url)
                       const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
-                      const sizeMB = fileSize ? Math.round(fileSize / 1024 / 1024) : null
+                      const platformName = platform === 'universal' ? (detectedPlatform || 'universal') : platform
 
-                      // Weibo-specific message
-                      if (isWeibo) {
-                        return (
-                          <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
-                            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
-                              🐦 Weibo Direct Link - Ready to Use!
-                            </p>
-                            <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
-                              <li>This link works anywhere - paste in any browser or download manager</li>
-                              <li>Optimized for reliable Weibo video downloads</li>
-                              {sizeMB && <li>File size: {sizeMB}MB</li>}
-                              <li className="font-semibold text-blue-800 dark:text-blue-200">✨ Supports unlimited file sizes with streaming!</li>
-                            </ul>
-                          </div>
-                        )
+                      if (isWeibo && downloadUrl) {
+                        // Use environment base URL, fallback to current window location for local dev
+                        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                          (typeof window !== 'undefined' ? window.location.origin : 'https://fsmvid.com')
+                        const proxyUrl = `${baseUrl}/api/weibo-proxy?url=${encodeURIComponent(downloadUrl)}`
+                        navigator.clipboard.writeText(proxyUrl)
+                        setCopied(true)
+                        toast.success("Download link copied!")
+                        setTimeout(() => setCopied(false), 2000)
+
+                        // Track successful link copy
+                        fetch('/api/track-copy', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
+                        }).catch(() => { }) // Silent fail - don't block user
+                      } else {
+                        copyToClipboard(e)
+
+                        // Track successful link copy
+                        fetch('/api/track-copy', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ platform: platformName, fileSize, url: downloadUrl })
+                        }).catch(() => { }) // Silent fail - don't block user
                       }
+                    }}
+                    disabled={!downloadUrl}
+                    data-test-id="copy-link-button"
+                    className="border-cyan-400/50 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-100 hover:border-cyan-300 transition-colors"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {/* Show different messages based on platform and file size */}
+                  {(() => {
+                    const detectedPlatform = detectPlatform(url)
+                    const isWeibo = platform === 'weibo' || (platform === 'universal' && detectedPlatform === 'weibo')
+                    const sizeMB = fileSize ? Math.round(fileSize / 1024 / 1024) : null
 
-                      // No large file warnings needed - streaming proxy handles everything!
-
-                      // Default message for normal files
+                    // Weibo-specific message
+                    if (isWeibo) {
                       return (
                         <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
                           <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
-                            💡 How to use this direct link:
+                            🐦 Weibo Direct Link - Ready to Use!
                           </p>
                           <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
-                            <li>Copy the link using the button above</li>
-                            <li>Paste it into your browser address bar or any download manager</li>
-                            <li>The video will start downloading directly</li>
+                            <li>This link works anywhere - paste in any browser or download manager</li>
+                            <li>Optimized for reliable Weibo video downloads</li>
                             {sizeMB && <li>File size: {sizeMB}MB</li>}
+                            <li className="font-semibold text-blue-800 dark:text-blue-200">✨ Supports unlimited file sizes with streaming!</li>
                           </ul>
                         </div>
                       )
-                    })()}
-                    <p className="text-sm text-gray-300 dark:text-gray-400">
-                      We care about providing you with the best experience. This direct link gives you full control over your download. For better stability with large files, consider using a download manager like IDM or DownThemAll.
-                    </p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          )}
-        </form>
+                    }
+
+                    // No large file warnings needed - streaming proxy handles everything!
+
+                    // Default message for normal files
+                    return (
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md">
+                        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                          💡 How to use this direct link:
+                        </p>
+                        <ul className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-disc ml-5">
+                          <li>Copy the link using the button above</li>
+                          <li>Paste it into your browser address bar or any download manager</li>
+                          <li>The video will start downloading directly</li>
+                          {sizeMB && <li>File size: {sizeMB}MB</li>}
+                        </ul>
+                      </div>
+                    )
+                  })()}
+                  <p className="text-sm text-gray-300 dark:text-gray-400">
+                    We care about providing you with the best experience. This direct link gives you full control over your download. For better stability with large files, consider using a download manager like IDM or DownThemAll.
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+      </form>
 
       {/* Download Limit Modal - only show on homepage/universal */}
       {isHomepage && limitState && (
@@ -1088,6 +1073,6 @@ export default function PlatformDownloader({ platform }: { platform: string }) {
           }}
         />
       )}
-    </div> 
+    </div>
   )
 }

@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen, ExternalLink } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,62 +50,71 @@ export const ThreadsSEOContent = () => {
   const platform = "threads";
   
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Threads Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About Threads Video Saver
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Threads Video Saver</h1>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
-                        In a remarkably short period, Meta's Threads has exploded onto the social media scene, establishing itself as a formidable new digital town square. Launched in July 2023, the platform quickly became one of the most downloaded apps globally, amassing a user base of nearly 200 million monthly active users across more than 100 countries.
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
+                        In a remarkably short period, Meta&apos;s Threads has exploded onto the social media scene, establishing itself as a formidable new digital town square. Launched in July 2023, the platform quickly became one of the most downloaded apps globally, amassing a user base of nearly 200 million monthly active users across more than 100 countries.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         As a creation of the Instagram team, Threads offers a space for public conversation, allowing users to share text updates up to 500 characters, along with links, photos, and videos up to five minutes long.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         This rapid growth has led to an unprecedented volume of content being created and shared every second. This is where a Threads Video Saver becomes essential. But what is a Threads Video Saver? It is a specialized tool designed to solve this exact problem, offering an easy and efficient way to save videos, photos, and even voice notes directly from the platform to your device.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         It bridges the gap between the fleeting nature of a social feed and the desire to keep a personal archive. Free, secure, and reliable tools like the FSMVID Threads Video Saver provides a simple solution, empowering users to save any public Threads media with just a few clicks.
                     </InterlinkText>
-                </p>
-            </SectionCard>
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="What is a Threads Video Saver, and Why Do You Really Need One?" 
                 icon={Star} 
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         A Threads Video Saver is a specialized tool—typically a web-based service, desktop application, or mobile app—engineered to save media content from the Threads platform directly onto a user's device.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         This allows for permanent, offline access to videos, high-resolution photos, animated GIFs, and even unique formats like voice notes.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While the immediate function is simple, the reasons for needing such a tool are diverse and compelling. It's not just about saving a single video; it's about gaining control over your digital content and unlocking new possibilities. In an ecosystem where platforms manage access to media, a video-saving tool provides a powerful form of content independence.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Here are the key reasons why a Threads Video Saver is an essential tool:</strong>
                 </p>
                 {renderStyledList([
@@ -112,20 +128,20 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="How to Save Threads Videos & Photos with FSMVID (It's Free!)?" 
                 icon={Zap} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The primary goal for anyone seeking a Threads Video Saver is a fast, frictionless path to saving their desired content.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The process should be intuitive and immediate, without the hassle of installing software or creating an account. The FSMVID Threads Video Saver is designed around this principle of simplicity.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         This step-by-step guide shows just how easy it is to save any public Threads media directly to your device.
                     </InterlinkText>
@@ -184,42 +200,42 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="The Anatomy of a Superior Threads Video Saver: 5 Features to Demand" 
                 icon={Award} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Not all video savers are created equal. When choosing a tool, users should be cautious and demand a high standard of quality, security, and functionality.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         A superior tool doesn't just save a video; it provides a seamless and safe experience.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         By understanding what features to look for, you can easily identify a trustworthy service and avoid the risks associated with poorly designed ones.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Here are five non-negotiable features that define a top-tier Threads Video Saver.</strong>
                 </p>
 
                 <div className="space-y-6">
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">1. Uncompromised Quality: HD, Full HD, and 4K Support</h4>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 The primary purpose of saving media is to enjoy it later, and that requires preserving its original clarity.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 A premium Threads Video Saver must support a range of resolutions, including standard definition (SD), high definition (720p), full high definition (1080p), and even 4K when the source provides it.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 This ensures that whether you're saving a professional video or a high-resolution photograph, the visual fidelity is not compromised in the process.
                             </InterlinkText>
@@ -228,12 +244,12 @@ export const ThreadsSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">2. Comprehensive Media Support: Beyond Just Video</h4>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 Threads is a multimedia platform, and a great video saver should reflect that versatility. It must be able to handle not just standard videos but also high-resolution photos, animated GIFs, and a format unique to the platform: voice posts.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 The ability to save voice notes is a key differentiator, as many basic tools overlook this feature. Some advanced tools even offer video-to-MP3 conversion, allowing users to extract audio from video content.
                             </InterlinkText>
@@ -242,12 +258,12 @@ export const ThreadsSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">3. Universal Accessibility: Works Everywhere, on Everything</h4>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 Convenience is paramount. The ideal tool should be a browser-based web application, eliminating the need for any software installation or browser extensions.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 This ensures universal compatibility across all major operating systems—including Windows, macOS, and Linux—and on all devices, from desktop PCs to mobile phones and tablets (iOS and Android). You should be able to access the service from any browser, anywhere, at any time.
                             </InterlinkText>
@@ -256,12 +272,12 @@ export const ThreadsSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">4. User-Centric Design: Speed, Simplicity, and No Registration</h4>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 The user experience should be effortless. A clean, intuitive interface that guides the user through a simple copy-paste-download process is essential.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 The service should be fast and free from intrusive pop-up ads or confusing redirects. Critically, a trustworthy tool should never require you to create an account, register, or provide any personal information to use its core features.
                             </InterlinkText>
@@ -270,17 +286,17 @@ export const ThreadsSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">5. Ironclad Security and Privacy</h4>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 When using any third-party online service, security is the top priority. A secure Threads Video Saver must operate over a secure connection (HTTPS).
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                             <InterlinkText currentPlatform={platform}>
                                 It should fetch content directly from Threads' servers without storing the user's data or download history on its own servers.
                             </InterlinkText>
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 This ensures your activity remains private. Furthermore, the tool must be free from any malware, spyware, or other malicious code.
                             </InterlinkText>
@@ -292,15 +308,15 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="FSMVID vs. The Rest: A Comparative Look at Threads Video Saver Tools" 
                 icon={ListChecks} 
-                iconBgGradient="from-indigo-500 to-purple-600"
-                cardBgClass="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The landscape of tools to save Threads videos includes several types, each with its own set of advantages and disadvantages.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Users will typically encounter three main categories:
                     </InterlinkText>
@@ -327,7 +343,7 @@ export const ThreadsSEOContent = () => {
                     </div>
                 </div>
 
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         To help clarify the best choice for most users, the following table provides a direct comparison based on the most important decision-making factors.
                     </InterlinkText>
@@ -344,8 +360,8 @@ export const ThreadsSEOContent = () => {
                                 <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Competitor C (Mobile App)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody className="divide-y divide-slate-100">
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Cost</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">100% Free</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Free (Ad-Supported)</td>
@@ -359,7 +375,7 @@ export const ThreadsSEOContent = () => {
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">No (in paid version)</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-600 dark:text-red-400">Yes</td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Registration Required</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">No</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">No</td>
@@ -373,7 +389,7 @@ export const ThreadsSEOContent = () => {
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Up to 4K</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">HD (1080p)</td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Voice Note Support</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Yes</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-600 dark:text-red-400">Often No</td>
@@ -391,12 +407,12 @@ export const ThreadsSEOContent = () => {
                     </table>
                 </div>
 
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The comparison makes it clear that while desktop software offers power for a price and mobile apps offer convenience with ads, the FSMVID Threads Video Saver occupies a unique position.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                     <InterlinkText currentPlatform={platform}>
                         Just as our FSMVID Threads Video Saver offers a best-in-class experience, so do our dedicated tools for saving content from other platforms. Check out our free 
                     </InterlinkText>
@@ -410,62 +426,62 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="Is It Legal and Safe to Use a Threads Video Saver?" 
                 icon={Shield} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Addressing the legality and safety of using a third-party video saver is crucial for any responsible user.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While the technology itself is straightforward, its use exists within a framework of copyright law and digital security best practices.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         By understanding these principles, you can confidently and ethically use tools like the FSMVID Threads Video Saver.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The conversation is less about whether the tool is legal and more about how to ensure your use of the saved content is responsible.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Understanding Copyright Law: The Golden Rule of Personal Use</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         All original content posted on Threads—videos, photos, text, and audio—is protected by copyright law and belongs to the person who created it.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         This means that downloading this content and then redistributing it, reposting it as your own, or using it for commercial purposes without the creator's explicit permission is a violation of their rights and constitutes copyright infringement.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         However, the legal landscape generally allows for downloading content for personal, non-commercial use.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         This is the key principle to follow. Saving a video to watch offline, archiving a photo for a personal collection, or keeping a voice note for your records is widely considered acceptable, akin to recording a TV show for later viewing.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The FSMVID Threads Video Saver is provided as a tool to enable this personal use.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The responsibility for how the saved content is ultimately used rests with the user.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Always credit the original creator, and if you intend to use the content for anything beyond personal viewing, seek their permission first.
                     </InterlinkText>
@@ -484,15 +500,15 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="How to Identify a Secure Video Saver and Avoid Risks?" 
                 icon={AlertTriangle} 
-                iconBgGradient="from-red-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Your digital security is paramount. A trustworthy video saver service will always prioritize your safety and privacy.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Here is a simple checklist to help you vet any tool and avoid potential risks:
                     </InterlinkText>
@@ -501,28 +517,28 @@ export const ThreadsSEOContent = () => {
                 <div className="space-y-4">
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-red-600 dark:text-red-400">Does it ask for your Threads/Instagram password?</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             Absolutely not. A legitimate video saver works with public URLs and will never need your login credentials. If a site or app asks for your password, it is a major red flag and should be avoided immediately.
                         </p>
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-green-600 dark:text-green-400">Is the website secure?</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             Always check for "HTTPS" at the beginning of the website's URL and a padlock icon in your browser's address bar. This indicates that your connection to the site is encrypted and secure.
                         </p>
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-red-600 dark:text-red-400">Does it force you to download software?</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             Be extremely cautious of web-based tools that unexpectedly prompt you to download an executable file (.exe,.dmg). The FSMVID service is 100% browser-based and requires no installation.
                         </p>
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-green-600 dark:text-green-400">Does it respect your privacy?</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 A reputable tool will have a clear privacy policy and will not store your personal data or a history of your downloads. FSMVID is built on the principle of user privacy, processing requests without logging user-specific information.
                             </InterlinkText>
@@ -534,15 +550,15 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="Beyond Threads: What Else Can FSMVID Do?" 
                 icon={Globe} 
-                iconBgGradient="from-cyan-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID isn't limited to Threads. It also supports downloading media from other popular platforms, making it a versatile tool for all your social media downloading needs.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Other platforms supported include:</strong>
                 </p>
                 {renderStyledList([
@@ -552,7 +568,7 @@ export const ThreadsSEOContent = () => {
                     <a href="/twitter-video-saver" className="text-blue-400 hover:underline dark:text-blue-300">Twitter</a>,
                     <a href="/tiktok-video-saver" className="text-gray-800 hover:underline dark:text-gray-200">TikTok</a>
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         This multi-platform support means you can use one familiar interface (just paste the URL!) for saving videos from various sources.
                     </InterlinkText>
@@ -562,20 +578,20 @@ export const ThreadsSEOContent = () => {
             <SectionCard 
                 title="Your Content, On Your Terms" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Threads has undeniably become a central hub for public discourse and creative expression.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While its real-time nature is part of its appeal, the platform's lack of a native download feature leaves a critical gap for users who wish to preserve the content that resonates with them.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         A high-quality Threads Video Saver is the essential bridge that fills this gap, putting control back into the hands of the user.
                     </InterlinkText>
@@ -584,15 +600,16 @@ export const ThreadsSEOContent = () => {
                     <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                         Ready to take control of your favorite Threads content?
                     </p>
-                    <p className="text-gray-700 dark:text-gray-300">
+                    <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
             <InterlinkText currentPlatform={platform}>
                             Try the FSMVID Threads Video Saver today—it's fast, free, and ready to go. Paste your first link now!
             </InterlinkText>
           </p>
                 </div>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

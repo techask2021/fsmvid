@@ -20,6 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   title: "FSMVID | Free Social Media Video Downloader",
   description: "Free online video downloader and converter tool that works. Download videos from 30+ platforms including YouTube, TikTok, Facebook, Instagram, Twitter with no software installation. Web-based video download utility with 4K quality, multiple formats (MP4, MKV, WebM, MP3), and built-in format conversion. No registration required—completely free video download software.",
   generator: 'v0.dev',
@@ -208,7 +209,7 @@ export default function RootLayout({
               <div suppressHydrationWarning>
                 <Header />
               </div>
-              <div className="flex-1 break-words pt-20" style={{ containIntrinsicSize: '1px 5000px' }}> {/* Added pt-20 */}
+              <div className="flex-1 break-words pb-20" style={{ containIntrinsicSize: '1px 5000px' }}>
                 {children}
               </div>
 

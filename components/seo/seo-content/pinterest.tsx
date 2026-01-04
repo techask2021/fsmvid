@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,35 +50,44 @@ export const PinterestSEOContent = () => {
   const platform = "pinterest";
   
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Pinterest Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About Pinterest Video Downloader
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Pinterest Video Downloader</h1>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         Pinterest has evolved far beyond its origins as a simple image-sharing platform. Today, millions of users discover and share inspiring video content daily, from cooking tutorials and DIY projects to fashion tips and travel vlogs.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
-                        But what happens when you find that perfect video and want to save it for offline viewing or future reference? That's where a Pinterest Video Downloader becomes an essential tool for content enthusiasts and creators alike.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
+                        But what happens when you find that perfect video and want to save it for offline viewing or future reference? That&apos;s where a Pinterest Video Downloader becomes an essential tool for content enthusiasts and creators alike.
                     </InterlinkText>
-                </p>
-            </SectionCard>
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="Key Takeaways" 
                 icon={ListChecks} 
-                iconBgGradient="from-emerald-500 to-green-600"
-                cardBgClass="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 {renderStyledList([
                     "Pinterest Video Downloader tools enable users to save videos from Pinterest for offline viewing and personal use.",
@@ -85,27 +101,27 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Understanding Pinterest Video Content" 
                 icon={Star} 
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Pinterest's video ecosystem has grown exponentially since the platform introduced video pins.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The platform now hosts millions of videos across diverse categories, making it a treasure trove of visual inspiration.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         These videos range from short clips to longer-form content, often featuring step-by-step tutorials, product demonstrations, and creative showcases.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Types of Pinterest Videos</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <InterlinkText currentPlatform={platform}>
                         Pinterest supports various video formats and styles:
                     </InterlinkText>
@@ -117,7 +133,7 @@ export const PinterestSEOContent = () => {
                     <><strong>Tutorial videos:</strong> Educational and how-to content.</>,
                     <><strong>Promoted video pins:</strong> Advertising content.</>
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4 mt-4">
                     <InterlinkText currentPlatform={platform}>
                         The platform's algorithm favors video content, making it more likely to appear in users' feeds and search results. This has led to increased high-quality video content that users often want to save for later reference.
                     </InterlinkText>
@@ -127,45 +143,45 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Why Use a Pinterest Video Downloader?" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-teal-500 to-cyan-600"
-                cardBgClass="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         There are numerous legitimate reasons why someone might need a Pinterest Video Downloader:
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>📱 Offline Access</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Save videos to watch without an internet connection, perfect for travel or areas with poor connectivity.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>🎓 Educational Purposes</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Preserve tutorial videos for learning new skills, crafts, or recipes that you can reference repeatedly.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>💼 Professional Use</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Content creators and marketers may need to analyze successful video strategies or create inspiration boards.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>🔄 Backup and Archiving</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Ensure access to valuable content even if the original pin is deleted or unavailable.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>📊 Research and Analysis</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Digital marketers and researchers may need to study video trends and content strategies.
                     </InterlinkText>
@@ -175,39 +191,39 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="How Pinterest Video Downloaders Work?" 
                 icon={Settings} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Most Pinterest Video Downloader tools operate on a simple principle: they extract the direct video file URL from Pinterest's servers and provide it in a downloadable format.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Here's the typical process:
                     </InterlinkText>
                 </p>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>URL Extraction:</strong> The tool analyzes the Pinterest video URL
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Server Communication:</strong> It communicates with Pinterest's content delivery network.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Format Detection:</strong> Identifies available video qualities and formats.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Download Generation:</strong> Creates downloadable links for the video file.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>File Delivery:</strong> Provides the video file to the user's device.
                     </li>
                 </ol>
 
                 <SubSectionTitle>Technical Considerations</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Pinterest videos are typically stored in MP4 format with various quality options. The platform uses content delivery networks (CDNs) to ensure fast loading times globally. A good Pinterest Video Downloader will:
                     </InterlinkText>
@@ -224,21 +240,21 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Top Pinterest Video Downloader Methods" 
                 icon={TrendingUp} 
-                iconBgGradient="from-cyan-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Online Pinterest Video Downloaders</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Online tools are the most popular choice for downloading Pinterest videos due to their convenience and accessibility.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         These web-based solutions require no software installation and work across all devices and operating systems.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Advantages:</strong>
                 </p>
                 {renderStyledList([
@@ -247,28 +263,28 @@ export const PinterestSEOContent = () => {
                     "Usually free to use.",
                     "Regular updates and maintenance."
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3 mt-4">
                     <strong>Disadvantages:</strong>
                 </p>
                 <ul className="space-y-2 mb-4">
                     <li className="flex items-start">
                         <span className="text-red-500 dark:text-red-400 mr-3 mt-1 shrink-0">•</span>
-                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">Requires internet connection.</span>
+                        <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900">Requires internet connection.</span>
                     </li>
                     <li className="flex items-start">
                         <span className="text-red-500 dark:text-red-400 mr-3 mt-1 shrink-0">•</span>
-                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">May have download limits.</span>
+                        <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900">May have download limits.</span>
                     </li>
                     <li className="flex items-start">
                         <span className="text-red-500 dark:text-red-400 mr-3 mt-1 shrink-0">•</span>
-                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">Potential privacy concerns.</span>
+                        <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900">Potential privacy concerns.</span>
                     </li>
                     <li className="flex items-start">
                         <span className="text-red-500 dark:text-red-400 mr-3 mt-1 shrink-0">•</span>
-                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">Ad-supported interfaces.</span>
+                        <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900">Ad-supported interfaces.</span>
                     </li>
                 </ul>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4 mt-4">
                     <InterlinkText currentPlatform={platform}>
                         When choosing an online Pinterest Video Downloader, consider platforms like 
                     </InterlinkText>
@@ -279,12 +295,12 @@ export const PinterestSEOContent = () => {
                 </p>
 
                 <SubSectionTitle>Browser Extensions</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Browser extensions provide seamless integration with your web browsing experience, allowing you to download Pinterest videos directly from the platform without switching tabs or copying URLs.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Popular Browser Extension Features:</strong>
                 </p>
                 {renderStyledList([
@@ -295,7 +311,7 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Mobile Apps</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Dedicated mobile applications offer Pinterest video downloading capabilities for smartphone and tablet users. These apps often provide additional features like:
                     </InterlinkText>
@@ -308,7 +324,7 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Desktop Software</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Professional-grade desktop applications provide advanced features for users who frequently download videos from Pinterest and other platforms.
                     </InterlinkText>
@@ -318,65 +334,65 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Step-by-Step Guide: How to Download Pinterest Videos?" 
                 icon={Zap} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Method 1: Using Online Tools</SubSectionTitle>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Find the Pinterest Video:</strong> Navigate to the video you want to download on Pinterest.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Copy the URL:</strong> Click the share button and copy the video's URL.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Visit the Downloader:</strong> Go to a reliable <a href="/pinterest-media-saver" className="text-blue-600 hover:underline dark:text-blue-400 font-semibold">video downloading service like FSMVID</a>.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Paste the URL:</strong> Enter the Pinterest video URL into the download tool.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Select Quality:</strong> Choose your preferred video quality and format.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Download:</strong> Click the download button and save the file to your device.
                     </li>
                 </ol>
 
                 <SubSectionTitle>Method 2: Browser Extension Method</SubSectionTitle>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Install Extension:</strong> Add a Pinterest video downloader extension to your browser.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Navigate to Video:</strong> Visit the Pinterest video you want to download.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Click the Download Button:</strong> Use the extension's download button that appears on the video.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Choose Options:</strong> Select quality and format preferences.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Save File:</strong> Download the video directly to your chosen folder.
                     </li>
                 </ol>
 
                 <SubSectionTitle>Method 3: Mobile App Approach</SubSectionTitle>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Install App:</strong> Download a Pinterest video downloader app from your device's app store.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Share Video:</strong> Use Pinterest's share function to copy the video URL.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Open App:</strong> Launch the downloader app and paste the URL.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Process Download:</strong> Follow the app's instructions to download the video.
                     </li>
-                    <li className="text-gray-700 dark:text-gray-300">
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <strong>Access File:</strong> Find the downloaded video in your device's gallery or designated folder.
                     </li>
                 </ol>
@@ -385,17 +401,17 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Legal and Ethical Considerations" 
                 icon={Shield} 
-                iconBgGradient="from-amber-500 to-orange-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Using a Pinterest Video Downloader comes with important legal and ethical responsibilities that every user should understand and respect.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Copyright and Fair Use</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Pinterest videos are protected by copyright law, and downloading them may infringe on the creator's rights. Consider these guidelines:
                     </InterlinkText>
@@ -408,7 +424,7 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Pinterest's Terms of Service</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Pinterest's terms of service and community guidelines should be respected when downloading content. The platform prohibits:
                     </InterlinkText>
@@ -433,10 +449,10 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Choosing the Right Pinterest Video Downloader" 
                 icon={Edit3} 
-                iconBgGradient="from-indigo-500 to-purple-600"
-                cardBgClass="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Selecting the best Pinterest Video Downloader depends on your specific needs, technical requirements, and usage patterns. Consider these factors:
                     </InterlinkText>
@@ -452,34 +468,34 @@ export const PinterestSEOContent = () => {
 
                 <SubSectionTitle>Quality and Format Options</SubSectionTitle>
                 <div className="overflow-x-auto mb-6 mt-4">
-                    <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                    <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-700">
-                                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Feature</th>
-                                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Basic Tools</th>
-                                <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Advanced Tools</th>
+                            <tr className="bg-slate-900">
+                                <th className="px-4 py-3 text-left text-[9px] font-black uppercase tracking-widest text-white">Feature</th>
+                                <th className="px-4 py-3 text-left text-[9px] font-black uppercase tracking-widest text-white">Basic Tools</th>
+                                <th className="px-4 py-3 text-left text-[9px] font-black uppercase tracking-widest text-white">Advanced Tools</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Video Quality</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">480p, 720p</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Up to 4K</td>
+                        <tbody className="divide-y divide-slate-100">
+                            <tr className="hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Video Quality</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">480p, 720p</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Up to 4K</td>
                             </tr>
-                            <tr className="bg-gray-50 dark:bg-gray-800">
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Format Support</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">MP4</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">MP4, AVI, MOV</td>
+                            <tr className="hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Format Support</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">MP4</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">MP4, AVI, MOV</td>
                             </tr>
-                            <tr>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Audio Extraction</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Limited</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Full Support</td>
+                            <tr className="hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Audio Extraction</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Limited</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Full Support</td>
                             </tr>
-                            <tr className="bg-gray-50 dark:bg-gray-800">
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Batch Downloads</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">No</td>
-                                <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">Yes</td>
+                            <tr className="hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Batch Downloads</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">No</td>
+                                <td className="px-4 py-3 text-[10px] font-medium italic text-slate-500">Yes</td>
                             </tr>
                         </tbody>
                     </table>
@@ -494,7 +510,7 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Cost Considerations</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3 mt-4">
                     <InterlinkText currentPlatform={platform}>
                         While many Pinterest Video Downloader tools are free, premium options often provide:
                     </InterlinkText>
@@ -506,7 +522,7 @@ export const PinterestSEOContent = () => {
                     <><strong>Advanced Features:</strong> Batch downloads, format conversion.</>,
                     <><strong>Customer Support:</strong> Dedicated help and troubleshooting.</>
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4 mt-4">
                     <InterlinkText currentPlatform={platform}>
                         For comprehensive video downloading needs across multiple platforms, consider services that support various social media sites, such as 
                     </InterlinkText>
@@ -520,14 +536,14 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Troubleshooting Common Issues" 
                 icon={AlertTriangle} 
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Download Failures</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Problem:</strong> Video won't download or process.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Solutions:</strong>
                 </p>
                 {renderStyledList([
@@ -539,10 +555,10 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Quality Issues</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Problem:</strong> Downloaded video quality is poor.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Solutions:</strong>
                 </p>
                 {renderStyledList([
@@ -553,10 +569,10 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Format Compatibility</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Problem:</strong> Downloaded video won't play on your device.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Solutions:</strong>
                 </p>
                 {renderStyledList([
@@ -567,10 +583,10 @@ export const PinterestSEOContent = () => {
                 ])}
 
                 <SubSectionTitle>Speed and Performance</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Problem:</strong> Downloads are slow or frequently interrupted.
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-3">
                     <strong>Solutions:</strong>
                 </p>
                 {renderStyledList([
@@ -584,27 +600,28 @@ export const PinterestSEOContent = () => {
             <SectionCard 
                 title="Conclusion" 
                 icon={Star} 
-                iconBgGradient="from-sky-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         A Pinterest Video Downloader serves as a valuable tool for users who want to preserve and access Pinterest's rich video content offline.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The key to successful Pinterest video downloading lies in choosing the right tool for your needs, respecting copyright and platform policies, and implementing proper organization and security practices.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                     <InterlinkText currentPlatform={platform}>
                         As Pinterest continues to evolve its video features and policies, staying informed about best practices and legal considerations remains crucial.
                     </InterlinkText>
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-900 dark:text-white leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-900 dark:text-white leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-900 dark:text-white leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,34 +50,43 @@ export const RedditSEOContent = () => {
   const platform = "reddit";
 
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Reddit Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About Reddit Video Downloader
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Reddit Video Downloader</h1>
-                <p className="text-gray-900 dark:text-white mb-4 leading-relaxed">
-                    Have you ever stumbled upon an amazing video on Reddit that you wanted to save for later? Whether it's a hilarious meme compilation, an educational tutorial, or a heartwarming animal rescue story.
-                </p>
-                <p className="text-gray-900 dark:text-white mb-4 leading-relaxed">
-                    Reddit hosts millions of videos that capture our attention daily. With <InterlinkText currentPlatform={platform}>fsmvid's</InterlinkText> free Reddit video downloader, you can easily save any Reddit video with audio to your device in just seconds.
-                </p>
-                <p className="text-gray-900 dark:text-white leading-relaxed">
-                    We'll walk you through everything you need to know about downloading Reddit videos, from the basics to advanced techniques, ensuring you never lose track of your favorite content again.
-                </p>
-            </SectionCard>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Have you ever stumbled upon an amazing video on Reddit that you wanted to save for later? Whether it&apos;s a hilarious meme compilation, an educational tutorial, or a heartwarming animal rescue story.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Reddit hosts millions of videos that capture our attention daily. With <InterlinkText currentPlatform={platform}>fsmvid&apos;s</InterlinkText> free Reddit video downloader, you can easily save any Reddit video with audio to your device in just seconds.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    We&apos;ll walk you through everything you need to know about downloading Reddit videos, from the basics to advanced techniques, ensuring you never lose track of your favorite content again.
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard
                 title="What is a Reddit Video Downloader?"
                 icon={Star}
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     A Reddit video downloader is a specialized tool that allows you to save videos posted on Reddit directly to your devices. Unlike traditional video sharing platforms, Reddit's video hosting system can make it challenging to download content directly. That's where tools like <InterlinkText currentPlatform={platform}>fsmvid</InterlinkText> come in handy.
@@ -86,8 +102,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Why You Need a Reddit Video Downloader?"
                 icon={Award}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Save Content for Offline Viewing</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -118,8 +134,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="How to Use fsmvid's Reddit Video Downloader?"
                 icon={Zap}
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Using our free Reddit video downloader is incredibly straightforward. Here's your step-by-step guide:
@@ -155,8 +171,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Advanced Features of Reddit Video Downloaders"
                 icon={Settings}
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Multiple Quality Options</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -182,8 +198,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Reddit Video Downloader for Mobile Devices"
                 icon={Globe}
-                iconBgGradient="from-sky-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>iPhone and iPad Users</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -205,8 +221,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Common Issues and Solutions"
                 icon={AlertTriangle}
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Videos Without Audio</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -242,8 +258,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Considerations for Reddit Video Downloads"
                 icon={Shield}
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Understanding Copyright</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -287,8 +303,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Alternative Reddit Video Download Methods"
                 icon={BookOpen}
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Browser Extensions</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -309,8 +325,8 @@ export const RedditSEOContent = () => {
             <SectionCard
                 title="Summary"
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Reddit's vast collection of videos represents one of the internet's most diverse content libraries. With <InterlinkText currentPlatform={platform}>fsmvid's</InterlinkText> free Reddit video downloader, you can easily save, organize, and enjoy this content on your terms. Whether you're building a reference library, creating offline entertainment for travel, or simply want to ensure you never lose track of amazing content, our tool provides the reliable, user-friendly solution you need.
@@ -319,8 +335,9 @@ export const RedditSEOContent = () => {
                     Start downloading your favorite Reddit videos today with <InterlinkText currentPlatform={platform}>fsmvid</InterlinkText>.
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

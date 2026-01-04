@@ -52,7 +52,7 @@ export default function FacebookPage() {
       >
         <PlatformDownloader platform="facebook" />
       </ToolsHero>
-      <div className="container mx-auto px-4">
+      <div>
         <Suspense fallback={<ContentLoading />}>
           <PlatformHowTo
             platform="facebook"
@@ -70,13 +70,13 @@ export default function FacebookPage() {
         </Suspense>
 
 
-        
+
         {/* SEO Content Section */}
         <Suspense fallback={<ContentLoading />}>
           <FacebookSEOContent />
         </Suspense>
 
-        
+
 
         <Suspense fallback={<FAQLoading />}>
           <FacebookFAQSection />
@@ -99,7 +99,7 @@ export default function FacebookPage() {
             }),
           }}
         />
-        
+
         {/* Related Tools Section */}
         <Suspense fallback={<ContentLoading />}>
           <RelatedTools currentPlatform={platform} />
@@ -135,7 +135,7 @@ function FacebookFAQSection() {
         },
         {
           question: "Is it legal to download Facebook videos?",
-          answer: 
+          answer:
             "Downloading Facebook videos for personal use is generally acceptable. However, you should respect copyright laws and not redistribute content without permission.",
         },
       ]}

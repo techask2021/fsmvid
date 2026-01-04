@@ -52,7 +52,7 @@ export default function TikTokPage() {
       >
         <PlatformDownloader platform="tiktok" />
       </ToolsHero>
-      <div className="container mx-auto px-4">
+      <div>
         <Suspense fallback={<ContentLoading />}>
           <PlatformHowTo
             platform="tiktok"
@@ -73,7 +73,7 @@ export default function TikTokPage() {
           <TikTokSEOContent />
         </Suspense>
 
-        
+
 
         <Suspense fallback={<FAQLoading />}>
           <TikTokFAQSection />
@@ -102,7 +102,7 @@ export default function TikTokPage() {
           <RelatedTools currentPlatform={platform} />
         </Suspense>
       </div>
-      
+
     </>
   );
 }
@@ -132,7 +132,7 @@ function TikTokFAQSection() {
         },
         {
           question: "Is it legal to download TikTok videos?",
-          answer: 
+          answer:
             "Downloading TikTok videos for personal use is generally acceptable. However, you should respect copyright laws and not redistribute content without permission.",
         },
       ]}

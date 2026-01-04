@@ -5,24 +5,54 @@ export const runtime = "edge"; // Runs on Cloudflare (cheap & fast)
 
 export async function POST(request: NextRequest) {
     try {
-        const { urls, quality, format, userId } = await request.json();
+        const { urls, userId, quality_preference, format_preference, platform } = await request.json();
 
         if (!urls || !Array.isArray(urls) || urls.length === 0) {
-            return NextResponse.json({ error: "URLs are required" }, { status: 400 });
+            return NextResponse.json({ error: "Invalid URLs" }, { status: 400 });
         }
 
         if (!userId) {
-            return NextResponse.json({ error: "User ID is required" }, { status: 401 });
+            return NextResponse.json({ error: "User ID required" }, { status: 400 });
         }
 
         // 1. Check User Credits
-        const { data: user, error: userError } = await supabaseAdmin
+        let { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('credits')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
+
+        // DEV MODE: Auto-provision mock user if missing
+        const isLocal = process.env.NODE_ENV === 'development';
+        if (!user && isLocal && userId === '00000000-0000-0000-0000-000000000000') {
+            console.log("🛠️ DEV MODE: Auto-provisioning mock user...");
+            const { data: newUser, error: createError } = await supabaseAdmin
+                .from('users')
+                .insert({ id: userId, email: 'admin@fsmvid.com', credits: 100 })
+                .select()
+                .single();
+
+            if (createError) {
+                console.error("❌ Failed to auto-provision user:", createError);
+
+                // Specific helpful message for foreign key errors
+                if (createError.code === '23503') {
+                    return NextResponse.json({
+                        error: "Supabase Security Constraint",
+                        details: "Your 'users' table is strictly linked to Supabase Auth. Please run the SQL fix I provided to allow the Mock Account to work."
+                    }, { status: 500 });
+                }
+
+                return NextResponse.json({
+                    error: "Provisioning Failed",
+                    details: createError.message
+                }, { status: 500 });
+            }
+            user = newUser;
+        }
 
         if (userError || !user) {
+            console.error("User fetch error:", userError);
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
@@ -34,18 +64,18 @@ export async function POST(request: NextRequest) {
                 error: "Insufficient credits",
                 required: creditsNeeded,
                 available: user.credits
-            }, { status: 402 }); // Payment Required
+            }, { status: 402 });
         }
 
-        // 2. Deduct Credits (using the RPC function we created)
+        // 2. Deduct Credits
         const { error: deductError } = await supabaseAdmin.rpc('deduct_credits', {
             user_id: userId,
             amount: creditsNeeded
         });
 
         if (deductError) {
-            console.error("Credit deduction failed:", deductError);
-            return NextResponse.json({ error: "Failed to process credits" }, { status: 500 });
+            console.error("❌ Credit deduction failed:", deductError);
+            return NextResponse.json({ error: "Failed to deduct credits. Check if 'deduct_credits' function exists in Supabase." }, { status: 500 });
         }
 
         // 3. Create Job Record
@@ -55,10 +85,11 @@ export async function POST(request: NextRequest) {
                 user_id: userId,
                 urls: urls,
                 total_files: urls.length,
-                quality_preference: quality || 'auto',
-                format_preference: format || 'mp4',
+                status: 'queued',
                 credits_used: creditsNeeded,
-                status: 'queued'
+                quality_preference: quality_preference || '1080',
+                format_preference: format_preference || 'mp4',
+                platform: platform || 'Other'
             })
             .select()
             .single();
@@ -70,26 +101,30 @@ export async function POST(request: NextRequest) {
         }
 
         // 4. Trigger Background Worker
-        // We send this to the Vercel worker we'll create in next step
+        let workerUrl = process.env.VERCEL_WORKER_URL || "";
         const qstashUrl = process.env.QSTASH_URL;
         const qstashToken = process.env.QSTASH_TOKEN;
-        const workerUrl = process.env.VERCEL_WORKER_URL;
 
-        // Check if running in local dev mode
-        const isLocal = process.env.NODE_ENV === 'development' || workerUrl?.includes('localhost');
+        // Smart Worker URL: Ensure it has the full path
+        if (workerUrl && !workerUrl.includes('/api/workers/')) {
+            workerUrl = workerUrl.replace(/\/$/, '') + '/api/workers/process-bulk';
+        }
 
-        if (isLocal && workerUrl) {
-            // LOCAL DEV MODE: Call worker directly (bypass QStash) because QStash can't reach localhost
-            console.log("🛠️ DEV MODE: Calling worker directly:", workerUrl);
-            // Fire and forget (don't await)
-            fetch(workerUrl, {
+        if (isLocal) {
+            const finalLocalUrl = workerUrl.includes('localhost') ? workerUrl : `http://localhost:3000/api/workers/process-bulk`;
+            console.log("🚀 DEV MODE: Detaching worker...");
+
+            // No 'await' here means the user gets their response INSTANTLY
+            fetch(finalLocalUrl, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${process.env.WORKER_SECRET || 'default-secret'}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ jobId: job.id })
-            }).catch(e => console.error("Worker call failed:", e));
+            }).catch(e => console.error("❌ Worker trigger failed:", e.message));
+
+            console.log("✅ API: Handshake complete.");
 
         } else if (qstashUrl && qstashToken && workerUrl) {
             try {

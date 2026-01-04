@@ -14,32 +14,33 @@ export default function ToolsHero({ title, subtitle, children, platform }: Tools
   return (
     <>
       <section
-        className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden"
+        className="relative min-h-[60vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 bg-blue-600 overflow-hidden"
       >
         <HeroSectionStyles />
-        <div className="container relative z-10 flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
-        <Badge
-          variant="secondary"
-          className="mb-6 bg-white/20 backdrop-blur-md text-white border-white/30 shadow-lg px-6 py-3 text-sm font-semibold hover:bg-white/30 transition-all duration-300 animate-fade-in"
-        >
-          <Sparkles className="w-4 h-4 mr-2 animate-spin-slow" />
-          Free Online Downloader
-        </Badge>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight max-w-5xl text-white animate-fade-in-up">
-          <span className="inline-block animate-fade-in-up delay-200">
+
+        {/* Atmospheric Orbs */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 blur-[120px] rounded-full -translate-y-1/2" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-600/5 blur-[120px] rounded-full translate-y-1/2" />
+
+        <div className="container relative z-10 flex flex-col items-center justify-center text-center px-6">
+          <Badge
+            className="mb-8 bg-white/20 backdrop-blur-md text-white border border-white/30 px-6 py-2 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Free Online Downloader
+          </Badge>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter italic leading-[0.85] mb-8 uppercase text-white animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
             {title}
-          </span>
-        </h1>
-        <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-4xl leading-relaxed animate-fade-in-up delay-600">
-          {subtitle}
-        </p>
-        <div className="w-full max-w-4xl animate-fade-in-up delay-1000 mt-2 mb-2" id="downloader">
-          <AdSenseBanner />
-          {children}
+          </h1>
+          <p className="text-sm md:text-base text-white/90 font-medium leading-relaxed drop-shadow-md max-w-2xl mb-12 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
+            {subtitle}
+          </p>
+          <div className="w-full max-w-4xl animate-in fade-in zoom-in-95 duration-1000 delay-400 mt-2 mb-2" id="downloader">
+            <AdSenseBanner />
+            {children}
+          </div>
         </div>
-      </div>
       </section>
-      
     </>
   );
 }

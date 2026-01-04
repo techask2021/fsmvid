@@ -44,21 +44,7 @@ const initialPlatformsData = [
   { name: "Castbox", icon: "/icons/castbox.svg", slug: getUrlSlug("castbox"), description: "Download Castbox podcasts", popular: false },
 ];
 
-const colorStyles = [
-  "bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-200 dark:from-red-800/20 dark:to-red-700/20 dark:border-red-600/50 dark:hover:from-red-700/30 dark:hover:to-red-600/30",
-  "bg-gradient-to-br from-pink-50 to-pink-100 border-pink-200 hover:from-pink-100 hover:to-pink-200 dark:from-pink-800/20 dark:to-pink-700/20 dark:border-pink-600/50 dark:hover:from-pink-700/30 dark:hover:to-pink-600/30",
-  "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-200 dark:from-blue-800/20 dark:to-blue-700/20 dark:border-blue-600/50 dark:hover:from-blue-700/30 dark:hover:to-blue-600/30",
-  "bg-gradient-to-br from-sky-50 to-sky-100 border-sky-200 hover:from-sky-100 hover:to-sky-200 dark:from-sky-800/20 dark:to-sky-700/20 dark:border-sky-600/50 dark:hover:from-sky-700/30 dark:hover:to-sky-600/30",
-  "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-200 dark:from-purple-800/20 dark:to-purple-700/20 dark:border-purple-600/50 dark:hover:from-purple-700/30 dark:hover:to-purple-600/30",
-  "bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200 hover:from-teal-100 hover:to-teal-200 dark:from-teal-800/20 dark:to-teal-700/20 dark:border-teal-600/50 dark:hover:from-teal-700/30 dark:hover:to-teal-600/30",
-  "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-200 dark:from-green-800/20 dark:to-green-700/20 dark:border-green-600/50 dark:hover:from-green-700/30 dark:hover:to-green-600/30",
-  "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:from-yellow-100 hover:to-yellow-200 dark:from-yellow-800/20 dark:to-yellow-700/20 dark:border-yellow-600/50 dark:hover:from-yellow-700/30 dark:hover:to-yellow-600/30",
-];
-
-const platforms = initialPlatformsData.map((platform, index) => ({
-  ...platform,
-  color: colorStyles[index % colorStyles.length],
-}));
+const platforms = initialPlatformsData;
 
 export default function PlatformGrid() {
   return (
@@ -74,40 +60,44 @@ export default function PlatformGrid() {
           <Badge className="mb-6 bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-500/10 dark:text-green-300 dark:hover:bg-green-500/20 px-6 py-2 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300">
             Supported Platforms
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">Choose Your Platform</h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Download videos from all your favorite social media platforms with a single tool. We support {platforms.length}+ platforms
-            and counting.
+          <h2 className="text-3xl md:text-4xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">Choose Your Platform</h2>
+          <p className="text-sm text-slate-500 max-w-2xl mx-auto font-medium italic border-t border-slate-100 pt-4 mt-2 leading-relaxed">
+            Download videos from all your favorite social media platforms with a single tool. We support {platforms.length}+ platforms and counting.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {platforms.map((platform) => (
-            <Link key={platform.name} href={`/${platform.slug}`} passHref>
+            <Link key={platform.name} href={`/${platform.slug}`} passHref className="group">
               <Card
-                className={`${platform.color} hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group relative overflow-hidden h-full flex flex-col border-2`}
+                className="border border-blue-500 shadow-md hover:shadow-2xl bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl overflow-hidden h-full flex flex-col group-hover:translate-y-[-5px] transition-all duration-500 group-hover:shadow-blue-600/30 relative"
               >
-                {platform.popular && (
-                  <Badge className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2.5 py-1 shadow-lg z-10 rounded-full">
-                    Popular
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center flex flex-col flex-grow items-center justify-center">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 mb-4 flex items-center justify-center rounded-full group-hover:scale-110 transition-transform duration-300 filter group-hover:drop-shadow-lg">
-                    <Image 
-                      src={platform.icon || "/placeholder.svg"} 
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative pt-4 pr-4 flex justify-end h-8">
+                  {platform.popular && (
+                    <Badge className="bg-white text-blue-600 border-none text-[8px] px-2 py-0.5 font-black uppercase tracking-widest rounded-lg shadow-lg">
+                      Popular
+                    </Badge>
+                  )}
+                </div>
+                <CardContent className="p-6 pt-2 text-center flex flex-col items-center flex-1 relative z-10">
+                  <div className="w-11 h-11 mb-3 flex items-center justify-center rounded-xl bg-white shadow-lg border border-blue-400 group-hover:scale-110 transition-transform duration-500">
+                    <Image
+                      src={platform.icon || "/placeholder.svg"}
                       alt={`${platform.name} icon`}
-                      width={32} 
-                      height={32}
-                      className="opacity-80 group-hover:opacity-100 transition-opacity"
+                      width={24}
+                      height={24}
+                      className="transition-transform duration-500"
                     />
                   </div>
-                  <h3 className="font-bold text-gray-800 dark:text-white mb-2 text-base sm:text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                    {platform.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300 flex-grow">
-                    {platform.description}
-                  </p>
+                  <div className="space-y-2">
+                    <h3 className="font-black italic uppercase tracking-tighter text-white transition-colors text-sm sm:text-base">
+                      {platform.name}
+                    </h3>
+                    <p className="text-xs text-blue-100 font-medium leading-relaxed italic line-clamp-2">
+                      {platform.description}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </Link>

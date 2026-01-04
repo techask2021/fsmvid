@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen, ExternalLink } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,67 +50,76 @@ export const Zingmp3SEOContent = () => {
   const platform = "zingmp3";
   
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Zingmp3 Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-blue-500 to-purple-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About ZingMP3 Downloader
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">ZingMP3 Downloader</h1>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
-                        To download your favorite tracks from ZingMP3 for offline listening, you need a fast, free, and safe tool. As Vietnam's top music streaming service, ZingMP3 has a massive library, but official offline access has significant limitations.
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
+                        To download your favorite tracks from ZingMP3 for offline listening, you need a fast, free, and safe tool. As Vietnam&apos;s top music streaming service, ZingMP3 has a massive library, but official offline access has significant limitations.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         For saving mobile data, listening on the go, or creating a permanent music collection, a reliable downloader is essential.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         This guide provides a direct, step-by-step process for using a ZingMP3 Downloader, covering the method, safety, and legal considerations. The FSMVID tool is a free solution designed to make this process simple and secure.
                     </InterlinkText>
-                </p>
-            </SectionCard>
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="Understanding ZingMP3: Vietnam's Digital Music Powerhouse" 
                 icon={Star} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         ZingMP3 is the leading free music player application in Vietnam, founded in 2007. It provides a massive, high-quality, and largely licensed music library across multiple platforms, including PC, smartphones, and Smart TVs.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While YouTube is used for general music listening, ZingMP3 dominates the dedicated audio streaming market in Vietnam with a 52% market share.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Its popularity is highest among Generation Y, who value its large collection of Vietnamese music and localized interface.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The official platform includes features like lossless streaming, HD music videos, lyrics, and personal playlist management.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         However, younger Gen Z listeners are increasingly moving to international services like Spotify.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                     <InterlinkText currentPlatform={platform}>
                         Long-time users also report a shrinking international music catalog and technical glitches, creating a strong incentive to download music for permanent, offline access.
                     </InterlinkText>
@@ -113,15 +129,15 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="Why You Need a Dedicated ZingMP3 Downloader for Offline Access?" 
                 icon={HelpCircle} 
-                iconBgGradient="from-orange-500 to-red-600"
-                cardBgClass="bg-gradient-to-br from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The official ZingMP3 application has specific limitations that make a third-party downloader necessary for a complete offline listening experience.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Downloading tracks allows for listening without an internet connection, saving mobile data and eliminating buffering. However, the official app's restrictions are the primary reason users seek external tools.
                     </InterlinkText>
@@ -130,7 +146,7 @@ export const Zingmp3SEOContent = () => {
                 <div className="space-y-4">
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">The VIP Paywall</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 The free version of the ZingMP3 app limits downloads to 128kbps quality. To get high-fidelity 320kbps MP3s or lossless (.flac) files, a paid Zing VIP subscription is required. A third-party ZingMP3 Downloader allows free users to access these superior-quality audio files.
                             </InterlinkText>
@@ -139,7 +155,7 @@ export const Zingmp3SEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Technical Frustrations</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Users of the official app report frequent technical problems, such as music pausing when the screen is off, random app crashes, and songs disappearing from libraries due to copyright changes. Downloading a track creates a stable, local copy that is immune to these platform issues.
                             </InterlinkText>
@@ -148,7 +164,7 @@ export const Zingmp3SEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Geographic and Content Restrictions</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 ZingMP3 is focused on the Vietnamese market, meaning users outside Vietnam may face access restrictions. For international fans of Vietnamese music, a downloader is the most reliable way to access this content.
                             </InterlinkText>
@@ -156,7 +172,7 @@ export const Zingmp3SEOContent = () => {
                     </div>
                 </div>
 
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mt-4">
                     <InterlinkText currentPlatform={platform}>
                         Tools like the one offered by FSMVID directly address these limitations. They provide the control, quality, and reliability that the official app reserves for paying customers.
                     </InterlinkText>
@@ -166,15 +182,15 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="How to Download from ZingMP3 with FSMVID: A Simple 4-Step Guide" 
                 icon={Zap} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The FSMVID ZingMP3 Downloader is a free, web-based tool that requires no software installation, making it the safest method for saving music.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         Follow these four steps to download your songs.
                     </InterlinkText>
@@ -183,7 +199,7 @@ export const Zingmp3SEOContent = () => {
                 <div className="space-y-6">
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Step 1: Find Your Song or Playlist on ZingMP3 and Copy the URL</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Navigate to the official ZingMP3 website (zingmp3.vn) in your browser. Find the song you want to download. Copy the full web address from your browser's address bar (Ctrl+C on Windows or Cmd+C on Mac).
                             </InterlinkText>
@@ -192,7 +208,7 @@ export const Zingmp3SEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Step 2: Navigate to the FSMVID ZingMP3 Downloader Tool</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Open a new browser tab and go to the FSMVID ZingMP3 Downloader tool. You will find a clean, simple interface.
                             </InterlinkText>
@@ -201,7 +217,7 @@ export const Zingmp3SEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Step 3: Paste the Link and Initiate the Process</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Locate the input box on the FSMVID downloader page. Paste the ZingMP3 URL into this box (Ctrl+V or Cmd+V). Click the "Download" button to begin processing the link.
                             </InterlinkText>
@@ -210,7 +226,7 @@ export const Zingmp3SEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">Step 4: Choose Your Quality and Click "Download"</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
             <InterlinkText currentPlatform={platform}>
                                 The FSMVID tool will display the available download formats and quality options, such as 128kbps and high-quality 320kbps MP3. Click the "Download" button next to your preferred quality, and the file will save to your device. The process works on any PC, Mac, Android, or iOS device.
             </InterlinkText>
@@ -222,15 +238,15 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="What Makes FSMVID the Best Free ZingMP3 Downloader?" 
                 icon={Award} 
-                iconBgGradient="from-indigo-500 to-purple-600"
-                cardBgClass="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The FSMVID ZingMP3 Downloader is designed to be effective, safe, and user-friendly.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Key features that make FSMVID the superior choice:</strong>
                 </p>
                 {renderStyledList([
@@ -241,7 +257,7 @@ export const Zingmp3SEOContent = () => {
                     <><strong>Clean, Intuitive, and Ad-Free Interface:</strong> FSMVID provides a clean user experience without aggressive pop-ups or misleading ads.</>,
                     <><strong>Universal Compatibility:</strong> Our tool runs in any web browser, making it compatible with all operating systems and devices, including Windows, macOS, Android, and iOS.</>
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mt-4">
                     <InterlinkText currentPlatform={platform}>
                         The table below compares the FSMVID downloader against common alternatives.
                     </InterlinkText>
@@ -251,8 +267,8 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="ZingMP3 Downloader Methods Compared" 
                 icon={Settings} 
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-300 dark:border-gray-600 mb-6">
@@ -264,8 +280,8 @@ export const Zingmp3SEOContent = () => {
                                 <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Official ZingMP3 App (Free)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody className="divide-y divide-slate-100">
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Cost</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Completely Free</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Free (Often with ads)</td>
@@ -277,7 +293,7 @@ export const Zingmp3SEOContent = () => {
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">No</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-600 dark:text-red-400">Yes (App installation)</td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Download Quality</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">High Quality (up to 320kbps)</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Variable, often limited</td>
@@ -289,7 +305,7 @@ export const Zingmp3SEOContent = () => {
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-600 dark:text-red-400">Yes, often intrusive</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">In-app ads</td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Unlimited Downloads</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Yes</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Often have limits</td>
@@ -304,7 +320,7 @@ export const Zingmp3SEOContent = () => {
                         </tbody>
                     </table>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                     <InterlinkText currentPlatform={platform}>
                         This comparison shows that FSMVID offers the best combination of quality, safety, and user experience.
                     </InterlinkText>
@@ -314,35 +330,35 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="Is It Legal to Use a ZingMP3 Downloader? A Nuanced Look at Copyright" 
                 icon={Shield} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The legality of music downloaders is complex, involving copyright law, platform terms of service, and the principle of personal use.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Legally, downloading copyrighted music without permission is infringement. ZingMP3's terms of service also prohibit using third-party tools to download content.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         However, enforcement focuses on preventing large-scale distribution, not personal use. The risk of legal action against an individual for downloading songs for private listening is extremely low.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         ZingMP3 itself has a complex history with copyright. While it has secured licenses with major labels like Universal and Sony, its own IPO filings acknowledge that some content may still lack complete licensing, and it continues to face legal challenges.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Additionally, some music is released under Creative Commons (CC) licenses, which permit downloading and sharing under specific conditions, such as non-commercial use.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID's ZingMP3 Downloader is intended for creating personal backups of content that users have a legal right to access. We do not condone using our tools for copyright infringement or illegal distribution.
                     </InterlinkText>
@@ -352,17 +368,17 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="Are ZingMP3 Downloaders Safe? How FSMVID Protects You" 
                 icon={AlertTriangle} 
-                iconBgGradient="from-red-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Safety is the most critical concern when using free online tools. FSMVID is built with a security-first approach to protect you from common online threats.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>The Dangers of Untrustworthy Downloader Sites</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Low-quality downloaders expose you to several risks:
                     </InterlinkText>
@@ -375,7 +391,7 @@ export const Zingmp3SEOContent = () => {
                 ])}
 
                 <SubSectionTitle>FSMVID's Security-First Approach: A Safe Haven for Downloads</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID eliminates these risks by following modern security best practices.
                     </InterlinkText>
@@ -391,10 +407,10 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="Expand Your Offline Library: More Tools from FSMVID" 
                 icon={Globe} 
-                iconBgGradient="from-cyan-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID offers a full suite of free and secure downloaders for other major platforms. Build your complete offline media library with our other tools.
                     </InterlinkText>
@@ -437,15 +453,15 @@ export const Zingmp3SEOContent = () => {
             <SectionCard 
                 title="Your Go-To Solution for ZingMP3 Downloads" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While ZingMP3 is an excellent platform, its official app limits download quality and can be technically unreliable.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The FSMVID ZingMP3 Downloader is the ideal solution. It provides a seamless, safe, and free method to save your favorite tracks in high quality directly from your browser. Our tool is fast, secure, requires no software installation, and is built to respect user privacy. It gives you the freedom to create the offline music library you want, without restrictions.
                     </InterlinkText>
@@ -454,15 +470,16 @@ export const Zingmp3SEOContent = () => {
                     <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                         Ready to build your ultimate offline music library?
                     </p>
-                    <p className="text-gray-700 dark:text-gray-300">
+                    <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                         <InterlinkText currentPlatform={platform}>
                             Try the FSMVID ZingMP3 Downloader today and experience your music, your way.
                         </InterlinkText>
                     </p>
                 </div>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

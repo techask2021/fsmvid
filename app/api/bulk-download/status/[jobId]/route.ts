@@ -3,9 +3,9 @@ import { supabaseAdmin } from "@/lib/api/supabase";
 
 export const runtime = "edge";
 
-export async function GET(request: NextRequest, { params }: { params: { jobId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ jobId: string }> }) {
     try {
-        const jobId = params.jobId;
+        const { jobId } = await params;
 
         if (!jobId) {
             return NextResponse.json({ error: "Job ID required" }, { status: 400 });
@@ -30,7 +30,11 @@ export async function GET(request: NextRequest, { params }: { params: { jobId: s
             total: job.total_files,
             completed: job.completed_files,
             failed: job.failed_files,
+            quality: job.quality_preference,
+            format: job.format_preference,
+            platform: job.platform,
             zipUrl: job.zip_download_url,
+            results: job.processed_urls,
             expiresAt: job.zip_expires_at,
             error: job.error_message
         });

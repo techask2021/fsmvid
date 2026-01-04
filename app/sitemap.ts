@@ -54,11 +54,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Get blog posts for sitemap - with error handling
   let blogRoutes: MetadataRoute.Sitemap = []
-  
+
   // Check if Sanity is properly configured
-  const hasSanityConfig = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && 
-                         process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== 'placeholder-project-id'
-  
+  const hasSanityConfig = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID &&
+    process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== 'placeholder-project-id'
+
   if (hasSanityConfig) {
     try {
       const { posts } = await getAllPosts(1, 100)
@@ -73,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       blogRoutes.push({
         url: `${baseUrl}/blog`,
         lastModified: new Date(),
-        changeFrequency: "weekly" as const, 
+        changeFrequency: "weekly" as const,
         priority: 0.8,
       })
     } catch (error) {
@@ -132,6 +132,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/bulk-download`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/refund-policy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/copyright-claims`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.3,
     },
     ...routes,
     ...blogRoutes,

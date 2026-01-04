@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,42 +50,51 @@ export const NineGagSEOContent = () => {
   const platform = "9gag";
 
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            9GAG Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About 9GAG Video Saver
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">FSMVID 9GAG Video Saver</h1>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                         9GAG has become the go-to platform for viral memes, funny videos, and entertaining content that keeps millions engaged daily.
                     </InterlinkText>
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <InterlinkText currentPlatform={platform}>
-                        However, what happens when you find that perfect video that makes you laugh every time, but you can't access it offline? That's where FSMVID's 9GAG Video Saver comes to the rescue.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
+                        However, what happens when you find that perfect video that makes you laugh every time, but you can&apos;t access it offline? That&apos;s where FSMVID&apos;s 9GAG Video Saver comes to the rescue.
                     </InterlinkText>
-                </p>
-            </SectionCard>
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="What is FSMVID's 9GAG Video Saver?" 
                 icon={Star} 
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID's 9GAG Video Saver is a powerful, user-friendly tool designed specifically to help you save and download videos from 9GAG effortlessly.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         Unlike generic video savers, our tool is optimized for 9GAG's unique video format and delivery system, ensuring you get the highest quality saves every time.
                     </InterlinkText>
@@ -88,8 +104,8 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Key Features That Set FSMVID Apart" 
                 icon={Award} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 {renderStyledList([
                     <strong>High-Quality Video Saves:</strong>,
@@ -108,29 +124,29 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Why Choose FSMVID for 9GAG Video Saving?" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-teal-500 to-cyan-600"
-                cardBgClass="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>1. Unmatched Reliability</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Our servers are optimized for consistent performance, ensuring your video saves completely successfully every time. We maintain a 99.9% uptime rate, so you can rely on FSMVID whenever you need it.
                     </InterlinkText>
                 </p>
                 <SubSectionTitle>2. Privacy-First Approach</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         We don't store your saved videos or track your browsing habits. Your privacy is our priority, and all video saves are processed securely through encrypted connections.
                     </InterlinkText>
                 </p>
                 <SubSectionTitle>3. Cross-Platform Compatibility</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Whether you're using Windows, Mac, Linux, iOS, or Android, FSMVID works flawlessly across all platforms and browsers.
                     </InterlinkText>
                 </p>
                 <SubSectionTitle>4. Regular Updates</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         As 9GAG updates its platform, we continuously update our video saver to ensure compatibility and optimal performance.
                     </InterlinkText>
@@ -140,8 +156,8 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="How to Use FSMVID's 9GAG Video Saver?" 
                 icon={Zap} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
                     <li>
@@ -150,8 +166,8 @@ export const NineGagSEOContent = () => {
                     <li>
                         <strong>Copy the Video URL:</strong>
                         <ul className="list-disc pl-5 mt-1">
-                            <li>On desktop: Right-click the video and select "Copy link address" or copy the URL from your browser's address bar.</li>
-                            <li>On mobile: Tap the share button and select "Copy link."</li>
+                            <li className="text-slate-500 font-medium italic leading-relaxed text-sm">On desktop: Right-click the video and select "Copy link address" or copy the URL from your browser's address bar.</li>
+                            <li className="text-slate-500 font-medium italic leading-relaxed text-sm">On mobile: Tap the share button and select "Copy link."</li>
                         </ul>
                     </li>
                     <li>
@@ -172,8 +188,8 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Technical Specifications" 
                 icon={Settings} 
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Supported Video Formats:</SubSectionTitle>
                 {renderStyledList([
@@ -189,7 +205,7 @@ export const NineGagSEOContent = () => {
                     "4K - When available from the source."
                 ])}
                 <SubSectionTitle>File Size Optimization:</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         Our compression algorithms ensure optimal file sizes without quality loss, making your saved videos perfect for sharing or storage.
                     </InterlinkText>
@@ -199,8 +215,8 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Legal and Ethical Usage" 
                 icon={Shield} 
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Important Guidelines:</SubSectionTitle>
                 {renderStyledList([
@@ -210,7 +226,7 @@ export const NineGagSEOContent = () => {
                     "Fair Use: Understand fair use policies in your jurisdiction."
                 ])}
                 <SubSectionTitle>FSMVID's Commitment:</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         We encourage responsible video saving and respect for content creators' rights. Our tool is designed for personal use and legitimate purposes only.
                     </InterlinkText>
@@ -220,8 +236,8 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Troubleshooting Common Issues" 
                 icon={AlertTriangle} 
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Video Won't Save?</SubSectionTitle>
                 {renderStyledList([
@@ -241,7 +257,7 @@ export const NineGagSEOContent = () => {
                     "Source Limitation: 9GAG videos are only available in the quality in which they were uploaded.",
                     "Mobile vs Desktop: Some quality options may vary between mobile and desktop versions."
                 ])}
-                <p className="text-gray-700 dark:text-gray-300 mb-6 font-semibold">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6 font-semibold">
                     Note: We don't store any saved content on our servers. All video saves are processed in real-time and delivered directly to your device.
                 </p>
             </SectionCard>
@@ -249,10 +265,10 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Getting Started Today" 
                 icon={TrendingUp} 
-                iconBgGradient="from-lime-500 to-green-600"
-                cardBgClass="bg-gradient-to-br from-lime-50 to-green-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Ready to start building your collection of favorite 9GAG videos? FSMVID makes it easier than ever to save, organize, and enjoy your favorite content offline.
                     </InterlinkText>
@@ -270,32 +286,33 @@ export const NineGagSEOContent = () => {
             <SectionCard 
                 title="Final Thoughts" 
                 icon={Star} 
-                iconBgGradient="from-sky-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID's 9GAG Video Saver represents the perfect balance of simplicity, power, and reliability.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Whether you're a casual user wanting to save a few funny videos or a content creator building a media library, our tool provides everything you need to save and manage 9GAG videos effectively.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The internet is full of amazing content that deserves to be preserved and enjoyed offline.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         With FSMVID, you have the power to build your entertainment library, share laughter with friends and family, and never lose access to the content that brings joy to your day.
                     </InterlinkText>
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

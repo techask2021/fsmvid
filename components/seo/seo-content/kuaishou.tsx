@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-900 dark:text-white leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-900 dark:text-white leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-900 dark:text-white leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,34 +50,43 @@ export const KuaishouSEOContent = () => {
   const platform = "kuaishou";
 
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Kuaishou Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard
                 icon={Info}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                    About Kuaishou Video Downloader
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Kuaishou Video Downloader Without Watermark</h1>
-                <p className="text-gray-900 dark:text-white mb-4 leading-relaxed">
-                    Have you ever stumbled upon an amazing video on Kuaishou that you wanted to keep forever? We understand that feeling completely.
-                </p>
-                <p className="text-gray-900 dark:text-white mb-4 leading-relaxed">
-                    Some videos deserve a permanent spot in your collection, whether it's a hilarious comedy skit, an impressive dance routine, or a heartwarming moment that speaks to your soul.
-                </p>
-                <p className="text-gray-900 dark:text-white leading-relaxed">
-                    That's exactly why we created our Kuaishou Video Downloader Without Watermark tool at <InterlinkText currentPlatform={platform}>fsmvid</InterlinkText>. We've designed this free solution to help you save your favorite Kuaishou content in pristine quality, completely free from those distracting watermarks that can ruin the viewing experience.
-                </p>
-            </SectionCard>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Have you ever stumbled upon an amazing video on Kuaishou that you wanted to keep forever? We understand that feeling completely.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    Some videos deserve a permanent spot in your collection, whether it&apos;s a hilarious comedy skit, an impressive dance routine, or a heartwarming moment that speaks to your soul.
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    That&apos;s exactly why we created our Kuaishou Video Downloader Without Watermark tool at <InterlinkText currentPlatform={platform}>fsmvid</InterlinkText>. We&apos;ve designed this free solution to help you save your favorite Kuaishou content in pristine quality, completely free from those distracting watermarks that can ruin the viewing experience.
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard
                 title="What Makes Kuaishou So Special?"
                 icon={Star}
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Kuaishou, known internationally as Kwai, has captured the hearts of over 400 million monthly active users worldwide. This Chinese short video platform has become a cultural phenomenon, especially among younger audiences who crave authentic, entertaining content.
@@ -86,8 +102,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Why You Need a Watermark-Free Kuaishou Video Downloader?"
                 icon={Award}
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     You've found the perfect video to share with your friend group, but there's a glaring watermark right in the middle of the screen. It's distracting, unprofessional-looking, and takes away from the content's impact. This is where our watermark-free downloader becomes your best friend.
@@ -109,8 +125,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Key Features That Make Our Kuaishou Downloader Stand Out"
                 icon={ThumbsUp}
-                iconBgGradient="from-teal-500 to-cyan-600"
-                cardBgClass="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Lightning-Fast Download Speeds</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -148,8 +164,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="How to Download Kuaishou Videos Without Watermarks?"
                 icon={Zap}
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>For Desktop Users</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -220,8 +236,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Troubleshooting Common Issues"
                 icon={AlertTriangle}
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Even the best tools occasionally run into hiccups. Here are solutions to the most common challenges users face:
@@ -260,8 +276,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Advanced Tips for Power Users"
                 icon={Settings}
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <SubSectionTitle>Building Your Video Collection Strategically</SubSectionTitle>
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
@@ -296,8 +312,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Why Choose fsmvid for Your Kuaishou Downloads?"
                 icon={Shield}
-                iconBgGradient="from-red-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-red-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Our commitment goes beyond just providing a working tool. We focus on delivering an exceptional user experience that respects your time, privacy, and needs. Here's what sets us apart:
@@ -314,8 +330,8 @@ export const KuaishouSEOContent = () => {
             <SectionCard
                 title="Start Building Your Kuaishou Video Collection Today"
                 icon={Globe}
-                iconBgGradient="from-sky-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4">
                     Now that you understand the benefits and know how to use our Kuaishou Video Downloader Without Watermark, nothing is stopping you from building an amazing collection of your favorite videos.
@@ -327,8 +343,9 @@ export const KuaishouSEOContent = () => {
                     Visit <InterlinkText currentPlatform={platform}>fsmvid</InterlinkText> today and experience the difference that a truly reliable, fast, and user-friendly Kuaishou video downloader can make. Your favorite videos are just one click away from becoming a permanent part of your digital collection – completely free from watermarks and ready to enjoy on your terms.
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

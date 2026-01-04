@@ -40,13 +40,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { slug } = await params
     const post = await getPostBySlug(slug).catch(() => null)
-    
+
     if (!post) {
       return {
         title: 'Post Not Found',
       }
     }
-    
+
     return {
       title: post.title,
       description: post.excerpt,
@@ -56,15 +56,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         type: 'article',
         publishedTime: post.publishedAt,
         authors: [post.author.name],
-        images: post.mainImage 
+        images: post.mainImage
           ? [
-              {
-                url: urlFor(post.mainImage).width(1200).height(630).url(),
-                width: 1200,
-                height: 630,
-                alt: post.title,
-              },
-            ]
+            {
+              url: urlFor(post.mainImage).width(1200).height(630).url(),
+              width: 1200,
+              height: 630,
+              alt: post.title,
+            },
+          ]
           : [],
       },
     }
@@ -121,16 +121,16 @@ const PortableTextComponents = {
             className="relative w-full overflow-hidden rounded-lg"
             style={{ aspectRatio }}
           >
-        <Image
+            <Image
               src={urlFor(value).width(displayWidth).url()}
-          alt={value.alt || 'Blog post image'}
-          fill
+              alt={value.alt || 'Blog post image'}
+              fill
               className="object-contain"
-          loading="lazy"
+              loading="lazy"
               sizes="(max-width: 1024px) 100vw, 960px"
-        />
+            />
           </div>
-        {value.alt && (
+          {value.alt && (
             <figcaption className="mt-2 text-center text-sm text-muted-foreground">
               {value.alt}
             </figcaption>
@@ -196,9 +196,9 @@ const PortableTextComponents = {
                   })}
                 </tbody>
               </table>
-      </div>
+            </div>
           </div>
-      </div>
+        </div>
       )
     },
   },
@@ -209,7 +209,7 @@ const PortableTextComponents = {
     normal: ({ children, index }: any) => {
       // Process text content to add links
       let processedChildren = processTextForLinks(children);
-      
+
       // Insert the CTA after a few paragraphs
       if (index === 3) {
         return (
@@ -246,12 +246,12 @@ const PortableTextComponents = {
       const href = value?.href || value?.url || '#'
       const isExternal = href.startsWith('http://') || href.startsWith('https://')
       const rel = isExternal ? 'noreferrer noopener' : undefined
-      
+
       // Use regular <a> tag for external links, Next.js Link for internal links
       if (isExternal) {
         return (
-          <a 
-            href={href} 
+          <a
+            href={href}
             rel={rel}
             target="_blank"
             className="text-primary underline hover:text-primary/80"
@@ -260,11 +260,11 @@ const PortableTextComponents = {
           </a>
         )
       }
-      
+
       return (
-        <Link 
-          href={href} 
-          rel={rel} 
+        <Link
+          href={href}
+          rel={rel}
           className="text-primary underline hover:text-primary/80"
         >
           {children}
@@ -288,7 +288,7 @@ const PortableTextComponents = {
 // Function to process text for links
 const processTextForLinks = (children: React.ReactNode): React.ReactNode => {
   if (typeof children !== 'string') return children;
-  
+
   // Tool names and their corresponding URLs
   const toolMappings: { [key: string]: string } = {
     'YouTube': '/youtube-video-saver',
@@ -327,35 +327,35 @@ const processTextForLinks = (children: React.ReactNode): React.ReactNode => {
 
   // Split the text into parts to create React elements
   let parts = children.split(/(FSMVID|YouTube|Instagram|TikTok|Facebook|Twitter|Pinterest|Dailymotion|Rumble|Tumblr|LinkedIn|Imgur|Telegram|Snapchat|YouTube Video Saver|YouTube Downloader|Instagram Media Saver|Instagram Downloader|TikTok Video Saver|TikTok Downloader|Facebook Media Grabber|Facebook Downloader|Twitter Video Saver|Twitter Downloader|Pinterest Media Saver|Pinterest Downloader|Dailymotion Video Saver|Rumble Video Grabber|Tumblr Content Saver|LinkedIn Content Saver|Imgur Media Saver|Telegram Media Saver|Snapchat Story Saver)/g);
-  
+
   // Create React elements with links
   return parts.map((part, index) => {
     // Check if this part is a tool name
     if (part in toolMappings) {
       return (
-        <Link 
-          key={index} 
-          href={toolMappings[part]} 
+        <Link
+          key={index}
+          href={toolMappings[part]}
           className="text-primary hover:underline"
         >
           {part}
         </Link>
       );
     }
-    
+
     // Check if this part is "FSMVID"
     if (part === "FSMVID") {
       return (
-        <Link 
-          key={index} 
-          href="/" 
+        <Link
+          key={index}
+          href="/"
           className="text-primary hover:underline"
         >
           {part}
         </Link>
       );
     }
-    
+
     // Return regular text
     return part;
   });
@@ -365,11 +365,11 @@ export default async function BlogPostPage({ params }: Props) {
   try {
     const { slug } = await params
     const post = await getPostBySlug(slug).catch(() => null)
-    
+
     if (!post) {
       notFound()
     }
-    
+
     // Get previous and next posts for navigation
     const { previous, next } = await getPostNavigation(slug);
 
@@ -378,35 +378,36 @@ export default async function BlogPostPage({ params }: Props) {
     const encodedShareUrl = encodeURIComponent(shareUrl)
     const encodedTitle = encodeURIComponent(post.title)
     const primaryCategory = post.categories?.[0]?.title
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background relative">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative pt-32 pb-20 overflow-hidden">
+        {/* Theme Settings: Atmospheric Orbs */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute top-1/3 left-0 w-[500px] h-[500px] bg-indigo-600/10 blur-[100px] rounded-full -translate-x-1/2 pointer-events-none" />
+
         {/* Subtle pattern overlay */}
         <div className="fixed inset-0 bg-[radial-gradient(circle_at_1px_1px,_rgb(0_0_0_/_0.05)_1px,_transparent_0)] dark:bg-[radial-gradient(circle_at_1px_1px,_rgb(255_255_255_/_0.03)_1px,_transparent_0)] bg-[size:24px_24px] pointer-events-none z-0"></div>
-        
-        {/* Hero Header with Gradient */}
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b border-border/50 relative z-10">
-          <div className="container mx-auto px-4 py-6">
-          {/* Breadcrumbs */}
-            <nav className="mb-4">
-              <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1">
-                    Home
-                  </Link>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <ChevronRight className="h-3.5 w-3.5" />
-                  <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <ChevronRight className="h-3.5 w-3.5" />
-                  <span className="truncate max-w-[200px] text-foreground/70">{post.title}</span>
-                </li>
-              </ol>
-            </nav>
-          </div>
-          </div>
+
+        {/* Breadcrumbs - Integrated */}
+        <div className="container mx-auto px-4 relative z-10 mb-8">
+          <nav>
+            <ol className="flex items-center space-x-2 text-xs md:text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              <li>
+                <Link href="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
+                  Home
+                </Link>
+              </li>
+              <li className="flex items-center space-x-2 text-slate-300">
+                <ChevronRight className="h-3.5 w-3.5" />
+                <Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link>
+              </li>
+              <li className="flex items-center space-x-2 text-slate-300">
+                <ChevronRight className="h-3.5 w-3.5" />
+                <span className="truncate max-w-[200px] text-blue-600">{post.title}</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
 
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -475,110 +476,110 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
 
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/40 via-primary/10 to-purple-400/40 rounded-[26px] blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <article className="relative bg-card/95 backdrop-blur border border-border/60 rounded-[22px] shadow-[0_20px_45px_-25px_rgba(15,23,42,0.45)] overflow-hidden">
-                <div className="px-6 md:px-10 pt-8 md:pt-12">
-                  {/* Article Header */}
+              <div className="relative group animate-in slide-in-from-bottom-8 duration-700">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 rounded-[3.2rem] blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <article className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-800 rounded-[3rem] shadow-2xl overflow-hidden">
+                  <div className="px-6 md:px-10 pt-8 md:pt-12">
+                    {/* Article Header */}
                     <header className="space-y-6">
                       <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
                         {post.title}
                       </h1>
-                    {post.excerpt && (
+                      {post.excerpt && (
                         <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-medium">
-                        {post.excerpt}
-                      </p>
-                    )}
+                          {post.excerpt}
+                        </p>
+                      )}
 
                       {/* Author & Meta Info */}
                       <div className="flex flex-wrap items-center gap-4">
-                      {post.author && (
-                        <div className="flex items-center gap-3">
-                          {post.author.image ? (
-                            <Image
-                              src={urlFor(post.author.image).width(48).height(48).url()}
-                              alt={post.author.name}
-                              width={48}
-                              height={48}
-                              className="rounded-full border-2 border-primary/20"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center border-2 border-primary/20">
-                              <span className="text-lg font-bold text-primary-foreground">
-                                {post.author.name.charAt(0).toUpperCase()}
-                              </span>
-                      </div>
-                          )}
-                          <div>
-                            <div className="text-sm font-semibold text-foreground">{post.author.name}</div>
-                            <div className="text-xs text-muted-foreground">Author</div>
-                      </div>
+                        {post.author && (
+                          <div className="flex items-center gap-3">
+                            {post.author.image ? (
+                              <Image
+                                src={urlFor(post.author.image).width(48).height(48).url()}
+                                alt={post.author.name}
+                                width={48}
+                                height={48}
+                                className="rounded-full border-2 border-primary/20"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center border-2 border-primary/20">
+                                <span className="text-lg font-bold text-primary-foreground">
+                                  {post.author.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <div className="text-sm font-semibold text-foreground">{post.author.name}</div>
+                              <div className="text-xs text-muted-foreground">Author</div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <CalendarIcon className="h-4 w-4" />
+                          <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
                         </div>
-                      )}
-                      
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <CalendarIcon className="h-4 w-4" />
-                        <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-                      </div>
-                      
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>5 min read</span>
-                      </div>
-                    </div>
-                  </header>
 
-                  {/* Featured Image */}
-                  {post.mainImage && (
-                    <div className="relative aspect-[2/1] mt-6 mb-10 overflow-hidden border border-border/40 rounded-[28px] -mx-6 md:-mx-10">
-                      <Image 
-                        src={urlFor(post.mainImage).width(1600).height(800).url()} 
-                        alt={post.title}
-                        fill
-                        className="object-cover"
-                        priority
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent"></div>
-                      {/* Categories on Image */}
-                      <div className="absolute top-6 left-8 flex flex-wrap gap-3">
-                    {post.categories?.map((category: any) => (
-                          <Badge key={category._id} className="bg-primary/90 text-primary-foreground backdrop-blur-sm shadow-lg px-4 py-2 text-sm">
-                            <Tag className="h-4 w-4 mr-1" />
-                        {category.title}
-                      </Badge>
-                    ))}
-                  </div>
-                    </div>
-                  )}
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>5 min read</span>
+                        </div>
+                      </div>
+                    </header>
 
-                  {/* Main Content */}
+                    {/* Featured Image */}
+                    {post.mainImage && (
+                      <div className="relative aspect-[2/1] mt-6 mb-10 overflow-hidden border border-border/40 rounded-[28px] -mx-6 md:-mx-10">
+                        <Image
+                          src={urlFor(post.mainImage).width(1600).height(800).url()}
+                          alt={post.title}
+                          fill
+                          className="object-cover"
+                          priority
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent"></div>
+                        {/* Categories on Image */}
+                        <div className="absolute top-6 left-8 flex flex-wrap gap-3">
+                          {post.categories?.map((category: any) => (
+                            <Badge key={category._id} className="bg-primary/90 text-primary-foreground backdrop-blur-sm shadow-lg px-4 py-2 text-sm">
+                              <Tag className="h-4 w-4 mr-1" />
+                              {category.title}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Main Content */}
                     <div className="prose prose-lg dark:prose-invert max-w-none hyphens-none break-words prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-a:text-primary">
                       <div className="w-full break-words leading-relaxed">
-                      {post.content ? (
-                        <PortableText 
-                          value={post.content} 
-                          components={{
-                            ...PortableTextComponents,
-                            block: {
-                              ...PortableTextComponents.block,
-                              normal: ({ children }: any) => (
-                                    <p className="mb-5 break-words hyphens-none text-[17px] leading-[1.8]">{children}</p>
-                              ),
-                            }
-                          }}
-                        />
-                      ) : (
-                        <>
-                          <p>No content available for this post.</p>
-                          <DownloadCTA />
-                        </>
-                      )}
+                        {post.content ? (
+                          <PortableText
+                            value={post.content}
+                            components={{
+                              ...PortableTextComponents,
+                              block: {
+                                ...PortableTextComponents.block,
+                                normal: ({ children }: any) => (
+                                  <p className="mb-5 break-words hyphens-none text-[17px] leading-[1.8]">{children}</p>
+                                ),
+                              }
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <p>No content available for this post.</p>
+                            <DownloadCTA />
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            </div>
+                </article>
+              </div>
 
               {/* Article Navigation */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -597,7 +598,7 @@ export default async function BlogPostPage({ params }: Props) {
                     </Link>
                   </Card>
                 )}
-                
+
                 {next && (
                   <Card className="group hover:shadow-lg transition-all duration-300 hover:border-primary/50 bg-gradient-to-br from-card to-muted/30 md:col-start-2">
                     <Link href={`/blog/${next.slug.current}`} className="block p-6">
@@ -679,8 +680,8 @@ async function MainPostContent({ post }: { post: any }) {
 
       <div className="aspect-video relative rounded-lg overflow-hidden mb-8">
         {post.mainImage ? (
-          <Image 
-            src={urlFor(post.mainImage).width(1200).height(675).url()} 
+          <Image
+            src={urlFor(post.mainImage).width(1200).height(675).url()}
             alt={post.title}
             fill
             className="object-cover"
@@ -702,7 +703,7 @@ async function MainPostContent({ post }: { post: any }) {
           </Badge>
         ))}
       </div>
-      
+
       {post.excerpt && (
         <div className="text-xl mb-6 font-medium text-muted-foreground">
           {post.excerpt}
@@ -711,9 +712,9 @@ async function MainPostContent({ post }: { post: any }) {
 
       <div className="prose dark:prose-invert max-w-none">
         {post.content ? (
-          <PortableText 
-            value={post.content} 
-            components={PortableTextComponents} 
+          <PortableText
+            value={post.content}
+            components={PortableTextComponents}
           />
         ) : (
           <>
@@ -729,12 +730,12 @@ async function MainPostContent({ post }: { post: any }) {
 async function RelatedPostsSection({ slug }: { slug: string }) {
   // Get related posts based on categories, excluding current post
   const relatedPosts = await getFeaturedPosts(4).catch(() => []);
-  
+
   // Filter out the current post and limit to 3
   const filteredPosts = relatedPosts.filter(post => post.slug.current !== slug).slice(0, 3);
-  
+
   if (filteredPosts.length === 0) return null;
-  
+
   return (
     <div className="mt-12 pt-8 border-t border-border/50">
       <div className="flex items-center gap-3 mb-8">
@@ -761,23 +762,23 @@ async function RelatedPostsSection({ slug }: { slug: string }) {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                
+
                 {/* Date badge at top right */}
                 <div className="absolute top-4 right-4">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 dark:bg-black/80 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg">
                     <CalendarIcon className="h-3 w-3" />
                     {formatDate(relatedPost.publishedAt)}
                   </span>
-              </div>
-                
+                </div>
+
                 {/* Title at bottom */}
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <h4 className="text-xl font-bold text-white line-clamp-2 drop-shadow-lg">
-                  {relatedPost.title}
-                </h4>
+                    {relatedPost.title}
+                  </h4>
                 </div>
               </div>
-              
+
               <CardContent className="p-6">
                 {relatedPost.excerpt && (
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
@@ -803,14 +804,14 @@ async function BlogSidebar({ slug }: { slug: string }) {
   // Get popular posts excluding current post
   const popularPosts = await getFeaturedPosts(5).catch(() => []);
   const filteredPopularPosts = popularPosts.filter(post => post.slug.current !== slug);
-  
+
   return (
     <aside className="space-y-6">
       <Button variant="outline" asChild className="w-full justify-start">
         <Link href="/blog" className="flex items-center">
           <ChevronLeft className="h-4 w-4 mr-2" />
-        Back to all posts
-      </Link>
+          Back to all posts
+        </Link>
       </Button>
 
       <Card className="bg-gradient-to-br from-card to-muted/30 border-border/50 shadow-lg">
@@ -840,8 +841,8 @@ async function BlogSidebar({ slug }: { slug: string }) {
                 )}
               </div>
               <Link href={`/blog/${popularPost.slug.current}`} className="font-semibold text-sm leading-snug hover:text-primary transition-colors line-clamp-2 flex-1">
-                  {popularPost.title}
-                </Link>
+                {popularPost.title}
+              </Link>
             </div>
           ))}
         </CardContent>

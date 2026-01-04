@@ -6,36 +6,43 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Shield, Zap, Globe, Award, Info, HelpCircle, Settings, Edit3, TrendingUp, ListChecks, AlertTriangle, ThumbsUp, BookOpen, ExternalLink } from "lucide-react";
 import { InterlinkText } from "@/lib/interlink-tools";
 
-const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-gray-500 to-gray-600", cardBgClass = "bg-gray-50 dark:bg-slate-800", titleClassName = "text-xl lg:text-2xl" }: {title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
-    <Card className={`border border-gray-200 dark:border-slate-700 shadow-sm ${cardBgClass}`}>
-      <CardContent className="p-6 md:p-8">
-        {title && Icon && (
-          <div className="flex items-center mb-6">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${iconBgGradient} text-white shadow-sm mr-4`}>
-              <Icon className="w-5 h-5" />
+const SectionCard = ({ title, icon: Icon, children, iconBgGradient = "from-blue-600/10 to-blue-600/10", cardBgClass = "bg-white", titleClassName = "text-xl md:text-2xl" }: { title?: string, icon?: React.ElementType, children: React.ReactNode, iconBgGradient?: string, cardBgClass?: string, titleClassName?: string }) => (
+    <Card className={`border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden group/card ${cardBgClass} dark:bg-slate-900 dark:border-slate-800`}>
+        <CardContent className="p-8 md:p-10">
+            {title && (
+                <div className="flex items-center mb-8">
+                    {Icon && (
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${iconBgGradient} text-blue-600 shadow-sm mr-6 group-hover/card:rotate-6 group-hover/card:scale-110 transition-all duration-500`}>
+                            <Icon className="w-6 h-6" />
+                        </div>
+                    )}
+                    <h2 className={`font-black tracking-tighter italic uppercase text-slate-900 dark:text-white leading-none ${titleClassName}`}>{title}</h2>
+                </div>
+            )}
+            <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed text-sm">
+                {children}
             </div>
-            <h2 className={`${titleClassName} font-semibold text-gray-900 dark:text-white`}>{title}</h2>
-          </div>
-        )}
-        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-          {children}
-        </div>
-      </CardContent>
+        </CardContent>
     </Card>
 );
 
 const SubSectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 pt-2">{children}</h3>
+    <h3 className="text-[10px] font-black italic uppercase tracking-[0.15em] text-slate-900 dark:text-slate-200 mt-8 mb-4 flex items-center gap-3">
+        <span className="w-6 h-[1.5px] bg-blue-600 rounded-full" />
+        {children}
+    </h3>
 );
 
 const renderStyledList = (items: (string | React.ReactNode)[]) => (
-    <ul className="space-y-2 mb-4">
-      {items.map((item, index) => (
-        <li key={index} className="flex items-start">
-          <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-3 mt-1 shrink-0" />
-          {typeof item === 'string' ? <span className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }}></span> : <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>}
-        </li>
-      ))}
+    <ul className="space-y-3 mb-4">
+        {items.map((item, index) => (
+            <li key={index} className="flex items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <CheckCircle className="w-4 h-4 text-emerald-500 mr-3 mt-0.5 shrink-0" />
+                <span className="text-[10px] md:text-xs font-black italic uppercase tracking-tight text-slate-900 dark:text-slate-200">
+                    {typeof item === 'string' ? <span dangerouslySetInnerHTML={{ __html: item }} /> : item}
+                </span>
+            </li>
+        ))}
     </ul>
 );
 
@@ -43,59 +50,66 @@ export const WeiboSEOContent = () => {
   const platform = "weibo";
   
   return (
-    <div className="w-full">
-      <div className="container px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="space-y-8 md:space-y-10 py-12 md:py-16">
+    <div className="w-screen bg-slate-50 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <section className="py-24">
+        <div className="container px-6 mx-auto max-w-7xl">
+                                                            <div className="text-center mb-16 space-y-4">
+                        <Badge className="bg-blue-600/10 text-blue-600 border-none px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+                            Deep Dive
+                        </Badge>
+                        <h2 className="text-xl md:text-3xl font-black tracking-tighter italic uppercase text-slate-900 leading-[0.9]">
+                            Weibo Video <span className="text-blue-600">Downloader</span>
+                        </h2>
+                    </div>
+                              
+
+<div className="space-y-12 max-w-4xl mx-auto">
             <SectionCard 
                 icon={Info}
-                iconBgGradient="from-orange-500 to-red-600"
-                cardBgClass="bg-gradient-to-br from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <div className="text-center">
-                    <Badge className="mb-4 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20 px-4 py-1 text-xs font-semibold">
-                        About Weibo Video Downloader
-                    </Badge>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Weibo Video Downloader</h1>
-                    <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                        <InterlinkText currentPlatform={platform}>
+                            <div className="space-y-4">
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                             Have you ever scrolled through your Weibo feed and stumbled upon a video so compelling, informative, or entertaining that you wished you could save it forever?
                         </InterlinkText>
-                    </p>
-                    <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                        <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                             With over 523 million active monthly users, Weibo is a vibrant hub of culture, news, and entertainment, hosting a vast library of unique video content.
                         </InterlinkText>
-                    </p>
-                    <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                        <InterlinkText currentPlatform={platform}>
+                                </p>
+<p className="text-slate-500 font-medium italic leading-relaxed text-sm border-l-2 border-blue-600/10 pl-6">
+                                    <InterlinkText currentPlatform={platform}>
                             The desire to download these videos for offline viewing, content creation, or archival purposes is a common one. This guide provides the definitive answer to that need, introducing the FSMVID Weibo video downloader is the simplest, safest, and most efficient method available today.
                         </InterlinkText>
-                    </p>
-                </div>
-            </SectionCard>
+                                </p>
+                            </div>
+                        </SectionCard>
 
             <SectionCard 
                 title="Why Do You Need a Weibo Video Downloader?" 
                 icon={Star} 
-                iconBgGradient="from-blue-500 to-indigo-600"
-                cardBgClass="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The reasons for saving a video from Weibo are as diverse as the content on the platform itself.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Understanding these motivations helps in choosing the right tool for the job.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Many users seek to preserve content that might be deleted or become unavailable later, creating a personal archive of important or memorable moments.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <strong>Common use cases for a Weibo video downloader include:</strong>
                 </p>
                 {renderStyledList([
@@ -109,15 +123,15 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="The Easiest Method: Using FSMVID's Free Online Weibo Video Downloader" 
                 icon={Award} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         For the vast majority of users, the ideal solution is fast, free, and requires no technical overhead.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID's online tool is engineered to meet these exact criteria, providing a direct path to downloading any public Weibo video in seconds. This method eliminates the risks and complexities associated with other approaches.
                     </InterlinkText>
@@ -127,10 +141,10 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="How to Download Weibo Videos with FSMVID (A Simple 3-Step Guide)?" 
                 icon={Zap} 
-                iconBgGradient="from-purple-500 to-pink-600"
-                cardBgClass="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         This process is designed for maximum simplicity and can be completed in under a minute. It is optimized to provide a clear, direct answer for users looking for immediate instructions.
                     </InterlinkText>
@@ -139,7 +153,7 @@ export const WeiboSEOContent = () => {
                 <div className="space-y-6">
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">1. Find the Weibo Video and Copy its URL</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Navigate to the Weibo post containing the video you wish to download. Click the share options and select "Copy Link" to copy the post's URL to your clipboard.
                             </InterlinkText>
@@ -148,7 +162,7 @@ export const WeiboSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">2. Paste the URL into FSMVID</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Open your web browser and go to the FSMVID Weibo Video Downloader. Paste the copied URL into the input field at the top of the page.
                             </InterlinkText>
@@ -157,7 +171,7 @@ export const WeiboSEOContent = () => {
 
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2 text-lg">3. Download the Video</h4>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className="text-slate-500 font-medium italic leading-relaxed text-sm">
                             <InterlinkText currentPlatform={platform}>
                                 Click the "Download" button. FSMVID will process the link and present you with available download options. Select your preferred video quality, and the download will begin automatically to your device.
                             </InterlinkText>
@@ -169,10 +183,10 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="Why is FSMVID the Best Weibo Video Downloader for 99% of Users?" 
                 icon={ThumbsUp} 
-                iconBgGradient="from-indigo-500 to-purple-600"
-                cardBgClass="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While numerous download methods exist, FSMVID stands out by removing common barriers and user friction points. Its design philosophy prioritizes security, cost-effectiveness, and simplicity, making it the default choice for non-technical users.
                     </InterlinkText>
@@ -190,22 +204,22 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="A Comparative Analysis of Weibo Video Downloading Methods" 
                 icon={ListChecks} 
-                iconBgGradient="from-teal-500 to-cyan-600"
-                cardBgClass="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         To make an informed choice, it is helpful to understand the full landscape of available tools.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Each method caters to a different type of user, from the casual viewer to the tech-savvy developer. This analysis highlights the trade-offs between ease of use, power, and security.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Online Tools</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Web-based downloaders are the most accessible option. They function by taking a URL, processing it on a server, and providing a direct download link.
                     </InterlinkText>
@@ -216,7 +230,7 @@ export const WeiboSEOContent = () => {
                 </div>
 
                 <SubSectionTitle>Desktop Software</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Dedicated desktop programs offer more robust features for users who need to download content in bulk. Applications like Jaksta Media Recorder fall into this category.
                     </InterlinkText>
@@ -227,7 +241,7 @@ export const WeiboSEOContent = () => {
                 </div>
 
                 <SubSectionTitle>Browser Scripts & Extensions: The DIY Approach</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         For technically inclined users, browser extensions and user scripts (often managed through an extension like Tampermonkey) can add download buttons directly into the Weibo interface.
                     </InterlinkText>
@@ -238,7 +252,7 @@ export const WeiboSEOContent = () => {
                 </div>
 
                 <SubSectionTitle>Command-Line Tools & Manual Methods: For Developers Only</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The most technical approach involves using command-line programs like yt-dlp or manually inspecting the website's code through browser developer tools to find the video file's direct URL
                     </InterlinkText>
@@ -252,10 +266,10 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="Weibo Video Downloader Methods Compared" 
                 icon={Settings} 
-                iconBgGradient="from-amber-500 to-yellow-600"
-                cardBgClass="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         The following table provides a visual summary of the different methods, allowing for a quick comparison based on key user criteria.
                     </InterlinkText>
@@ -273,8 +287,8 @@ export const WeiboSEOContent = () => {
                                 <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">Best For</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody className="divide-y divide-slate-100">
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Online Tool (FSMVID)</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Very Easy</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Free</td>
@@ -290,7 +304,7 @@ export const WeiboSEOContent = () => {
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Medium</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">Bulk downloading and power users</td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50 transition-colors">
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">Browser Scripts</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-red-600 dark:text-red-400">Difficult</td>
                                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-green-600 dark:text-green-400">Free</td>
@@ -314,74 +328,74 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="How to Download Weibo Videos on Any Device?" 
                 icon={Globe} 
-                iconBgGradient="from-cyan-500 to-blue-600"
-                cardBgClass="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         A key advantage of a web-based tool like FSMVID is its ability to function on any platform with a modern browser. However, the exact steps can vary slightly depending on the device's operating system.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Weibo Video Downloader for PC and Mac</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         On a desktop or laptop computer, the process is the most straightforward.
                     </InterlinkText>
                 </p>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li>Open any web browser (such as Chrome, Firefox, Safari, or Edge).</li>
-                    <li>Navigate to the Weibo post with the desired video and copy the URL.</li>
-                    <li>Go to the FSMVID website, paste the link into the input box, and click "Download."</li>
-                    <li>The video file will be saved directly to your computer's "Downloads" folder.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Open any web browser (such as Chrome, Firefox, Safari, or Edge).</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Navigate to the Weibo post with the desired video and copy the URL.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Go to the FSMVID website, paste the link into the input box, and click "Download."</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">The video file will be saved directly to your computer's "Downloads" folder.</li>
                 </ol>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-6">
                     <InterlinkText currentPlatform={platform}>
                         This method works identically for both Windows PCs and Apple Mac computers.
                     </InterlinkText>
                 </p>
 
                 <SubSectionTitle>Weibo Video Downloader for Android</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Downloading on an Android device is similarly simple, leveraging the mobile browser.
                     </InterlinkText>
                 </p>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li>Open the Weibo app or the Weibo website on your Android phone or tablet.</li>
-                    <li>Locate the video, tap the "Share" button, and choose the "Copy Link" option.</li>
-                    <li>Open the Chrome browser (or any other mobile browser) and navigate to the FSMVID tool.</li>
-                    <li>Paste the link into the downloader and tap "Download" to save the video to your device's gallery or downloads folder.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Open the Weibo app or the Weibo website on your Android phone or tablet.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Locate the video, tap the "Share" button, and choose the "Copy Link" option.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Open the Chrome browser (or any other mobile browser) and navigate to the FSMVID tool.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Paste the link into the downloader and tap "Download" to save the video to your device's gallery or downloads folder.</li>
                 </ol>
 
                 <SubSectionTitle>Weibo Video Downloader for iPhone and iPad (iOS)</SubSectionTitle>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         Apple's iOS has stricter security protocols that can make direct video downloads from a browser slightly more complex.
                     </InterlinkText>
                 </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
             <InterlinkText currentPlatform={platform}>
                         However, a simple and reliable workaround exists. Answering the common question of what to do when the video opens in a new tab instead of downloading is crucial for user trust.
             </InterlinkText>
           </p>
                 <ol className="space-y-3 mb-6 list-decimal pl-6">
-                    <li>From the Weibo app on your iPhone or iPad, copy the link to the video post.</li>
-                    <li>Open the Safari browser and go to the FSMVID Weibo Video Downloader.</li>
-                    <li>Paste the link and tap the "Download" button.</li>
-                    <li>The video will likely open and start playing in a new browser tab. Do not worry, this is normal for iOS.</li>
-                    <li>Tap the "Share" icon at the bottom of the Safari screen (it looks like a square with an arrow pointing up).</li>
-                    <li>From the share menu, scroll down and select "Save to Files." This will save the video directly to the Files app on your iPhone, from where it can be moved, shared, or viewed.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">From the Weibo app on your iPhone or iPad, copy the link to the video post.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Open the Safari browser and go to the FSMVID Weibo Video Downloader.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Paste the link and tap the "Download" button.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">The video will likely open and start playing in a new browser tab. Do not worry, this is normal for iOS.</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">Tap the "Share" icon at the bottom of the Safari screen (it looks like a square with an arrow pointing up).</li>
+                    <li className="text-slate-500 font-medium italic leading-relaxed text-sm">From the share menu, scroll down and select "Save to Files." This will save the video directly to the Files app on your iPhone, from where it can be moved, shared, or viewed.</li>
                 </ol>
             </SectionCard>
 
             <SectionCard 
                 title="More Free Video Downloaders from FSMVID" 
                 icon={Star} 
-                iconBgGradient="from-pink-500 to-rose-600"
-                cardBgClass="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         FSMVID is more than just a Weibo tool; it is a comprehensive suite of solutions for saving content from all major social media platforms. By using the same simple, secure, and efficient technology, these tools provide a one-stop resource for all video downloading needs.
                     </InterlinkText>
@@ -434,17 +448,18 @@ export const WeiboSEOContent = () => {
             <SectionCard 
                 title="Summary" 
                 icon={BookOpen} 
-                iconBgGradient="from-green-500 to-emerald-600"
-                cardBgClass="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/70"
+                iconBgGradient="from-blue-600/10 to-blue-600/10"
+                cardBgClass="bg-white"
             >
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <p className="text-slate-500 font-medium italic leading-relaxed text-sm mb-4">
                     <InterlinkText currentPlatform={platform}>
                         While the methods for downloading videos from Weibo range from the highly technical to the deceptively simple, the best solution for most people is one that balances power with accessibility and security. Desktop software can be costly and risky, while command-line tools are impractical for everyday use.
                     </InterlinkText>
                 </p>
             </SectionCard>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

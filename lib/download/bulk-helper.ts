@@ -1,4 +1,5 @@
-import { getBestQualityUrl } from './download-helper'; // Reuse your existing helper
+import { getBestQualityUrl } from './download-helper';
+import { getCachedResponse, setCachedResponse } from '@/lib/api/redis-cache';
 
 interface ProcessedVideo {
     url: string;
@@ -12,7 +13,7 @@ interface ProcessedVideo {
  * Helper to fetch metadata for a single video using your existing proxy API logic.
  * This runs on the server (Worker) to prepare for bulk processing.
  */
-export async function fetchVideoMetadata(videoUrl: string, platform?: string): Promise<ProcessedVideo> {
+export async function fetchVideoMetadata(videoUrl: string, platform?: string, quality?: string, format?: string): Promise<ProcessedVideo> {
     const apiUrl = process.env.NEXT_PUBLIC_ZM_API_URL;
     const apiKey = process.env.NEXT_PUBLIC_ZM_API_KEY;
 
@@ -27,27 +28,40 @@ export async function fetchVideoMetadata(videoUrl: string, platform?: string): P
     }
 
     try {
-        // 1. Fetch metadata using the 3rd party API (exactly like your proxy)
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'apikey': apiKey,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ url: videoUrl })
-        });
+        // 1. Try Cache First (Upstash Redis)
+        const cached = await getCachedResponse(videoUrl);
+        let data: any;
 
-        if (!response.ok) {
-            return {
-                url: videoUrl,
-                filename: 'error',
-                metadata: null,
-                success: false,
-                error: `API error: ${response.status}`
-            };
+        if (cached) {
+            data = typeof cached === 'string' ? JSON.parse(cached) : cached;
+        } else {
+            // 2. Fetch metadata using the 3rd party API (exactly like your proxy)
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'apikey': apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: videoUrl })
+            });
+
+            if (!response.ok) {
+                return {
+                    url: videoUrl,
+                    filename: 'error',
+                    metadata: null,
+                    success: false,
+                    error: `API error: ${response.status}`
+                };
+            }
+
+            data = await response.json();
+
+            // Store in Cache (1 hour)
+            if (data && !data.error) {
+                await setCachedResponse(videoUrl, data, 3600);
+            }
         }
-
-        const data = await response.json();
 
         if (data.error || (data.message && data.message.toLowerCase().includes("no medias"))) {
             return {
@@ -60,8 +74,7 @@ export async function fetchVideoMetadata(videoUrl: string, platform?: string): P
         }
 
         // 2. Use your existing logic to get the best URL
-        // We pass platform if available, otherwise undefined
-        const downloadUrl = getBestQualityUrl(data, platform);
+        const downloadUrl = getBestQualityUrl(data, platform, quality, format);
 
         if (!downloadUrl) {
             return {
@@ -75,8 +88,18 @@ export async function fetchVideoMetadata(videoUrl: string, platform?: string): P
 
         // 3. Determine filename
         const title = data.title || 'video';
-        const cleanTitle = title.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-        const extension = 'mp4'; // Default to mp4 for now, your getBestQualityUrl might need format tweaking if audio
+        // Remove only characters illegal in filenames across Windows/Mac/Linux
+        // and allow spaces for readability.
+        let cleanTitle = title
+            .replace(/[<>:"/\\|?*\x00-\x1F]/g, '') // remove illegal chars
+            .trim()
+            .substring(0, 100); // allow slightly longer names
+
+        if (!cleanTitle || cleanTitle.replace(/_/g, '').length === 0) {
+            cleanTitle = `video_${Date.now().toString().slice(-6)}`;
+        }
+
+        const extension = format === 'mp3' ? 'mp3' : 'mp4';
 
         return {
             url: downloadUrl, // This is the direct CDN link

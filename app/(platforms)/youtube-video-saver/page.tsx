@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 
 export default function YouTubePage() {
   const platform = "youtube";
-  
+
   return (
     <>
       <ToolsHero
@@ -54,7 +54,7 @@ export default function YouTubePage() {
       >
         <PlatformDownloader platform="youtube" />
       </ToolsHero>
-      <div className="container mx-auto px-4">
+      <div>
         <Suspense fallback={<ContentLoading />}>
           <PlatformHowTo
             platform="youtube"
@@ -97,13 +97,13 @@ export default function YouTubePage() {
             }),
           }}
         />
-   
+
         {/* Related Tools Section */}
         <Suspense fallback={<ContentLoading />}>
           <RelatedTools currentPlatform={platform} />
         </Suspense>
       </div>
-      
+
     </>
   );
 }

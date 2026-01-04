@@ -1,11 +1,19 @@
+
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to get fresh env vars (important for Edge runtime)
-const getEnv = (key: string) => process.env[key] || '';
+const getEnv = (key: string) => {
+    // Check for NEXT_PUBLIC_ version (required for browser/client-side)
+    // If the user hasn't added NEXT_PUBLIC_ to their .env, this will be undefined in the browser.
+    const publicVal = process.env[`NEXT_PUBLIC_${key}`];
+    if (publicVal) return publicVal;
 
-// Client for client-side operations (public/anon key)
-// We use a singleton pattern but initialize lazily to avoid build-time errors
+    // Fallback to standard key (only works on SERVER-SIDE)
+    return process.env[key] || '';
+};
+
 let supabaseInstance: any = null;
+let supabaseAdminInstance: any = null;
 
 export const getSupabase = () => {
     if (supabaseInstance) return supabaseInstance;
@@ -13,46 +21,65 @@ export const getSupabase = () => {
     const url = getEnv('SUPABASE_URL');
     const key = getEnv('SUPABASE_ANON_KEY');
 
+    // We only error if we are on the server or if we really need it.
+    // On the client, we might not have these yet if the user didn't prefix them.
     if (!url || !key) {
-        if (process.env.NODE_ENV === 'development') {
-            console.warn('Supabase URL or Key missing');
+        if (typeof window !== 'undefined') {
+            console.warn('⚠️ Supabase client-side config missing. Ensure NEXT_PUBLIC_SUPABASE_URL is in .env');
+            return null; // Return null instead of breaking
         }
-        // Return a dummy client or throw, but better to checking calling code
-        // However, throwing here might still break build if called globally.
-        // We'll trust the caller to handle errors or we throw deeply.
+        return null;
     }
 
     supabaseInstance = createClient(url, key);
     return supabaseInstance;
 };
 
-// Admin client (server-side only)
 export const getSupabaseAdmin = () => {
+    if (supabaseAdminInstance) return supabaseAdminInstance;
+
     const url = getEnv('SUPABASE_URL');
     const serviceKey = getEnv('SUPABASE_SERVICE_KEY');
     const anonKey = getEnv('SUPABASE_ANON_KEY');
 
-    // Fallback to anon key if service key missing (though permissions might fail)
-    return createClient(url, serviceKey || anonKey);
+    if (!url) return null;
+
+    const key = serviceKey || anonKey;
+    if (!key) return null;
+
+    supabaseAdminInstance = createClient(url, key);
+    return supabaseAdminInstance;
 };
 
-// Keep direct exports for backward compatibility if safe, 
-// BUT for the build error fix, we should prefer the functions.
-// We'll wrap the current exports to use the lazy loader if accessed.
-
-export const supabase = {
-    get from() { return getSupabase().from },
-    get storage() { return getSupabase().storage },
-    get auth() { return getSupabase().auth },
+/**
+ * Proxy helper to allow lazy initialization with proper 'this' binding.
+ */
+const createLazyProxy = (clientGetter: () => any) => {
+    return new Proxy({} as any, {
+        get(target, prop) {
+            const client = clientGetter();
+            if (!client) {
+                // If it's a critical call, we throw a descriptive error
+                if (prop === 'from' || prop === 'auth' || prop === 'rpc') {
+                    const msg = typeof window !== 'undefined'
+                        ? "Supabase Config Missing: Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env file."
+                        : "Supabase Config Missing: Please add SUPABASE_URL and SUPABASE_SERVICE_KEY to your .env file.";
+                    throw new Error(msg);
+                }
+                return undefined;
+            }
+            const value = client[prop];
+            if (typeof value === 'function') {
+                return value.bind(client);
+            }
+            return value;
+        }
+    });
 };
 
-export const supabaseAdmin = {
-    get from() { return getSupabaseAdmin().from },
-    get storage() { return getSupabaseAdmin().storage },
-    get auth() { return getSupabaseAdmin().auth },
-    get rpc() { return getSupabaseAdmin().rpc },
-};
+export const supabase = createLazyProxy(getSupabase);
+export const supabaseAdmin = createLazyProxy(getSupabaseAdmin);
 
 export const isSupabaseConfigured = () => {
-    return !!getEnv('SUPABASE_URL') && !!getEnv('SUPABASE_ANON_KEY');
+    return !!getEnv('SUPABASE_URL') && (!!getEnv('SUPABASE_ANON_KEY') || !!getEnv('SUPABASE_SERVICE_KEY'));
 };

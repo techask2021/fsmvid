@@ -134,43 +134,57 @@ export async function downloadVideo(videoUrl: string, filename: string, platform
   }
 }
 
-export function getBestQualityUrl(apiResponse: any, platform?: string): string | null { // Add platform parameter
+export function getBestQualityUrl(apiResponse: any, platform?: string, quality?: string, format?: string): string | null {
   try {
-    console.log(`getBestQualityUrl called for platform: ${platform}, data:`, JSON.stringify(apiResponse, null, 2).substring(0, 1000));
+    console.log(`getBestQualityUrl called for platform: ${platform}, quality: ${quality}, format: ${format}`);
 
-    // Handle different API response formats for videos/audio
     if (apiResponse.medias && Array.isArray(apiResponse.medias) && apiResponse.medias.length > 0) {
-      // Sort by quality/resolution if available
-      const sortedMedias = [...apiResponse.medias].sort((a, b) => {
+      let filteredMedias = [...apiResponse.medias];
+
+      // 1. FILTER BY FORMAT
+      if (format === 'mp3') {
+        // Look for audio-only first
+        const audioOnly = filteredMedias.filter(m => m.extension === 'mp3' || m.type === 'audio');
+        if (audioOnly.length > 0) filteredMedias = audioOnly;
+      } else {
+        // Look for video if format is mp4
+        const videoOnly = filteredMedias.filter(m => m.extension === 'mp4' || m.type === 'video');
+        if (videoOnly.length > 0) filteredMedias = videoOnly;
+      }
+
+      // 2. SORT BY QUALITY (Higher first)
+      filteredMedias.sort((a, b) => {
         const heightA = parseInt((a.quality || a.label || a.height || '').toString().replace('p', '')) || 0;
         const heightB = parseInt((b.quality || b.label || b.height || '').toString().replace('p', '')) || 0;
-        return heightB - heightA; // Higher resolution first
+        return heightB - heightA;
       });
-      // Prefer medias with a URL
-      const firstValidMedia = sortedMedias.find(media => media.url);
-      if (firstValidMedia) {
-        console.log("Selected media URL (from medias array):", firstValidMedia.url);
-        return firstValidMedia.url;
+
+      // 3. FIND BEST MATCH FOR REQUESTED QUALITY
+      if (quality && format !== 'mp3') {
+        const target = parseInt(quality);
+        // Try to find exact or slightly lower
+        const match = filteredMedias.find(m => {
+          const h = parseInt((m.quality || m.label || m.height || '').toString().replace('p', '')) || 0;
+          return h <= target;
+        });
+        if (match?.url) return match.url;
       }
+
+      // Fallback: First valid URL
+      const firstValidMedia = filteredMedias.find(media => media.url);
+      if (firstValidMedia) return firstValidMedia.url;
     }
 
+    // Secondary Check: formats structure (some APIs use this)
     if (apiResponse.formats && typeof apiResponse.formats === 'object') {
-      // Handle nested format structure
-      for (const formatType of Object.keys(apiResponse.formats)) {
-        const qualities = apiResponse.formats[formatType];
-        if (typeof qualities === 'object') {
-          const highestQuality = Object.values(qualities)[0] as any;
-          if (highestQuality?.url) {
-            return highestQuality.url;
-          }
-        }
-      }
+      // Simplify: just grab the first valid URL for now if medias failed
+      const formats = apiResponse.formats;
+      const firstFormat = Object.values(formats)[0] as any;
+      if (firstFormat?.url) return firstFormat.url;
     }
 
     // Handle simple URL response
-    if (apiResponse.url) {
-      return apiResponse.url;
-    }
+    if (apiResponse.url) return apiResponse.url;
 
     return null;
   } catch (error) {
