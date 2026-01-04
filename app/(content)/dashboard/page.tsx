@@ -67,7 +67,7 @@ function DashboardContent() {
 
     // States
     const [activeTab, setActiveTab] = useState("overview");
-    const [activeJobId, setActiveJobId] = useState<string | null>(null);
+    const [activeJobIds, setActiveJobIds] = useState<string[]>([]);
     const [history, setHistory] = useState<JobRecord[]>([]);
     const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -114,15 +114,32 @@ function DashboardContent() {
         }
     }, [searchParams]);
 
-    // 2. Handle activeJobId persistence
+    // 2. Handle activeJobIds persistence
     useEffect(() => {
         const queryJobId = searchParams.get("jobId");
-        if (queryJobId) {
-            setActiveJobId(queryJobId);
-            localStorage.setItem('fsmvid_active_job', queryJobId);
-        } else {
-            const savedJobId = localStorage.getItem('fsmvid_active_job');
-            if (savedJobId) setActiveJobId(savedJobId);
+        const savedJobsStr = localStorage.getItem('fsmvid_active_jobs');
+        let currentJobs: string[] = [];
+
+        if (savedJobsStr) {
+            try {
+                currentJobs = JSON.parse(savedJobsStr);
+            } catch (e) {
+                currentJobs = [];
+            }
+        }
+
+        if (queryJobId && !currentJobs.includes(queryJobId)) {
+            const updatedJobs = [queryJobId, ...currentJobs];
+            setActiveJobIds(updatedJobs);
+            localStorage.setItem('fsmvid_active_jobs', JSON.stringify(updatedJobs));
+
+            // Clean URL to prevent re-adding on refresh
+            const params = new URLSearchParams(window.location.search);
+            params.delete('jobId');
+            const newUrl = params.toString() ? `/dashboard?${params.toString()}` : '/dashboard';
+            router.replace(newUrl);
+        } else if (currentJobs.length > 0) {
+            setActiveJobIds(currentJobs);
         }
     }, [searchParams]);
 
@@ -150,7 +167,7 @@ function DashboardContent() {
         // Background sync every 15 seconds
         const interval = setInterval(fetchData, 15000);
         return () => clearInterval(interval);
-    }, [user, activeJobId]);
+    }, [user, activeJobIds]);
 
     // History Deletion Handlers
     const toggleJob = (id: string) => {
@@ -211,12 +228,15 @@ function DashboardContent() {
         );
     }
 
-    const clearActiveJob = () => {
-        setActiveJobId(null);
-        localStorage.removeItem('fsmvid_active_job');
-        const params = new URLSearchParams(window.location.search);
-        params.delete('jobId');
-        router.push(`/dashboard?${params.toString()}`);
+    const clearActiveJob = (id: string) => {
+        const updated = activeJobIds.filter(jobId => jobId !== id);
+        setActiveJobIds(updated);
+        localStorage.setItem('fsmvid_active_jobs', JSON.stringify(updated));
+    };
+
+    const clearAllActiveJobs = () => {
+        setActiveJobIds([]);
+        localStorage.removeItem('fsmvid_active_jobs');
     };
 
     const handleSyncProfile = async () => {
@@ -322,29 +342,38 @@ function DashboardContent() {
 
                 {/* OVERVIEW TAB */}
                 <TabsContent value="overview" className="space-y-10 animate-in slide-in-from-bottom-6 duration-700">
-                    {activeJobId ? (
+                    {activeJobIds.length > 0 ? (
                         <div className="space-y-8 animate-in fade-in duration-500">
-                            <Card className="border-none shadow-[0_32px_64px_-16px_rgba(37,99,235,0.15)] rounded-[3.5rem] overflow-hidden bg-white ring-1 ring-slate-100">
-                                <CardHeader className="p-10 pb-0 flex flex-row justify-between items-center">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <Badge className="bg-blue-600/10 text-blue-600 border-none px-4 py-1 font-black text-[10px] uppercase tracking-[0.2em]">Running Session</Badge>
-                                        </div>
-                                        <CardTitle className="text-3xl font-black tracking-tighter">Active Bulk Video Download</CardTitle>
-                                    </div>
-                                    <Button variant="ghost" onClick={clearActiveJob} className="text-slate-400 hover:text-red-500 font-black text-[10px] uppercase tracking-widest h-10 px-6 rounded-xl hover:bg-slate-50">
-                                        Dismiss View
-                                    </Button>
-                                </CardHeader>
-                                <CardContent className="p-10">
-                                    <BulkProgress
-                                        jobId={activeJobId}
-                                        onComplete={() => {
-                                            fetchData(); // Refresh history when a job finishes
-                                        }}
-                                    />
-                                </CardContent>
-                            </Card>
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-3">
+                                    <Badge className="bg-blue-600/10 text-blue-600 border-none px-4 py-1 font-black text-[10px] uppercase tracking-[0.2em]">Active Cluster</Badge>
+                                    <span className="text-sm font-bold text-slate-500">{activeJobIds.length} Nodes Online</span>
+                                </div>
+                                <Button variant="ghost" onClick={clearAllActiveJobs} className="text-slate-400 hover:text-red-500 font-black text-[10px] uppercase tracking-widest h-8 px-4 rounded-xl hover:bg-slate-50">
+                                    Dismiss All
+                                </Button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
+                                {activeJobIds.map(id => (
+                                    <Card key={id} className="border-none shadow-[0_32px_64px_-16px_rgba(37,99,235,0.1)] rounded-[3rem] overflow-hidden bg-white ring-1 ring-slate-100 group">
+                                        <CardHeader className="p-8 pb-0 flex flex-row justify-between items-center">
+                                            <CardTitle className="text-xl font-black tracking-tighter italic">Batch Process <span className="text-blue-600 opacity-50 text-xs ml-2">#{id.substring(0, 8)}</span></CardTitle>
+                                            <Button variant="ghost" onClick={() => clearActiveJob(id)} className="text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full h-8 w-8 p-0">
+                                                <XCircle className="w-5 h-5" />
+                                            </Button>
+                                        </CardHeader>
+                                        <CardContent className="p-8">
+                                            <BulkProgress
+                                                jobId={id}
+                                                onComplete={() => {
+                                                    fetchData(); // Refresh history
+                                                }}
+                                            />
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
                         </div>
                     ) : (
                         <Card className="border-none bg-slate-50/50 rounded-[3.5rem] overflow-hidden hover:bg-white transition-all duration-500 group border-2 border-dashed border-slate-200 hover:border-blue-500/50">
@@ -408,27 +437,30 @@ function DashboardContent() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {history.slice(0, 4).map((job) => (
                                             <div key={job.id}
-                                                className={`group/item flex items-center justify-between p-5 rounded-3xl border transition-all cursor-pointer ${activeJobId === job.id ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-[1.02]' : 'bg-slate-50 border-slate-100 hover:bg-white hover:shadow-2xl hover:border-blue-50'}`}
+                                                className={`group/item flex items-center justify-between p-5 rounded-3xl border transition-all cursor-pointer ${activeJobIds.includes(job.id) ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-[1.02]' : 'bg-slate-50 border-slate-100 hover:bg-white hover:shadow-2xl hover:border-blue-50'}`}
                                                 onClick={() => {
-                                                    setActiveJobId(job.id);
-                                                    localStorage.setItem('fsmvid_active_job', job.id);
+                                                    if (!activeJobIds.includes(job.id)) {
+                                                        const updated = [job.id, ...activeJobIds];
+                                                        setActiveJobIds(updated);
+                                                        localStorage.setItem('fsmvid_active_jobs', JSON.stringify(updated));
+                                                    }
                                                     setActiveTab("overview");
                                                 }}
                                             >
                                                 <div className="flex items-center gap-4">
-                                                    <div className={`p-3 rounded-2xl ${activeJobId === job.id ? 'bg-white/20' : 'bg-white shadow-sm border border-slate-100'}`}>
-                                                        {job.status === 'completed' ? <CheckCircle2 className={`w-5 h-5 ${activeJobId === job.id ? 'text-white' : 'text-green-500'}`} /> :
-                                                            job.status === 'failed' ? <XCircle className={`w-5 h-5 ${activeJobId === job.id ? 'text-white' : 'text-red-500'}`} /> :
-                                                                <Clock className={`w-5 h-5 ${activeJobId === job.id ? 'text-white' : 'text-indigo-500'} animate-spin-slow`} />}
+                                                    <div className={`p-3 rounded-2xl ${activeJobIds.includes(job.id) ? 'bg-white/20' : 'bg-white shadow-sm border border-slate-100'}`}>
+                                                        {job.status === 'completed' ? <CheckCircle2 className={`w-5 h-5 ${activeJobIds.includes(job.id) ? 'text-white' : 'text-green-500'}`} /> :
+                                                            job.status === 'failed' ? <XCircle className={`w-5 h-5 ${activeJobIds.includes(job.id) ? 'text-white' : 'text-red-500'}`} /> :
+                                                                <Clock className={`w-5 h-5 ${activeJobIds.includes(job.id) ? 'text-white' : 'text-indigo-500'} animate-spin-slow`} />}
                                                     </div>
                                                     <div>
-                                                        <p className={`font-black text-[10px] uppercase tracking-tighter ${activeJobId === job.id ? 'text-indigo-100' : 'text-slate-400'}`}>{job.platform || 'General'}</p>
+                                                        <p className={`font-black text-[10px] uppercase tracking-tighter ${activeJobIds.includes(job.id) ? 'text-indigo-100' : 'text-slate-400'}`}>{job.platform || 'General'}</p>
                                                         <p className="text-sm font-bold">{job.completed_files}/{job.total_files} Units</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <Badge variant="outline" className={`text-[9px] h-5 px-2 font-black uppercase tracking-widest ${activeJobId === job.id ? 'border-white/20 text-white' : 'border-slate-200 text-slate-500'}`}>{job.quality_preference}</Badge>
-                                                    <p className={`text-[10px] font-bold mt-1 ${activeJobId === job.id ? 'text-indigo-100' : 'text-slate-400'}`}>{new Date(job.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</p>
+                                                    <Badge variant="outline" className={`text-[9px] h-5 px-2 font-black uppercase tracking-widest ${activeJobIds.includes(job.id) ? 'border-white/20 text-white' : 'border-slate-200 text-slate-500'}`}>{job.quality_preference}</Badge>
+                                                    <p className={`text-[10px] font-bold mt-1 ${activeJobIds.includes(job.id) ? 'text-indigo-100' : 'text-slate-400'}`}>{new Date(job.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -519,8 +551,11 @@ function DashboardContent() {
                                         <div key={job.id}
                                             className={`flex flex-col md:flex-row md:items-center p-6 rounded-[2rem] bg-white border hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)] transition-all group cursor-pointer ${selectedJobs.includes(job.id) ? 'border-blue-400 bg-blue-50/10' : 'border-slate-100 hover:border-blue-100'}`}
                                             onClick={() => {
-                                                setActiveJobId(job.id);
-                                                localStorage.setItem('fsmvid_active_job', job.id);
+                                                if (!activeJobIds.includes(job.id)) {
+                                                    const updated = [job.id, ...activeJobIds];
+                                                    setActiveJobIds(updated);
+                                                    localStorage.setItem('fsmvid_active_jobs', JSON.stringify(updated));
+                                                }
                                                 setActiveTab("overview");
                                             }}
                                         >

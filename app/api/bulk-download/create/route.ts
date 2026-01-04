@@ -105,14 +105,21 @@ export async function POST(request: NextRequest) {
         const qstashUrl = process.env.QSTASH_URL;
         const qstashToken = process.env.QSTASH_TOKEN;
 
+        console.log("📡 Triggering Worker...");
+        console.log("- Worker URL Config:", workerUrl ? "SET" : "MISSING");
+        console.log("- QStash URL Config:", qstashUrl ? "SET" : "MISSING");
+        console.log("- QStash Token Config:", qstashToken ? "SET" : "MISSING");
+
         // Smart Worker URL: Ensure it has the full path
         if (workerUrl && !workerUrl.includes('/api/workers/')) {
             workerUrl = workerUrl.replace(/\/$/, '') + '/api/workers/process-bulk';
         }
 
+        console.log("- Final Resolved Worker URL:", workerUrl);
+
         if (isLocal) {
             const finalLocalUrl = workerUrl.includes('localhost') ? workerUrl : `http://localhost:3000/api/workers/process-bulk`;
-            console.log("🚀 DEV MODE: Detaching worker...");
+            console.log("🚀 DEV MODE: Detaching local worker...");
 
             // No 'await' here means the user gets their response INSTANTLY
             fetch(finalLocalUrl, {
@@ -122,28 +129,42 @@ export async function POST(request: NextRequest) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ jobId: job.id })
-            }).catch(e => console.error("❌ Worker trigger failed:", e.message));
+            }).catch(e => console.error("❌ Local Worker trigger failed:", e.message));
 
             console.log("✅ API: Handshake complete.");
 
         } else if (qstashUrl && qstashToken && workerUrl) {
+            console.log("🌐 Production Mode: Publishing to QStash...");
             try {
-                await fetch(`${qstashUrl}/v2/publish/${encodeURIComponent(workerUrl)}`, {
+                const qstashEndpoint = `${qstashUrl.replace(/\/$/, '')}/v2/publish/${encodeURIComponent(workerUrl)}`;
+                console.log("- QStash Endpoint:", qstashEndpoint);
+
+                const qRes = await fetch(qstashEndpoint, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${qstashToken}`,
                         'Content-Type': 'application/json',
-                        // Simple secret validation
                         'Upstash-Forward-Authorization': `Bearer ${process.env.WORKER_SECRET || 'default-secret'}`
                     },
                     body: JSON.stringify({ jobId: job.id })
                 });
-            } catch (qError) {
-                console.error("Failed to queue job:", qError);
-                // We still return success because the job is in DB and can be retried/picked up
+
+                if (!qRes.ok) {
+                    const qErr = await qRes.text();
+                    console.error("❌ QStash Error Response:", qRes.status, qErr);
+                } else {
+                    console.log("✅ QStash: Message published successfully.");
+                }
+            } catch (qError: any) {
+                console.error("❌ Failed to queue job via QStash:", qError.message);
             }
         } else {
-            console.warn("QStash/Worker configuration missing - job created but not queued automatically");
+            console.warn("⚠️ QStash/Worker configuration missing - job created but not queued automatically");
+            console.log("- Missing details:", {
+                qstashUrl: !!qstashUrl,
+                qstashToken: !!qstashToken,
+                workerUrl: !!workerUrl
+            });
         }
 
         return NextResponse.json({
