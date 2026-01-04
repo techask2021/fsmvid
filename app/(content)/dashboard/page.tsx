@@ -29,9 +29,11 @@ import {
     Crown,
     LayoutDashboard,
     Plus,
+    Slash,
     Settings,
     ShieldCheck,
-    Trash2
+    Trash2,
+    Loader2
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 
@@ -785,15 +787,8 @@ function DashboardContent() {
 export default function DashboardPage() {
     return (
         <Suspense fallback={
-            <div className="container mx-auto px-4 py-40 text-center flex flex-col items-center justify-center gap-6">
-                <div className="relative">
-                    <div className="w-20 h-20 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                    <Download className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-600" />
-                </div>
-                <div className="space-y-2">
-                    <p className="text-2xl font-black tracking-tight animate-pulse">Establishing Connection...</p>
-                    <p className="text-slate-400 font-medium text-sm">Syncing with encrypted cloud nodes</p>
-                </div>
+            <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
         }>
             <DashboardContent />

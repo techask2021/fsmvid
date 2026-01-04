@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-provider';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ const PLANS = {
     'archive elite': { name: 'Archive Elite', price: 19.99, credits: 1000, icon: Crown }, // Added from dashboard
 };
 
-export default function ManualPaymentPage() {
+function ManualPaymentContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, login, isLoading } = useAuth();
@@ -278,5 +278,17 @@ export default function ManualPaymentPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ManualPaymentPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+        }>
+            <ManualPaymentContent />
+        </Suspense>
     );
 }
